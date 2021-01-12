@@ -8,6 +8,7 @@ export type User = {
   id: UserID,
   name: string,
   adminId: null | AdminID,
+  creatorAdminId: AdminID,
 };
 */
 const toUserId/*: Cast<UserID>*/ = toString;
@@ -17,6 +18,7 @@ const toUser/*: Cast<User>*/ = (value) => {
     id: toUserId(object.id),
     name: toString(object.name),
     adminId: object.adminId ? toAdminId(object.adminId) : null,
+    creatorAdminId: toAdminId(object.creatorAdminId),
   }
 };
 
