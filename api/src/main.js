@@ -5,7 +5,7 @@ const { createListener } = require('@lukekaalim/server');
 const { createRoutes } = require('./routes');
 const { createServices } = require('./services');
 
-const main = async () => {
+const main = async (port) => {
   try {
     const services = await createServices();
     const routes = createRoutes(services);
@@ -17,10 +17,10 @@ const main = async () => {
     const firstToken = await services.tokens.createLoginToken(firstUser.id);
     console.log([firstUser, firstAdmin, firstToken]);
   
-    server.listen(5543, () => console.log(`http://localhost:${server.address().port}`))
+    server.listen(port, () => console.log(`http://localhost:${server.address().port}`))
   } catch (error) {
     console.error(error);
   }
 };
 
-main();
+main(...process.argv.slice(2));

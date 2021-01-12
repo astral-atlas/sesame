@@ -5,8 +5,8 @@
   "description": "Identity Service API for Astral Atlas",
   "main": "src/main.js",
   "scripts": {
-    "dev": "nodemon src/main",
-    "start": "node src/main",
+    "dev": "nodemon src/main 5543",
+    "start": "node src/main 8080",
     "postversion": "../scripts/postversion.sh"
   },
   "author": "luke@kaal.im",
