@@ -6,7 +6,7 @@ on:
       - '@astral-atlas/sesame-models@*'
 
 jobs:
-  publish:
+  publish-models:
     runs-on: ubuntu-latest
     defaults:
       run:

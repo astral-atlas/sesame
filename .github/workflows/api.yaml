@@ -1,0 +1,32 @@
+name: "Publish @astral-atlas/sesame-api"
+
+on:
+  push:
+    tags:
+      - '@astral-atlas/sesame-api@*'
+
+jobs:
+  release-api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci install --production
+      - name: Archive
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: api.zip
+          exclusions: '*.git*'
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: api.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
