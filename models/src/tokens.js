@@ -11,7 +11,6 @@ export type AccessToken = {
   secret: string,
   userId: UserID,
   status: 'valid' | 'revoked',
-  device: null | string,
   host: null | string,
 };
 */
@@ -23,7 +22,6 @@ const toAccessToken/*: Cast<AccessToken>*/ = (value) => {
     secret: toString(object.secret),
     userId: toUserId(object.userId),
     status: toEnum(object.status, ['valid', 'revoked']),
-    device: object.device ? toString(object.device) : null,
     host: object.host ? toString(object.host) : null,
   };
 };
