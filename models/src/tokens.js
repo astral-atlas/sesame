@@ -33,7 +33,7 @@ export type LoginTokenID = string;
 export type LoginToken = {
   id: LoginTokenID,
   secret: string,
-  consumed: boolean,
+  accessTokenId: null | AccessTokenID,
   userId: UserID,
 };
 */
@@ -43,7 +43,7 @@ const toLoginToken/*: Cast<LoginToken>*/ = (value) => {
   return {
     id: toLoginTokenId(object.id),
     secret: toString(object.secret),
-    consumed: toBoolean(object.consumed),
+    accessTokenId: object.accessTokenId ? toAccessTokenId(object.accessTokenId) : null,
     userId: toString(object.device),
   };
 };
