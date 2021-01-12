@@ -22,6 +22,7 @@ jobs:
         uses: thedoctor0/zip-release@master
         with:
           filename: api.zip
+          directory: api
           exclusions: '*.git*'
       - name: Release
         uses: softprops/action-gh-release@v1
