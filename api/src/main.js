@@ -17,7 +17,7 @@ const main = async () => {
     const firstToken = await services.tokens.createLoginToken(firstUser.id);
     console.log([firstUser, firstAdmin, firstToken]);
   
-    server.listen(0, () => console.log(`http://localhost:${server.address().port}`))
+    server.listen(5543, () => console.log(`http://localhost:${server.address().port}`))
   } catch (error) {
     console.error(error);
   }

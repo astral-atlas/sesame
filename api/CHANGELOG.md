@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0]
+### Modified
+ - default api port from 0 (random) to 5543
+
 ## [1.0.2]
 ### Fixed
  - build script publishing zip from wrong source

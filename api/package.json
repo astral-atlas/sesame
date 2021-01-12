@@ -6,6 +6,7 @@
   "main": "src/main.js",
   "scripts": {
     "dev": "nodemon src/main",
+    "start": "node src/main",
     "postversion": "../scripts/postversion.sh"
   },
   "author": "luke@kaal.im",
