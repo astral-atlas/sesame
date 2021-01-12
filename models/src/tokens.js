@@ -5,9 +5,9 @@ const { toObject, toString, toNumber, toBoolean, toEnum } = require('@lukekaalim
 const { toUserId } = require('./user');
 
 /*::
-export type PermanentAccessTokenID = string;
-export type PermanentAccessToken = {
-  id: string,
+export type AccessTokenID = string;
+export type AccessToken = {
+  id: AccessTokenID,
   secret: string,
   userId: UserID,
   status: 'valid' | 'revoked',
@@ -15,11 +15,11 @@ export type PermanentAccessToken = {
   host: null | string,
 };
 */
-const toPermanentAccessTokenId/*: Cast<PermanentAccessTokenID>*/ = toString;
-const toPermanentAccessToken/*: Cast<PermanentAccessToken>*/ = (value) => {
+const toAccessTokenId/*: Cast<AccessTokenID>*/ = toString;
+const toAccessToken/*: Cast<AccessToken>*/ = (value) => {
   const object = toObject(value);
   return {
-    id: toPermanentAccessTokenId(object.id),
+    id: toAccessTokenId(object.id),
     secret: toString(object.secret),
     userId: toUserId(object.userId),
     status: toEnum(object.status, ['valid', 'revoked']),
@@ -29,19 +29,19 @@ const toPermanentAccessToken/*: Cast<PermanentAccessToken>*/ = (value) => {
 };
 
 /*::
-export type OneTimeAccessTokenID = string;
-export type OneTimeAccessToken = {
-  id: string,
+export type LoginTokenID = string;
+export type LoginToken = {
+  id: LoginTokenID,
   secret: string,
   consumed: boolean,
   userId: UserID,
 };
 */
-const toOneTimeAccessTokenId/*: Cast<OneTimeAccessTokenID>*/ = toString;
-const toOneTimeAccessToken/*: Cast<OneTimeAccessToken>*/ = (value) => {
+const toLoginTokenId/*: Cast<LoginTokenID>*/ = toString;
+const toLoginToken/*: Cast<LoginToken>*/ = (value) => {
   const object = toObject(value);
   return {
-    id: toOneTimeAccessTokenId(object.id),
+    id: toLoginTokenId(object.id),
     secret: toString(object.secret),
     consumed: toBoolean(object.consumed),
     userId: toString(object.device),
@@ -49,8 +49,8 @@ const toOneTimeAccessToken/*: Cast<OneTimeAccessToken>*/ = (value) => {
 };
 
 module.exports = {
-  toPermanentAccessTokenId,
-  toPermanentAccessToken,
-  toOneTimeAccessTokenId,
-  toOneTimeAccessToken
+  toLoginTokenId,
+  toLoginToken,
+  toAccessTokenId,
+  toAccessToken
 };
