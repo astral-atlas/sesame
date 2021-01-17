@@ -1,6 +1,7 @@
 {
   "workspaces": [
     "models",
-    "api"
+    "api",
+    "client"
   ]
 }

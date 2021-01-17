@@ -1,0 +1,23 @@
+name: "Publish @astral-atlas/sesame-client"
+
+on:
+  push:
+    tags:
+      - '@astral-atlas/sesame-client@*'
+
+jobs:
+  publish-models:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 15
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
