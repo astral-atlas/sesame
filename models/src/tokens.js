@@ -6,13 +6,13 @@ const { toUserId } = require('./user');
 
 /*::
 export type AccessTokenID = string;
-export type AccessToken = {
+export type AccessToken = {|
   id: AccessTokenID,
   secret: string,
   userId: UserID,
   status: 'valid' | 'revoked',
   host: null | string,
-};
+|};
 */
 const toAccessTokenId/*: Cast<AccessTokenID>*/ = toString;
 const toAccessToken/*: Cast<AccessToken>*/ = (value) => {
@@ -28,12 +28,12 @@ const toAccessToken/*: Cast<AccessToken>*/ = (value) => {
 
 /*::
 export type LoginTokenID = string;
-export type LoginToken = {
+export type LoginToken = {|
   id: LoginTokenID,
   secret: string,
   accessTokenId: null | AccessTokenID,
   userId: UserID,
-};
+|};
 */
 const toLoginTokenId/*: Cast<LoginTokenID>*/ = toString;
 const toLoginToken/*: Cast<LoginToken>*/ = (value) => {

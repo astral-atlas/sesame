@@ -4,12 +4,12 @@ const { toObject, toString } = require('@lukekaalim/cast');
 
 /*::
 export type UserID = string;
-export type User = {
+export type User = {|
   id: UserID,
   name: string,
   adminId: null | AdminID,
   creatorAdminId: null | AdminID,
-};
+|};
 */
 const toUserId/*: Cast<UserID>*/ = toString;
 const toUser/*: Cast<User>*/ = (value) => {
@@ -24,10 +24,10 @@ const toUser/*: Cast<User>*/ = (value) => {
 
 /*::
 export type AdminID = string;
-export type Admin = {
+export type Admin = {|
   id: AdminID,
   userId: UserID,
-};
+|};
 */
 const toAdminId/*: Cast<AdminID>*/ = toString;
 const toAdmin/*: Cast<Admin>*/ = (value) => {
