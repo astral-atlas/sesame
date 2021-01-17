@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.0]
+### Added
+ - encodeAccessToken and decodeAccessToken functions
+
 ## [5.0.0]
 ### Modified
  - creatorAdminId is optional, as the original users are not created by anyone
