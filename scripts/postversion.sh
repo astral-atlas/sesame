@@ -6,7 +6,6 @@ tag="$name@$version"
 
 git add .
 git commit -m $tag
-git tag $tag
+git tag -a $tag -m "Publied version $version of $name"
 
-git push origin
-git push --tags
+git push origin --follow-tags
