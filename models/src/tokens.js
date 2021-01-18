@@ -1,5 +1,5 @@
 // @flow strict
-/*:: import type { Cast } from '@lukekaalim/cast'; */
+/*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
 /*:: import type { UserID } from './user'; */
 const { toObject, toString, toNumber, toBoolean, toEnum, stringify, parse } = require('@lukekaalim/cast');
 const { toUserId } = require('./user');
@@ -46,12 +46,28 @@ const toLoginToken/*: Cast<LoginToken>*/ = (value) => {
     userId: toString(object.device),
   };
 };
-const encodeAccessToken = (accessToken/*: AccessToken*/)/*: string*/ => {
-  return toBase64(stringify(accessToken));
-}
-const decodeAccessToken = (encodedAccessToken/*: string*/)/*: AccessToken*/ => {
-  return toAccessToken(parse(fromBase64(encodedAccessToken)));
-}
+/*::
+export type Encoder<T> = {
+  encode: T => string,
+  decode: string => T,
+};
+*/
+const createJSONBase64Encoder = /*:: <T: JSONValue>*/(toDecoded/*: Cast<T>*/)/*: Encoder<T>*/ => {
+  const encode = (value) => {
+    return toBase64(stringify(value));
+  };
+  const decode = (value) => {
+    return toDecoded(parse(fromBase64(value)));
+  };
+  return {
+    encode,
+    decode,
+  };
+};
+
+const accessTokenEncoder/*: Encoder<AccessToken>*/ = createJSONBase64Encoder(toAccessToken);
+const loginTokenEncoder/*: Encoder<LoginToken>*/ = createJSONBase64Encoder(toLoginToken);
+
 
 module.exports = {
   toLoginTokenId,
@@ -59,6 +75,6 @@ module.exports = {
   toAccessTokenId,
   toAccessToken,
 
-  encodeAccessToken,
-  decodeAccessToken,
+  accessTokenEncoder,
+  loginTokenEncoder,
 };
