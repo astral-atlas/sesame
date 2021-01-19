@@ -1,0 +1,15 @@
+{
+  "name": "@lukekaalim/api-models",
+  "version": "0.1.0",
+  "description": "Utility data structures for building type-safe API defenitions",
+  "main": "src/main.js",
+  "scripts": {
+    "postversion": "../scripts/postversion.sh"
+  },
+  "author": "Luke Kaalim (luke@kaal.im)",
+  "license": "MIT",
+  "dependencies": {
+    "@lukekaalim/cast": "^1.0.0",
+    "@lukekaalim/model": "^2.1.1"
+  }
+}

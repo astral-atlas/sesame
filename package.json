@@ -2,6 +2,7 @@
   "workspaces": [
     "models",
     "api",
-    "client"
+    "client",
+    "api-models"
   ]
 }
