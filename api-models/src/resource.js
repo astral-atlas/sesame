@@ -2,7 +2,7 @@
 /*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
 
 /*::
-export type QueryMap = ?{ +[string]: ?(string | number | boolean) };
+export type QueryMap = ?{ +[string]: ?string };
 
 export type APIResource<Response: JSONValue = null, Request: JSONValue = null, Query: QueryMap = null> = {
   path: string,
