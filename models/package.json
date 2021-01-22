@@ -11,6 +11,7 @@
     "postversion": "../scripts/postversion.sh"
   },
   "dependencies": {
+    "@lukekaalim/api-models": "^1.0.0",
     "@lukekaalim/cast": "^1.0.0"
   },
   "devDependencies": {

@@ -13,6 +13,7 @@ export type AccessToken = {|
   userId: UserID,
   status: 'valid' | 'revoked',
   host: null | string,
+  deviceName: null | string,
 |};
 */
 const toAccessTokenId/*: Cast<AccessTokenID>*/ = toString;
@@ -24,6 +25,7 @@ const toAccessToken/*: Cast<AccessToken>*/ = (value) => {
     userId: toUserId(object.userId),
     status: toEnum(object.status, ['valid', 'revoked']),
     host: object.host ? toString(object.host) : null,
+    deviceName: object.deviceName ? toString(object.deviceName) : null,
   };
 };
 
@@ -32,8 +34,9 @@ export type LoginTokenID = string;
 export type LoginToken = {|
   id: LoginTokenID,
   secret: string,
-  accessTokenId: null | AccessTokenID,
   userId: UserID,
+  status: 'valid' | 'revoked',
+  accessTokenId: null | AccessTokenID,
 |};
 */
 const toLoginTokenId/*: Cast<LoginTokenID>*/ = toString;
@@ -42,6 +45,7 @@ const toLoginToken/*: Cast<LoginToken>*/ = (value) => {
   return {
     id: toLoginTokenId(object.id),
     secret: toString(object.secret),
+    status: toEnum(object.status, ['valid', 'revoked']),
     accessTokenId: object.accessTokenId ? toAccessTokenId(object.accessTokenId) : null,
     userId: toString(object.device),
   };
