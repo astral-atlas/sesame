@@ -1,40 +1,23 @@
 // @flow strict
 /*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
+/*:: import type { RouteHandler } from '@lukekaalim/server'; */
+const { stringify } = require('@lukekaalim/cast');
 
 /*::
-export type QueryMap = ?{ +[string]: ?string };
-
-export type APIResource<Response: JSONValue = null, Request: JSONValue = null, Query: QueryMap = null> = {
+export type Endpoint<Q: ?{ +[string]: ?string }> = {|
   path: string,
-  method: string,
-  authenticated: boolean,
-  toQuery: Cast<Query>,
-  toRequest: Cast<Request>,
-  toResponse: Cast<Response>
-};
+  toQuery: ?{ +[string]: ?string } => Q
+|};
 
-export type QueryOfAPIResource<T> = $Call<<Q>(t: APIResource<any, any, Q>) => Q, T>;
-export type RequestOfAPIResource<T> = $Call<<Req>(t: APIResource<Req, any, any>) => Req, T>;
-export type ResponseOfAPIResource<T> = $Call<<Res>(t: APIResource<any, Res, any>) => Res, T>;
+export type WithResponseBody<ResponseBody: JSONValue> = {|
+  toResponseBody: JSONValue => ResponseBody,
+|};
+export type WithRequestBody<RequestBody: JSONValue> = {|
+  toRequestBody: JSONValue => RequestBody,
+|};
+
+export type GETEndpoint<Res, Q> = {| ...Endpoint<Q>, ...WithResponseBody<Res>, method: 'GET' |};
+export type PUTEndpoint<Req, Q> = {| ...Endpoint<Q>, ...WithRequestBody<Req>, method: 'PUT' |};
+export type POSTEndpoint<Req, Res, Q> = {| ...Endpoint<Q>, ...WithResponseBody<Res>, ...WithRequestBody<Req>, method: 'POST' |};
+export type DELETEEndpoint<Req, Res, Q> = {| ...Endpoint<Q>, ...WithResponseBody<Res>, ...WithRequestBody<Req>, method: 'DELETE' |};
 */
-
-const createAPIResource = /*:: <Res: JSONValue, Req: JSONValue, Q: QueryMap>*/(
-  path/*: string*/,
-  method/*: string*/,
-  toQuery/*: Cast<Q>*/,
-  toRequest/*: Cast<Req>*/,
-  toResponse/*: Cast<Res>*/,
-  authenticated/*: boolean*/ = false,
-)/*: APIResource<Res, Req, Q>*/ => ({
-  path,
-  method,
-  authenticated,
-  toQuery,
-  toRequest,
-  toResponse,
-});
-
-module.exports = {
-  createAPIResource,
-};
-

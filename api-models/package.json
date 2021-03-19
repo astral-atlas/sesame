@@ -1,7 +1,7 @@
 {
   "name": "@lukekaalim/api-models",
   "version": "2.2.0",
-  "description": "Utility data structures for building type-safe API defenitions",
+  "description": "Utility data structures for building type-safe API definitions",
   "main": "src/main.js",
   "scripts": {
     "postversion": "../scripts/postversion.sh"
@@ -10,6 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "@lukekaalim/cast": "^1.0.0",
-    "@lukekaalim/model": "^2.1.1"
+    "@lukekaalim/http-client": "^2.5.0",
+    "@lukekaalim/model": "^2.1.1",
+    "@lukekaalim/server": "^9.0.0"
   }
 }
