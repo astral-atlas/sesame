@@ -1,6 +1,5 @@
 // @flow strict
 /*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
-/*:: import type { RouteHandler } from '@lukekaalim/server'; */
 const { stringify } = require('@lukekaalim/cast');
 
 /*::
