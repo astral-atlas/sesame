@@ -9,9 +9,6 @@
   "author": "Luke Kaalim (luke@kaal.im)",
   "license": "MIT",
   "dependencies": {
-    "@lukekaalim/cast": "^1.0.0",
-    "@lukekaalim/http-client": "^2.5.0",
-    "@lukekaalim/model": "^2.1.1",
-    "@lukekaalim/server": "^9.0.0"
+    "@lukekaalim/cast": "^1.0.0"
   }
 }
