@@ -1,6 +1,6 @@
 {
   "name": "@lukekaalim/api-models",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Utility data structures for building type-safe API definitions",
   "main": "src/main.js",
   "scripts": {
