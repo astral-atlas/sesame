@@ -1,55 +1,43 @@
 // @flow strict
 /*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
 /*:: import type { UserID } from './user'; */
+/*:: import type { AccessGrantID, LoginGrantID } from './grants'; */
 const { toObject, toString, toNumber, toBoolean, toEnum, stringify, parse } = require('@lukekaalim/cast');
 const { toUserId } = require('./user');
 const { toBase64, fromBase64 } = require('./base64');
+const { toAccessGrantId, toLoginGrantId } = require('./grants');
 
 /*::
 export type AccessTokenID = string;
 export type AccessToken = {|
-  id: AccessTokenID,
+  accessGrantId: AccessGrantID,
   secret: string,
-  userId: UserID,
-  status: 'valid' | 'revoked',
-  host: null | string,
-  deviceName: null | string,
+|};
+
+export type LoginTokenID = string;
+export type LoginToken = {|
+  loginGrantId: LoginGrantID,
+  secret: string,
 |};
 */
 const toAccessTokenId/*: Cast<AccessTokenID>*/ = toString;
 const toAccessToken/*: Cast<AccessToken>*/ = (value) => {
   const object = toObject(value);
   return {
-    id: toAccessTokenId(object.id),
+    accessGrantId: toAccessGrantId(object.accessGrantId),
     secret: toString(object.secret),
-    userId: toUserId(object.userId),
-    status: toEnum(object.status, ['valid', 'revoked']),
-    host: object.host ? toString(object.host) : null,
-    deviceName: object.deviceName ? toString(object.deviceName) : null,
   };
 };
-
-/*::
-export type LoginTokenID = string;
-export type LoginToken = {|
-  id: LoginTokenID,
-  secret: string,
-  userId: UserID,
-  status: 'valid' | 'revoked',
-  accessTokenId: null | AccessTokenID,
-|};
-*/
 const toLoginTokenId/*: Cast<LoginTokenID>*/ = toString;
 const toLoginToken/*: Cast<LoginToken>*/ = (value) => {
   const object = toObject(value);
   return {
-    id: toLoginTokenId(object.id),
+    loginGrantId: toLoginGrantId(object.loginGrantId),
     secret: toString(object.secret),
-    status: toEnum(object.status, ['valid', 'revoked']),
-    accessTokenId: object.accessTokenId ? toAccessTokenId(object.accessTokenId) : null,
-    userId: toString(object.device),
   };
-};
+}
+
+
 /*::
 export type Encoder<T> = {
   encode: T => string,

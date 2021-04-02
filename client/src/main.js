@@ -1,92 +1,74 @@
 // @flow strict
 /*:: import type { HTTPClient } from '@lukekaalim/http-client'; */
-/*:: import type { LoginToken, LoginTokenID, AccessToken, AccessTokenID, User } from '@astral-atlas/sesame-models'; */
-const { createRESTClient, createBearerAuthorization } = require('@lukekaalim/rest-client');
-const { toLoginToken, toAccessToken, toUser } = require('@astral-atlas/sesame-models');
-const { toBase64 } = require('./base64');
+/*:: import type { LoginToken, LoginTokenID, AccessToken, AccessTokenID, User, Admin, UserID } from '@astral-atlas/sesame-models'; */
+const { toLoginToken, toAccessToken, toUser, loginTokenEncoder, accessTokenEncoder, api } = require('@astral-atlas/sesame-models');
 const { stringify } = require('@lukekaalim/cast');
+const { createNoneAuthorization, createBearerAuthorization } = require('@lukekaalim/http-client');
+const { toBase64 } = require('./base64');
+const { createGrantClient, createUserClient } = require('./api');
 
 /*::
-export type GuestSesameClientArgs = {
+export type GuestArgs = {
   baseURL: URL, 
-  httpClient: HTTPClient,
+  http: HTTPClient,
 };
-
-export type AuthenticatedSesameClientArgs = GuestSesameClientArgs & {
-  id: AccessTokenID,
-  secret: string
-};
-
 export type GuestSesameClient = {
-  createAccessToken: (login: { id: LoginTokenID, secret: string }) => Promise<AccessToken>,
-  login: (login: { id: LoginTokenID, secret: string }) => Promise<UserSesameClient>,
+  grantAccess: (login: LoginToken, deviceName: string) => Promise<AccessToken>,
+};
+*/
+const createGuestSesameClient = ({ baseURL, http }/*: GuestArgs*/)/*: GuestSesameClient*/ => {
+  const authorization = createNoneAuthorization();
+  const service = { baseURL, authorization };
+  const grantClient = createGrantClient(http, service);
+  return {
+    grantAccess: grantClient.grantAccess,
+  };
 };
 
+/*::
+export type UserArgs = GuestArgs & {
+  accessToken: AccessToken,
+};
 export type UserSesameClient = GuestSesameClient & {
-  createLoginToken: () => Promise<LoginToken>,
-  getSelf: () => Promise<User>,
+  getSelf: () => Promise<{ self: User, admin: null | Admin }>,
+  createLoginGrant: (userId: UserID) => Promise<LoginToken>,
 };
-
-export type AdminSesameClient = AdminSesameClient & {
-  createUser: (name: string) => Promise<User>,
+*/
+const createUserSesameClient = ({ baseURL, http, accessToken }/*: UserArgs*/)/*: UserSesameClient*/ => {
+  const authorization = createBearerAuthorization(accessTokenEncoder.encode(accessToken));
+  const service = { baseURL, authorization };
+  const userClient = createUserClient(http, service);
+  const grantClient = createGrantClient(http, service);
+  return {
+    ...createGuestSesameClient({ baseURL, http }),
+    getSelf: userClient.getSelf,
+    createLoginGrant: grantClient.grantLogin,
+  }
+};
+/*::
+export type AdminSesameClient = UserSesameClient & {
+  createUser: (userName: string) => Promise<User>,
+  getUsers: () => Promise<User[]>,
 };
 */
 
-class RequiresAccessTokenError extends Error {};
-
-const createGuestSesameClient = ({
-  baseURL,
-  httpClient
-}/*: GuestSesameClientArgs*/)/*: GuestSesameClient*/ => {
-  const rest = createRESTClient({ client: httpClient, baseURL });
-  
-  const createAccessToken = async (login) => {
-    const { body, status } = await rest.post({
-      path: '/access',
-      body: { id: login.id, secret: login.secret }
-    });
-
-    const newAccessToken = toAccessToken(body);
-    return newAccessToken;
+/*
+const createAdminSesameClient = ({ baseURL, http, accessToken }/*: UserArgs)/*: AdminSesameClient => {
+  const authorization = createBearerAuthorization(accessTokenEncoder.encode(accessToken));
+  const service = { baseURL, authorization };
+  const user = createUserClient(http, service);
+  const getUsers = async () => {
+    return await user.getSelf();
   };
-  const login = async (login) => {
-    const { id, secret } = await createAccessToken(login);
-    const authenticatedClient = createUserSesameClient({ baseURL, httpClient, id, secret });
-    return authenticatedClient;
-  };
+  const createUser = async () => {
 
+  }
   return {
-    createAccessToken,
-    login,
+    ...createUserSesameClient({ sesameBaseURL, httpClient, accessToken }),
+    getUsers,
   };
 };
-
-const createUserSesameClient = ({
-  baseURL,
-  httpClient,
-  id,
-  secret,
-}/*: AuthenticatedSesameClientArgs*/)/*: UserSesameClient*/ => {
-  const authorization = createBearerAuthorization(toBase64(stringify({ id, secret })))
-  const rest = createRESTClient({ client: httpClient, baseURL, authorization });
-
-  const createLoginToken = async () => {
-    const { body } = await rest.post({ path: '/login', body: null });
-    const loginToken = toLoginToken(body);
-    return loginToken;
-  };
-  const getSelf = async () => {
-    const { body } = await rest.get({ path: '/self', body: null });
-    const user = toUser(body);
-    return user;
-  }
-
-  return {
-    ...createGuestSesameClient({ baseURL, httpClient }),
-    createLoginToken,
-    getSelf,
-  }
-};
+*/
 
 module.exports = {
   createGuestSesameClient,

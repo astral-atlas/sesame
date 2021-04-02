@@ -1,56 +1,53 @@
 // @flow strict
-/*:: import type { RESTResource } from '@lukekaalim/api-models'; */
-/*:: import type { User, UserID } from '../user'; */
-/*:: import type { OffsetPaginationFilterQuery } from './pagination'; */
-const { createRESTResource } = require('@lukekaalim/api-models');
-const { toObject, toString } = require('@lukekaalim/cast');
-const { toUser, toUserId } = require('../user');
-const { toOffsetPaginationFilter } = require('./pagination');
+/*:: import type { Cast } from '@lukekaalim/cast'; */
+/*:: import type { GETEndpoint, POSTEndpoint, PUTEndpoint, DELETEEndpoint } from '@lukekaalim/api-models'; */
+/*:: import type { User, UserID, Admin } from '../user'; */
+const { toObject, toString, toArray, toNullable } = require('@lukekaalim/cast');
+const { toUser, toUserId, toAdmin } = require('../user');
 
-/*::
-export type UserCreateArgs = {|
-  name: string,
-|};
-export type UserModifyArgs = {|
-  name: null | string,
-|};
-export type UserIDQuery = {|
-  userId: UserID,
-|};
-*/
-const toUserCreateArgs = (value) => {
-  const object = toObject(value);
-  return {
-    name: toString(object.name),
+const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null |}, null>*/ = {
+  method: 'GET',
+  path: '/self',
+  toQuery: () => null,
+  toResponseBody: (value) => {
+    const object = toObject(value);
+    return {
+      self: toUser(object.self),
+      admin: toNullable(object.admin, toAdmin),
+    };
+  }, 
+};
+const POSTUser/*: POSTEndpoint<{| name: string |}, {| newUserId: UserID |}, null>*/ = {
+  method: 'POST',
+  path: '/users',
+  toQuery: () => null,
+  toRequestBody: (value) => {
+    const object = toObject(value);
+    return {
+      name: toString(object.name),
+    };
+  },
+  toResponseBody: (value) => {
+    const object = toObject(value);
+    return {
+      newUserId: toUserId(object.newUserId),
+    };
+  },
+};
+const GETUsers/*: GETEndpoint<{| users: User[] |}, null>*/ = {
+  method: 'GET',
+  path: '/users',
+  toQuery: () => null,
+  toResponseBody: (value) => {
+    const object = toObject(value);
+    return {
+      users: toArray(object.users).map(toUser),
+    };
   }
 };
-const toUserModifyArgs = (value) => {
-  const object = toObject(value);
-  return {
-    name: object.name ? toString(object.name) : null,
-  }
-};
-const toUserIdQuery = (value) => {
-  const object = toObject(value);
-  return {
-    userId: toUserId(object.userId)
-  };
-};
-
-/*:: export type UsersResource = RESTResource<
-  User,
-  UserCreateArgs, 
-  UserModifyArgs,
-  UserIDQuery,
-  OffsetPaginationFilterQuery
->*/
-const users/*: UsersResource*/ = createRESTResource(
-  '/users',
-  toUser, 
-  toUserCreateArgs, toUserModifyArgs,
-  toUserIdQuery,
-);
 
 module.exports = {
-  users,
+  GETSelf,
+  GETUsers,
+  POSTUser,
 };

@@ -1,0 +1,17 @@
+{
+  "name": "@astral-atlas/sesame-www",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "snowpack": "^3.0.7"
+  },
+  "dependencies": {
+    "preact": "^10.5.9"
+  }
+}

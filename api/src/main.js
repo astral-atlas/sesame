@@ -1,25 +1,23 @@
-#!/usr/bin/env node
 // @flow strict
 const { createServer } = require('http');
-const { createListener } = require('@lukekaalim/server');
+const { router } = require('@lukekaalim/server');
 const { createRoutes } = require('./routes');
 const { createServices } = require('./services');
+const { loginTokenEncoder } = require('@astral-atlas/sesame-models');
 
-const main = async (port) => {
+const { readConfig } = require('./config');
+
+const main = async (configPath) => {
   try {
-    const services = await createServices();
+    const config = await readConfig(configPath);
+    const services = await createServices(config);
     const routes = createRoutes(services);
-    const listener = createListener(routes);
-    const server = createServer(listener);
-  
-    const firstUser = await services.user.createUser('Luke', null);
-    const firstAdmin = await services.user.createAdmin(firstUser.id);
-    const firstToken = await services.tokens.createLoginToken(firstUser.id);
-    console.log([firstUser, firstAdmin, firstToken]);
-  
-    server.listen(port, () => console.log(`http://localhost:${server.address().port}`))
+    const listener = router(routes);
+    const server = createServer((req, res) => (console.log(req.url), listener(req, res)));
+
+    server.listen(config.port, () => console.log(`Running on: "http://localhost:${server.address().port}"`))
   } catch (error) {
-    console.error(error);
+    console.error(error.message, error.stack);
   }
 };
 

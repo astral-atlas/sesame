@@ -5,20 +5,16 @@
   "description": "Identity Service API for Astral Atlas",
   "main": "src/main.js",
   "scripts": {
-    "dev": "nodemon src/main 5543",
-    "start": "node src/main 8080",
+    "start": "node src/main.js dev-config.json",
     "postversion": "../scripts/postversion.sh"
   },
   "author": "luke@kaal.im",
   "license": "MIT",
   "dependencies": {
-    "@astral-atlas/sesame-models": "^5.0.0",
+    "@astral-atlas/sesame-models": "../models",
     "@lukekaalim/cast": "^1.0.0",
-    "@lukekaalim/server": "^7.1.1",
+    "@lukekaalim/server": "^9.1.1",
     "crypto-random-string": "^3.3.0",
     "uuid": "^8.3.2"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.7"
   }
 }

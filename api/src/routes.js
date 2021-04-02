@@ -1,88 +1,135 @@
 // @flow strict
-/*:: import type { Route } from '@lukekaalim/server'; */
+/*:: import type { Route, RouteRequest, RouteResponse, RouteHandler } from '@lukekaalim/server'; */
+/*:: import type { JSONValue } from '@lukekaalim/cast'; */
 /*:: import type { Services } from './services'; */
-const { toLoginTokenId } = require('@astral-atlas/sesame-models');
-const { toObject, toString } = require('@lukekaalim/cast');
-const { resource, json: { ok, notFound, forbidden } } = require('@lukekaalim/server');
+/*:: import type { Admin, User } from './models'; */
+const { api: { GETSelf } } = require('@astral-atlas/sesame-models');
+const { toLoginTokenId, api, toLoginRequest, toPOSTUserRequest, toPOSTLoginRequest, toPOSTAccessRequest, toPOSTAdminRequest, toPUTUserRequest } = require('./models');
+const { toObject, toString, parse } = require('@lukekaalim/cast');
+const { resource, readJSONBody, getContent, application, statusCodes, createGETHandler, createPOSTHandler } = require('@lukekaalim/server');
+const { getAuthorization } = require('@lukekaalim/server/src/authorization');
+const { createPUTHandler } = require('@lukekaalim/server/src/endpoint');
 
 const options = {
-
+  allowedOrigins: { type: 'wildcard' },
+  authorized: true,
+  cacheSeconds: 600,
 };
-
-const toLoginParams = (v) => {
-  const object = toObject(v);
-  return {
-    id: toLoginTokenId(object.id),
-    secret: toString(object.secret),
-  };
-}
+const { ok, created, internalServerError } = statusCodes;
 
 const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
-  const loginRoutes = resource('/login', {
-    async post({ query: { userId }, auth, headers }) {
-      const host = headers['host'];
-      const user = await services.auth.getUser(auth, host);
-      if (!user)
-        return forbidden();
-      const admin = await services.user.getAdminFromUser(user.id);
-      if (user.id !== userId && !admin)
-        return forbidden();
-
-      return ok(await services.tokens.createLoginToken(userId));
+  const withRouteMiddleware = (handler/*: RouteHandler*/)/*: RouteHandler*/ => async (request) => {
+    try {
+      return await handler(request);
+    } catch (error) {
+      console.error(error);
+      return application.json(internalServerError, { error: { message: error.message, stack: error.stack } });
     }
-  });
-  const accessRoutes = resource('/access', {
-    async post({ validateJSON, headers }) {
-      const host = headers['host'];
-      const { id, secret } = await validateJSON(toLoginParams);
+  };
 
-      const accessToken = await services.tokens.consumeLoginToken(id, secret, { host });
-
-      return ok(accessToken);
-    },
-  }, options);
-  const selfRoutes = resource('/self', {
-    async get({ headers, auth }) {
-      const host = headers['host'];
-      const user = await services.auth.getUser(auth, host);
-      if (!user)
-        return notFound();
-      return ok(user);
-    }
-  }, options);
-  const userRoutes = resource('/user', {
-    async post({ validateJSON, headers, auth }) {
-      const host = headers['host'];
-      const user = await services.auth.getUser(auth, host);
-      if (!user)
-        return forbidden();
-      const admin = await services.user.getAdminFromUser(user.id);
-      if (!admin)
-        return forbidden();
-      const { name } = await validateJSON(v => {
-        const object = toObject(v);
-        return {
-          name: toString(object.name),
-        };
-      });
-      
+  const self = resource({ path: '/self', methods: {
+    GET: withRouteMiddleware(createGETHandler(api.GETSelf, async ({ headers }) => {
+      const self = await services.auth.authorizeUser(headers);
+      if (self.adminId)
+        return { status: ok, body: { self, admin: await services.user.getAdminFromUser(self.id) } };
+      return { status: ok, body: { self, admin: null } };
+    })),
+  }});
+  const user = resource({ path: '/users', methods: {
+    GET: withRouteMiddleware(createGETHandler(api.GETUsers, async ({ headers }) => {
+      const [,] = await services.auth.authorizeAdmin(headers);
+      const users = await services.user.listSomeUsers();
+      return { status: ok, body: { users } };
+    })),
+    POST: withRouteMiddleware(createPOSTHandler(api.POSTUser, async ({ headers, body: { name } }) => {
+      const [admin,] = await services.auth.authorizeAdmin(headers);
       const newUser = await services.user.createUser(name, admin.id);
-      return ok(newUser);
-    },
-    async patch({ }) {
-      return ok();
-    },
-    async delete({  }) {
-      return ok();
-    }
-  }, options);
+      return { status: created, body: { newUserId: newUser.id } };
+    })),
+  }});
+
+  const accessGrant = resource({ path: '/grants/access', methods: {
+    POST: withRouteMiddleware(createPOSTHandler(api.POSTAccessGrant, async ({ body: { deviceName, loginToken }, headers }) => {
+      const accessToken = await services.access.createNewAccess(loginToken, deviceName, headers['host']);
+      return { status: ok, body: { accessToken } };
+    })),
+  }});
+  const loginGrant = resource({ path: '/grants/login', methods: {
+    POST: withRouteMiddleware(createPOSTHandler(api.POSTLoginGrant, async ({ body: { subjectId }, headers }) => {
+      const user = await services.auth.authorizeUser(headers);
+      const loginToken = await services.access.createNewLogin(user.id, subjectId);
+      return { status: ok, body: { loginToken } };
+    })),
+  }});
 
   return [
-    ...loginRoutes,
-    ...accessRoutes,
-    ...selfRoutes,
-    ...userRoutes,
+    ...user,
+    ...self,
+    ...accessGrant,
+    ...loginGrant,
   ];
+  /*
+  const users = resource({ path: '/users', methods: {
+    GET: createAdminHandler(async ({}, user, admin) => {
+      const users = await services.user.listSomeUsers();
+      return application.json(ok, { users });
+    }),
+    POST: createAdminHandler(async ({ headers, incoming }, user, admin) => {
+      const userRequestBody = toPOSTUserRequest(await readJSONBody(incoming, getContent(headers)));
+      const newUser = await services.user.createUser(userRequestBody.name, admin.id);
+      return application.json(created, { newUser });
+    }),
+  }});
+  const admins = resource({ path: '/admins', methods: {
+    POST: createAdminHandler(async ({ headers, incoming }, user, admin) => {
+      const adminRequestBody = toPOSTAdminRequest(await readJSONBody(incoming, getContent(headers)));
+      const newAdmin = await services.user.createAdmin(adminRequestBody.userId);
+      return application.json(created, { newAdmin });
+    }),
+  }});
+  const loginGrants = resource({ path: '/grants/login', methods: {
+    POST: createUserHandler(async ({ headers, incoming }, user) => {
+      const loginRequestBody = toPOSTLoginRequest(await readJSONBody(incoming, getContent(headers)));
+      const loginToken = await services.access.createNewLogin(user.id, loginRequestBody.subjectId);
+      return application.json(created, { loginToken });
+    }),
+  }});
+  const accessGrants = resource({ path: '/grants/access', methods: {
+    POST: createSesameHandler(async ({ headers, incoming }) => {
+      const accessRequestBody = toPOSTAccessRequest(await readJSONBody(incoming, getContent(headers)));
+      const accessToken = await services.access.createNewAccess(accessRequestBody.loginToken, accessRequestBody.deviceName, headers['origin'] || null);
+      return application.json(created, { accessToken });
+    }),
+  }});
+  const tables = resource({ path: '/tables', methods: {
+    GET: createAdminHandler(async ({ query }, user, admin) => {
+      const getTable = () => {
+        switch (query.get('tableName')) {
+          case 'users':
+            return services.tables.users;
+          case 'grants/login':
+            return services.tables.loginGrants;
+          case 'grants/access':
+            return services.tables.accessGrants;
+          default:
+            throw new Error();
+        }
+      };
+      const table = getTable();
+      const { result: tableContents } = await table.scan();
+      return application.json(ok, { tableContents });
+    }),
+  }})
+
+  return [
+    ...loginGrants,
+    ...accessGrants,
+    ...self,
+    ...admins,
+    ...users,
+    ...tables,
+  ];
+  */
 };
 
 module.exports = {

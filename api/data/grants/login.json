@@ -1,0 +1,22 @@
+[
+  [
+    "32d55362-9ecc-43a5-a948-dc192af45424",
+    {
+      "id": "32d55362-9ecc-43a5-a948-dc192af45424",
+      "subject": "acc3b73c-0a88-46a4-b151-aef59ad0996d",
+      "secret": "zX4IJipW0UR2e-V8kVjyuIut3ajnBem2",
+      "createdBy": "dev_admin",
+      "accessGrantId": "b7e98dd7-adca-4e13-8243-1f92ec67bf36"
+    }
+  ],
+  [
+    "6807df85-e107-4d7f-9e99-94461bb0f533",
+    {
+      "id": "6807df85-e107-4d7f-9e99-94461bb0f533",
+      "accessGrantId": "8ccdf92f-862f-43ba-a1ff-a6cc2e0c8fdd",
+      "createdBy": "acc3b73c-0a88-46a4-b151-aef59ad0996d",
+      "subject": "acc3b73c-0a88-46a4-b151-aef59ad0996d",
+      "secret": "3hnMNN7EncbxBsX_NdBtfC-nYrbprVEy"
+    }
+  ]
+]

@@ -9,9 +9,9 @@
   "author": "Luke Kaalim",
   "license": "MIT",
   "dependencies": {
-    "@astral-atlas/sesame-models": "^5.0.0",
+    "@astral-atlas/sesame-models": "../models",
+    "@lukekaalim/api-models": "^1.0.0",
     "@lukekaalim/cast": "^1.0.0",
-    "@lukekaalim/http-client": "^2.3.1",
-    "@lukekaalim/rest-client": "^2.1.1"
+    "@lukekaalim/http-client": "^3.0.1"
   }
 }

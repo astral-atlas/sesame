@@ -1,0 +1,17 @@
+{
+  "name": "@astral-atlas/sesame-cli",
+  "version": "1.0.0",
+  "description": "CLI program for interacting with the sesame API",
+  "main": "src/main.js",
+  "bin": {
+    "sesame": "src/main.js"
+  },
+  "dependencies": {
+    "@astral-atlas/sesame-client": "../client",
+    "@astral-atlas/sesame-models": "../models",
+    "@lukekaalim/api-models": "^1.0.0",
+    "@lukekaalim/http-client": "^3.0.2"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,24 @@
+[
+  [
+    "b7e98dd7-adca-4e13-8243-1f92ec67bf36",
+    {
+      "id": "b7e98dd7-adca-4e13-8243-1f92ec67bf36",
+      "deviceName": "Dev laptop",
+      "hostName": "localhost:5543",
+      "subject": "acc3b73c-0a88-46a4-b151-aef59ad0996d",
+      "loginGrantId": "32d55362-9ecc-43a5-a948-dc192af45424",
+      "secret": "c_ibeFCQKN_EdyRE5s.C~ovdkDeSVzPu"
+    }
+  ],
+  [
+    "8ccdf92f-862f-43ba-a1ff-a6cc2e0c8fdd",
+    {
+      "id": "8ccdf92f-862f-43ba-a1ff-a6cc2e0c8fdd",
+      "deviceName": "Dev laptop",
+      "hostName": "localhost:5543",
+      "subject": "acc3b73c-0a88-46a4-b151-aef59ad0996d",
+      "loginGrantId": "6807df85-e107-4d7f-9e99-94461bb0f533",
+      "secret": "4ZGVYeEJnAb72VobuasO7La-X~~zZv.a"
+    }
+  ]
+]
