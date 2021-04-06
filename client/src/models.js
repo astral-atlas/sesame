@@ -1,19 +1,9 @@
 // @flow strict
 /*:: import type { Cast } from '@lukekaalim/cast'; */
-/*:: import type { AccessToken, User, Admin } from '@astral-atlas/sesame-models'; */
+/*:: import type { User, Admin } from '@astral-atlas/sesame-models'; */
 const { toObject, toArray } = require('@lukekaalim/cast');
-const { toAccessToken, toUser, toAdmin } = require('@astral-atlas/sesame-models');
-/*::
-export type POSTAccessResponse = {
-  accessToken: AccessToken,
-};
-*/
-const toPOSTAccessResponse/*: Cast<POSTAccessResponse>*/ = (value) => {
-  const object = toObject(value);
-  return {
-    accessToken: toAccessToken(object.accessToken),
-  };
-};
+const { toUser, toAdmin } = require('@astral-atlas/sesame-models');
+
 /*::
 export type GETSelfUserResponse = {
   self: User,
@@ -49,7 +39,6 @@ const toGETUsersResponse/*: Cast<GETUsersResponse>*/ = (value) => {
 };
 
 module.exports = {
-  toPOSTAccessResponse,
   toGETSelfUserResponse,
   toPOSTAdminResponse,
   toGETUsersResponse,

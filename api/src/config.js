@@ -1,9 +1,8 @@
 // @flow strict
-/*:: import type { LoginTokenID, UserID, AdminID } from '@astral-atlas/sesame-models'; */
+/*:: import type { UserID, AdminID } from '@astral-atlas/sesame-models'; */
 /*:: import type { Cast } from '@lukekaalim/cast'; */
 const { readFile } = require('fs').promises;
 const { toObject, toString, toNumber } = require('@lukekaalim/cast');
-const { toLoginTokenId } = require('@astral-atlas/sesame-models');
 
 /*::
 export type SuperUser = {

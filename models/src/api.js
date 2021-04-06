@@ -3,6 +3,6 @@
 module.exports = {
   api: {
     ...require('./api/users'),
-    ...require('./api/grants'),
+    ...require('./api/access'),
   }
 };

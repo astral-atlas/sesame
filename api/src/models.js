@@ -1,8 +1,8 @@
 // @flow strict
 /*:: import type { Cast } from '@lukekaalim/cast'; */
-/*:: import type { UserID, AdminID, LoginToken } from '@astral-atlas/sesame-models'; */
+/*:: import type { UserID, AdminID } from '@astral-atlas/sesame-models'; */
 /*:: export type * from '@astral-atlas/sesame-models'; */
-const { toUserId, toAdminId, toLoginToken } = require('@astral-atlas/sesame-models');
+const { toUserId, toAdminId } = require('@astral-atlas/sesame-models');
 const { toObject, toString, stringify } = require('@lukekaalim/cast');
 
 /*::
@@ -19,21 +19,6 @@ const toSuperUser/*: Cast<SuperUser>*/ = (value) => {
     userId: toUserId(object.userId),
     adminId: toAdminId(object.adminId),
     password: toString(object.password),
-  }
-};
-
-/*::
-export type LoginRequest = {
-  accessTokenName: string,
-  loginToken: LoginToken,
-};
-*/
-
-const toLoginRequest/*: Cast<LoginRequest>*/ = (value) => {
-  const object = toObject(value);
-  return {
-    accessTokenName: toString(object.accessTokenName),
-    loginToken: toLoginToken(object.loginToken),
   }
 };
 
@@ -57,23 +42,12 @@ const toPUTUserRequest/*: Cast<PUTUserRequest>*/ = toPOSTUserRequest;
 export type POSTLoginRequest = {
   subjectId: UserID,
 };
-export type POSTAccessRequest = {
-  loginToken: LoginToken,
-  deviceName: string,
-};
 */
 const toPOSTLoginRequest/*: Cast<POSTLoginRequest>*/ = (value) => {
   const object = toObject(value);
   return {
     subjectId: toUserId(object.subjectId),
   }
-};
-const toPOSTAccessRequest/*: Cast<POSTAccessRequest>*/ = (value) => {
-  const object = toObject(value);
-  return {
-    loginToken: toLoginToken(object.loginToken),
-    deviceName: toString(object.deviceName),
-  };
 };
 /*::
 export type POSTAdminRequest = {
@@ -90,10 +64,8 @@ const toPOSTAdminRequest/*: Cast<POSTAdminRequest>*/ = (value) => {
 module.exports = {
   ...require('@astral-atlas/sesame-models'),
   toSuperUser,
-  toLoginRequest,
   toPOSTUserRequest,
   toPUTUserRequest,
   toPOSTLoginRequest,
-  toPOSTAccessRequest,
   toPOSTAdminRequest,
 }

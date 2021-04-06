@@ -3,7 +3,6 @@ const { createServer } = require('http');
 const { router } = require('@lukekaalim/server');
 const { createRoutes } = require('./routes');
 const { createServices } = require('./services');
-const { loginTokenEncoder } = require('@astral-atlas/sesame-models');
 
 const { readConfig } = require('./config');
 

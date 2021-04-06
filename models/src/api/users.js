@@ -2,22 +2,25 @@
 /*:: import type { Cast } from '@lukekaalim/cast'; */
 /*:: import type { GETEndpoint, POSTEndpoint, PUTEndpoint, DELETEEndpoint } from '@lukekaalim/api-models'; */
 /*:: import type { User, UserID, Admin } from '../user'; */
+/*:: import type { AccessGrant } from '../access'; */
 const { toObject, toString, toArray, toNullable } = require('@lukekaalim/cast');
 const { toUser, toUserId, toAdmin } = require('../user');
+const { toAccessGrant } = require('../access');
 
-const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null |}, null>*/ = {
+const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null, access: null | AccessGrant |}, null>*/ = {
   method: 'GET',
-  path: '/self',
+  path: '/users/self',
   toQuery: () => null,
   toResponseBody: (value) => {
     const object = toObject(value);
     return {
       self: toUser(object.self),
       admin: toNullable(object.admin, toAdmin),
+      access: toNullable(object.access, toAccessGrant),
     };
   }, 
 };
-const POSTUser/*: POSTEndpoint<{| name: string |}, {| newUserId: UserID |}, null>*/ = {
+const POSTNewUser/*: POSTEndpoint<{| name: string |}, {| newUserId: UserID |}, null>*/ = {
   method: 'POST',
   path: '/users',
   toQuery: () => null,
@@ -34,7 +37,23 @@ const POSTUser/*: POSTEndpoint<{| name: string |}, {| newUserId: UserID |}, null
     };
   },
 };
-const GETUsers/*: GETEndpoint<{| users: User[] |}, null>*/ = {
+const GETUserById/*: GETEndpoint<{| user: User |}, {| userId: UserID |}>*/ = {
+  method: 'GET',
+  path: '/users/byId',
+  toQuery: (value) => {
+    const object = toObject(value);
+    return {
+      userId: toUserId(object.userId),
+    };
+  },
+  toResponseBody: (value) => {
+    const object = toObject(value);
+    return {
+      user: toUser(object.user),
+    };
+  }
+};
+const GETUserList/*: GETEndpoint<{| users: User[] |}, null>*/ = {
   method: 'GET',
   path: '/users',
   toQuery: () => null,
@@ -48,6 +67,7 @@ const GETUsers/*: GETEndpoint<{| users: User[] |}, null>*/ = {
 
 module.exports = {
   GETSelf,
-  GETUsers,
-  POSTUser,
+  GETUserList,
+  GETUserById,
+  POSTNewUser,
 };

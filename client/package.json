@@ -11,7 +11,9 @@
   "dependencies": {
     "@astral-atlas/sesame-models": "../models",
     "@lukekaalim/api-models": "^1.0.0",
-    "@lukekaalim/cast": "^1.0.0",
-    "@lukekaalim/http-client": "^3.0.1"
+    "@lukekaalim/cast": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@lukekaalim/http-client": "^3.0.4"
   }
 }

@@ -1,9 +1,9 @@
 // @flow strict
-/*:: import type { LoginToken } from '@astral-atlas/sesame-models'; */
+/*:: import type { AccessGrantProof } from '@astral-atlas/sesame-models'; */
 /*:: import type { GuestSesameClient } from '@astral-atlas/sesame-client'; */
 /*:: import type { CLIConfig } from '../config'; */
 const { request } = require('http');
-const { loginTokenEncoder } = require('@astral-atlas/sesame-models');
+const { accessOfferProofEncoder, toAccessId, toUserId } = require('@astral-atlas/sesame-models');
 const { createNodeClient } = require('@lukekaalim/http-client');
 const { createGuestSesameClient, createUserSesameClient } = require('../../../client/src/main');
 const { createCLI } = require('../ask');
@@ -17,24 +17,24 @@ export type LoginCLI = {
 */
 
 const createLoginCLI = (guestSesameClient/*: GuestSesameClient*/, config/*: CLIConfig*/)/*: LoginCLI*/ => {
-  const login = async (loginToken) => {
-    const accessToken = await guestSesameClient.grantAccess(loginToken, config.deviceName || 'Unnamed Command Line');
+  const login = async (offerProof) => {
+    const { grantProof } = await guestSesameClient.acceptAccess(config.deviceName || 'Unnamed Command Line', offerProof);
 
-    await  writeCLIConfig({ ...config, accessToken });
-    console.log(accessToken);
+    await  writeCLIConfig({ ...config, accessGrantProof:grantProof });
   };
   const handleEncodedLogin = async () => {
     const cli = createCLI();
-    const encodedLoginToken = await cli.ask(`Please enter your encoded login token`);
-    const loginToken = loginTokenEncoder.decode(encodedLoginToken);
+    const encodedProof = await cli.ask(`Please enter your access code`);
+    const offerProof = accessOfferProofEncoder.decode(encodedProof);
     cli.finish();
-    await login(loginToken);
+    await login(offerProof);
   };
   const handleManualLogin = async () => {
     const cli = createCLI();
-    const secret = await cli.ask(`Please enter your login secret`);
-    const loginGrantId = await cli.ask(`Please enter your login id`);
-    const loginToken = { secret, loginGrantId };
+    const offerSecret = await cli.ask(`Please enter your offer secret`);
+    const id = await cli.ask(`Please enter your offer id`);
+    const subject = await cli.ask(`Please enter your user id`);
+    const loginToken = { offerSecret, id: toAccessId(id), subject: toUserId(subject) };
     cli.finish();
     await login(loginToken);
   };

@@ -1,8 +1,0 @@
-{
-  "workspaces": [
-    "models",
-    "api",
-    "client",
-    "api-models"
-  ]
-}

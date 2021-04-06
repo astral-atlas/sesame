@@ -4,7 +4,7 @@
 /*:: import type { Services } from './services'; */
 /*:: import type { Admin, User } from './models'; */
 const { api: { GETSelf } } = require('@astral-atlas/sesame-models');
-const { toLoginTokenId, api, toLoginRequest, toPOSTUserRequest, toPOSTLoginRequest, toPOSTAccessRequest, toPOSTAdminRequest, toPUTUserRequest } = require('./models');
+const { api, toPOSTUserRequest, toPOSTLoginRequest, toPOSTAdminRequest, toPUTUserRequest } = require('./models');
 const { toObject, toString, parse } = require('@lukekaalim/cast');
 const { resource, readJSONBody, getContent, application, statusCodes, createGETHandler, createPOSTHandler } = require('@lukekaalim/server');
 const { getAuthorization } = require('@lukekaalim/server/src/authorization');
@@ -26,47 +26,62 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
       return application.json(internalServerError, { error: { message: error.message, stack: error.stack } });
     }
   };
+  const access = {
+    origins: { type: 'wildcard' },
+    headers: ['content-type', 'authorization']
+  };
 
-  const self = resource({ path: '/self', methods: {
+  const userSelf = resource({ path: api.GETSelf.path, access, methods: {
     GET: withRouteMiddleware(createGETHandler(api.GETSelf, async ({ headers }) => {
       const self = await services.auth.authorizeUser(headers);
+      const access = await services.access.getAccessGrant(headers);
       if (self.adminId)
-        return { status: ok, body: { self, admin: await services.user.getAdminFromUser(self.id) } };
-      return { status: ok, body: { self, admin: null } };
+        return { status: ok, body: { self, admin: await services.user.getAdminFromUser(self.id), access } };
+      return { status: ok, body: { self, admin: null, access } };
     })),
   }});
-  const user = resource({ path: '/users', methods: {
-    GET: withRouteMiddleware(createGETHandler(api.GETUsers, async ({ headers }) => {
+  const user = resource({ path: api.GETUserList.path, access, methods: {
+    GET: withRouteMiddleware(createGETHandler(api.GETUserList, async ({ headers }) => {
       const [,] = await services.auth.authorizeAdmin(headers);
       const users = await services.user.listSomeUsers();
       return { status: ok, body: { users } };
     })),
-    POST: withRouteMiddleware(createPOSTHandler(api.POSTUser, async ({ headers, body: { name } }) => {
+    POST: withRouteMiddleware(createPOSTHandler(api.POSTNewUser, async ({ headers, body: { name } }) => {
       const [admin,] = await services.auth.authorizeAdmin(headers);
       const newUser = await services.user.createUser(name, admin.id);
       return { status: created, body: { newUserId: newUser.id } };
     })),
   }});
 
-  const accessGrant = resource({ path: '/grants/access', methods: {
-    POST: withRouteMiddleware(createPOSTHandler(api.POSTAccessGrant, async ({ body: { deviceName, loginToken }, headers }) => {
-      const accessToken = await services.access.createNewAccess(loginToken, deviceName, headers['host']);
-      return { status: ok, body: { accessToken } };
+  const accessAccept = resource({ path: api.POSTAcceptAccess.path, access, methods: {
+    POST: withRouteMiddleware(createPOSTHandler(api.POSTAcceptAccess, async ({ body: { deviceName, offerProof }, headers }) => {
+      const grantProof = await services.access.createNewGrant(offerProof, deviceName, headers['host']);
+      return { status: ok, body: { grantProof } };
     })),
   }});
-  const loginGrant = resource({ path: '/grants/login', methods: {
-    POST: withRouteMiddleware(createPOSTHandler(api.POSTLoginGrant, async ({ body: { subjectId }, headers }) => {
+  const accessOffer = resource({ path: api.POSTCreateAccessOffer.path, access, methods: {
+    POST: withRouteMiddleware(createPOSTHandler(api.POSTCreateAccessOffer, async ({ body: { subject }, headers }) => {
       const user = await services.auth.authorizeUser(headers);
-      const loginToken = await services.access.createNewLogin(user.id, subjectId);
-      return { status: ok, body: { loginToken } };
+      const offerProof = await services.access.createNewOffer(user.id, subject);
+      return { status: ok, body: { offerProof } };
+    })),
+  }});
+  const accessList = resource({ path: api.GETAccessList.path, access, methods: {
+    GET: withRouteMiddleware(createGETHandler(api.GETAccessList, async ({ query: { userId }, headers }) => {
+      throw new Error('Unimplemented functionality')
+    })),
+  }});
+  const accessRevoke = resource({ path: api.POSTAccessRevoke.path, access, methods: {
+    POST: withRouteMiddleware(createPOSTHandler(api.POSTAccessRevoke, async ({ body: { subject }, headers }) => {
+      throw new Error('Unimplemented functionality')
     })),
   }});
 
   return [
     ...user,
-    ...self,
-    ...accessGrant,
-    ...loginGrant,
+    ...userSelf,
+    ...accessAccept,
+    ...accessOffer,
   ];
   /*
   const users = resource({ path: '/users', methods: {

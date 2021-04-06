@@ -17,7 +17,7 @@ const handleUnauthenticatedCommand = () => {
 const main = async (command, ...args) => {
   try {
     const config = await readCLIConfig();
-    const { accessToken, baseURL } = config;
+    const { accessGrantProof, baseURL } = config;
     const http = createNodeClient(request);
 
     switch (command) {
@@ -41,10 +41,12 @@ const main = async (command, ...args) => {
           return await loginCLI.handleManualLogin();
     }
 
-    if (!accessToken)
+    if (!accessGrantProof)
       throw new Error('No AccessToken set; Try running "sesame login"?');
+    if (!config.baseURL)
+      throw new Error('No BaseURL set; Try running "sesame init"?');
 
-    const userClient = createUserSesameClient({ http, baseURL: new URL(config.baseURL || ''), accessToken })
+    const userClient = createUserSesameClient({ http, baseURL: new URL(config.baseURL), accessGrantProof })
     const userCli = createUsersCLI(userClient);
 
     switch (command) {

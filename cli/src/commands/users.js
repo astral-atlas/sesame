@@ -4,7 +4,7 @@
 /*:: import type { UserSesameClient } from '@astral-atlas/sesame-client'; */
 const { createHTTPClient } = require('../http');
 const { createUserSesameClient } = require("@astral-atlas/sesame-client");
-const { loginTokenEncoder } = require('@astral-atlas/sesame-models');
+const { accessOfferProofEncoder } = require('@astral-atlas/sesame-models');
 
 /*::
 export type UserCommands =
@@ -17,15 +17,18 @@ export type UserCLI = {
 
 const createUsersCLI = (client/*: UserSesameClient*/)/*: UserCLI*/ => {
   const whoami = async () => {
-    const { admin, self } = await client.getSelf();
-    console.log(self);
-    admin && console.log(admin)
+    const { self, admin, access } = await client.getSelfUser();
+    console.log(`Logged in as ${self.name} (${self.id})`);
+    if (access)
+      console.log(`Using access granted to "${access.deviceName}"`)
+    if (admin)
+      console.log(`${self.name} is an Admin (${admin.id})`);
   };
   const newLogin = async () => {
-    const { self } = await client.getSelf();
-    const loginToken = await client.createLoginGrant(self.id);
-    console.log('This is your login token. Don\'t share it with anyone!')
-    console.log(loginTokenEncoder.encode(loginToken));
+    const { self } = await client.getSelfUser();
+    const { offerProof } = await client.createAccessOfferForSelf();
+    console.log('This is your secret access code. Keep it safe!')
+    console.log(accessOfferProofEncoder.encode(offerProof));
   };
   const handleCommand = async (command, subcommand) => {
     switch (command) {

@@ -1,11 +1,12 @@
 // @flow strict
 /*:: import type { HTTPClient } from '@lukekaalim/http-client'; */
-/*:: import type { LoginToken, LoginTokenID, AccessToken, AccessTokenID, User, Admin, UserID } from '@astral-atlas/sesame-models'; */
-const { toLoginToken, toAccessToken, toUser, loginTokenEncoder, accessTokenEncoder, api } = require('@astral-atlas/sesame-models');
+/*:: import type { AccessGrantProof, AccessOfferProof, User, Admin, UserID } from '@astral-atlas/sesame-models'; */
+/*:: import type { AccessClient, UserClient } from './api'; */
+const { toUser, accessGrantProofEncoder, accessOfferProofEncoder, api } = require('@astral-atlas/sesame-models');
 const { stringify } = require('@lukekaalim/cast');
 const { createNoneAuthorization, createBearerAuthorization } = require('@lukekaalim/http-client');
 const { toBase64 } = require('./base64');
-const { createGrantClient, createUserClient } = require('./api');
+const { createAccessClient, createUserClient } = require('./api');
 
 /*::
 export type GuestArgs = {
@@ -13,64 +14,70 @@ export type GuestArgs = {
   http: HTTPClient,
 };
 export type GuestSesameClient = {
-  grantAccess: (login: LoginToken, deviceName: string) => Promise<AccessToken>,
+  acceptAccess: $PropertyType<AccessClient, 'acceptAccess'>,
 };
 */
 const createGuestSesameClient = ({ baseURL, http }/*: GuestArgs*/)/*: GuestSesameClient*/ => {
   const authorization = createNoneAuthorization();
   const service = { baseURL, authorization };
-  const grantClient = createGrantClient(http, service);
+  const accessClient = createAccessClient(http, service);
   return {
-    grantAccess: grantClient.grantAccess,
+    acceptAccess: accessClient.acceptAccess,
   };
 };
 
 /*::
 export type UserArgs = GuestArgs & {
-  accessToken: AccessToken,
+  accessGrantProof: AccessGrantProof,
 };
 export type UserSesameClient = GuestSesameClient & {
-  getSelf: () => Promise<{ self: User, admin: null | Admin }>,
-  createLoginGrant: (userId: UserID) => Promise<LoginToken>,
+  getSelfUser: $PropertyType<UserClient, 'getSelf'>,
+  listAccess: $PropertyType<AccessClient, 'list'>,
+  revokeAccess: $PropertyType<AccessClient, 'revoke'>,
+  createAccessOfferForSelf: () => Promise<{ offerProof: AccessOfferProof }>,
 };
 */
-const createUserSesameClient = ({ baseURL, http, accessToken }/*: UserArgs*/)/*: UserSesameClient*/ => {
-  const authorization = createBearerAuthorization(accessTokenEncoder.encode(accessToken));
+const createUserSesameClient = ({ baseURL, http, accessGrantProof }/*: UserArgs*/)/*: UserSesameClient*/ => {
+  const authorization = createBearerAuthorization(accessGrantProofEncoder.encode(accessGrantProof));
   const service = { baseURL, authorization };
   const userClient = createUserClient(http, service);
-  const grantClient = createGrantClient(http, service);
+  const accessClient = createAccessClient(http, service);
+  const createAccessOfferForSelf = async () => {
+    return await accessClient.createOffer(accessGrantProof.subject);
+  };
   return {
     ...createGuestSesameClient({ baseURL, http }),
-    getSelf: userClient.getSelf,
-    createLoginGrant: grantClient.grantLogin,
+    getSelfUser: userClient.getSelf,
+    listAccess: accessClient.list,
+    revokeAccess: accessClient.revoke,
+    createAccessOfferForSelf,
   }
 };
 /*::
 export type AdminSesameClient = UserSesameClient & {
-  createUser: (userName: string) => Promise<User>,
-  getUsers: () => Promise<User[]>,
+  listUsers: $PropertyType<UserClient, 'list'>,
+  createNewUser: $PropertyType<UserClient, 'create'>,
+  createAccessOffer: $PropertyType<AccessClient, 'createOffer'>,
 };
 */
 
-/*
-const createAdminSesameClient = ({ baseURL, http, accessToken }/*: UserArgs)/*: AdminSesameClient => {
-  const authorization = createBearerAuthorization(accessTokenEncoder.encode(accessToken));
+const createAdminSesameClient = ({ baseURL, http, accessGrantProof }/*: UserArgs*/)/*: AdminSesameClient*/ => {
+  const authorization = createBearerAuthorization(accessGrantProofEncoder.encode(accessGrantProof));
   const service = { baseURL, authorization };
   const user = createUserClient(http, service);
-  const getUsers = async () => {
-    return await user.getSelf();
-  };
-  const createUser = async () => {
+  const accessClient = createAccessClient(http, service);
 
-  }
   return {
-    ...createUserSesameClient({ sesameBaseURL, httpClient, accessToken }),
-    getUsers,
+    ...createUserSesameClient({ baseURL, http, accessGrantProof }),
+    createNewUser: user.create,
+    listUsers: user.list,
+    createAccessOffer: accessClient.createOffer,
   };
 };
-*/
+
 
 module.exports = {
   createGuestSesameClient,
   createUserSesameClient,
+  createAdminSesameClient,
 };

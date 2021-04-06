@@ -5,6 +5,7 @@ export type * from './tokens';
 export type * from './user';
 export type * from './api';
 export type * from './grants';
+export type * from './access';
 */
 
 module.exports = {
@@ -12,4 +13,5 @@ module.exports = {
   ...require('./user'),
   ...require('./api'),
   ...require('./grants'),
+  ...require('./access'),
 }

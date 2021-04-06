@@ -9,9 +9,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "snowpack": "^3.0.7"
+    "@rollup/plugin-commonjs": "^18.0.0",
+    "@rollup/plugin-html": "^0.2.3",
+    "@rollup/plugin-node-resolve": "^11.2.1",
+    "rollup": "^2.44.0"
   },
   "dependencies": {
+    "@astral-atlas/sesame-client": "file:../client",
+    "@astral-atlas/sesame-models": "file:../models",
+    "@lukekaalim/http-client": "^3.0.4",
     "preact": "^10.5.9"
   }
 }

@@ -1,41 +1,40 @@
 // @flow strict
 /*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
 /*:: import type { UserID } from './user'; */
-/*:: import type { AccessGrantID, LoginGrantID } from './grants'; */
+/*:: import type { AccessID} from './access'; */
 const { toObject, toString, toNumber, toBoolean, toEnum, stringify, parse } = require('@lukekaalim/cast');
 const { toUserId } = require('./user');
 const { toBase64, fromBase64 } = require('./base64');
-const { toAccessGrantId, toLoginGrantId } = require('./grants');
+const { toAccessId } = require('./access');
 
 /*::
-export type AccessTokenID = string;
-export type AccessToken = {|
-  accessGrantId: AccessGrantID,
-  secret: string,
+export type AccessOfferProof = {|
+  subject: UserID,
+  id: AccessID,
+  offerSecret: string,
 |};
-
-export type LoginTokenID = string;
-export type LoginToken = {|
-  loginGrantId: LoginGrantID,
-  secret: string,
+export type AccessGrantProof = {|
+  subject: UserID,
+  id: AccessID,
+  grantSecret: string,
 |};
 */
-const toAccessTokenId/*: Cast<AccessTokenID>*/ = toString;
-const toAccessToken/*: Cast<AccessToken>*/ = (value) => {
+const toAccessOfferProof/*: Cast<AccessOfferProof>*/ = (value) => {
   const object = toObject(value);
   return {
-    accessGrantId: toAccessGrantId(object.accessGrantId),
-    secret: toString(object.secret),
+    subject: toUserId(object.subject),
+    id: toAccessId(object.id),
+    offerSecret: toString(object.offerSecret),
   };
 };
-const toLoginTokenId/*: Cast<LoginTokenID>*/ = toString;
-const toLoginToken/*: Cast<LoginToken>*/ = (value) => {
+const toAccessGrantProof/*: Cast<AccessGrantProof>*/ = (value) => {
   const object = toObject(value);
   return {
-    loginGrantId: toLoginGrantId(object.loginGrantId),
-    secret: toString(object.secret),
+    subject: toUserId(object.subject),
+    id: toAccessId(object.id),
+    grantSecret: toString(object.grantSecret),
   };
-}
+};
 
 
 /*::
@@ -57,16 +56,13 @@ const createJSONBase64Encoder = /*:: <T: JSONValue>*/(toDecoded/*: Cast<T>*/)/*:
   };
 };
 
-const accessTokenEncoder/*: Encoder<AccessToken>*/ = createJSONBase64Encoder(toAccessToken);
-const loginTokenEncoder/*: Encoder<LoginToken>*/ = createJSONBase64Encoder(toLoginToken);
+const accessOfferProofEncoder/*: Encoder<AccessOfferProof>*/ = createJSONBase64Encoder(toAccessOfferProof);
+const accessGrantProofEncoder/*: Encoder<AccessGrantProof>*/ = createJSONBase64Encoder(toAccessGrantProof);
 
 
 module.exports = {
-  toLoginTokenId,
-  toLoginToken,
-  toAccessTokenId,
-  toAccessToken,
-
-  accessTokenEncoder,
-  loginTokenEncoder,
+  toAccessOfferProof,
+  toAccessGrantProof,
+  accessOfferProofEncoder,
+  accessGrantProofEncoder,
 };
