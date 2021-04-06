@@ -4,22 +4,41 @@
 const { homedir } = require('os');
 const { writeFile, readFile } = require('fs').promises;
 const { toAccessGrantProof } = require('@astral-atlas/sesame-models');
-const { toObject, toString, toNullable, stringify, parse } = require('@lukekaalim/cast');
+const { toObject, toString, toNullable, stringify, parse, toEnum } = require('@lukekaalim/cast');
 
 /*::
+export type CLILoginConfig = 
+  | {| type: 'super', username: string, password: string |}
+  | {| type: 'grant', proof: AccessGrantProof |}
+  | {| type: 'none' |}
 export type CLIConfig = {|
   baseURL: null | string,
   deviceName: null | string,
-  accessGrantProof: null | AccessGrantProof,
+  login: CLILoginConfig,
 |};
 */
+
+const toLoginConfig/*: Cast<CLILoginConfig>*/ = (value) => {
+  const object = toObject(value);
+  const objectType = toString(object.type);
+  switch (objectType) {
+    case 'super':
+      return { type: 'super', username: toString(object.username), password: toString(object.password) };
+    case 'grant':
+      return { type: 'grant', proof: toAccessGrantProof(object.proof) };
+    case 'none':
+      return { type: 'none' };
+    default:
+      throw new TypeError(`Unknown login type: "${objectType}"`)
+  }
+};
 
 const toCLIConfig/*: Cast<CLIConfig>*/ = (value) => {
   const object = toObject(value);
   return {
     baseURL: toNullable(object.baseURL || null, toString),
     deviceName: toNullable(object.deviceName || null, toString),
-    accessGrantProof: toNullable(object.accessGrantProof || null, toAccessGrantProof)
+    login: toLoginConfig(object.login),
   }
 };
 
@@ -31,7 +50,7 @@ const readCLIConfig = async ()/*: Promise<CLIConfig>*/ => {
   } catch (error) {
     return {
       baseURL: null,
-      accessGrantProof: null,
+      login: { type: 'none' },
       deviceName: null,
     }
   }

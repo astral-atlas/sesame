@@ -13,6 +13,7 @@ const { readCLIConfig, writeCLIConfig } = require('../config');
 export type LoginCLI = {
   handleEncodedLogin: () => Promise<void>,
   handleManualLogin: () => Promise<void>,
+  handleSuperLogin: () => Promise<void>,
 }
 */
 
@@ -20,7 +21,7 @@ const createLoginCLI = (guestSesameClient/*: GuestSesameClient*/, config/*: CLIC
   const login = async (offerProof) => {
     const { grantProof } = await guestSesameClient.acceptAccess(config.deviceName || 'Unnamed Command Line', offerProof);
 
-    await  writeCLIConfig({ ...config, accessGrantProof:grantProof });
+    await  writeCLIConfig({ ...config, login: { type: 'grant', proof: grantProof } });
   };
   const handleEncodedLogin = async () => {
     const cli = createCLI();
@@ -34,12 +35,19 @@ const createLoginCLI = (guestSesameClient/*: GuestSesameClient*/, config/*: CLIC
     const offerSecret = await cli.ask(`Please enter your offer secret`);
     const id = await cli.ask(`Please enter your offer id`);
     const subject = await cli.ask(`Please enter your user id`);
-    const loginToken = { offerSecret, id: toAccessId(id), subject: toUserId(subject) };
     cli.finish();
+    const loginToken = { offerSecret, id: toAccessId(id), subject: toUserId(subject) };
     await login(loginToken);
   };
+  const handleSuperLogin = async () => {
+    const cli = createCLI();
+    const username = await cli.ask(`Please enter your username`);
+    const password = await cli.ask(`Please enter your password`);
+    cli.finish();
+    await  writeCLIConfig({ ...config, login: { type: 'super', username, password } });
+  };
 
-  return { handleEncodedLogin, handleManualLogin };
+  return { handleEncodedLogin, handleManualLogin, handleSuperLogin };
 };
 
 module.exports = {
