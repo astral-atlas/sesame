@@ -44,7 +44,7 @@ export type UserClient = {
   getSelf: () => Promise<{ self: User, admin: null | Admin, access: null | AccessGrant }>,
   getById: (userId: UserID) => Promise<{ user: User }>,
   list: () => Promise<{ users: User[] }>,
-  create: (name: string) => Promise<{ newUserId: UserID }>,
+  create: (name: string) => Promise<{ newUser: User }>,
 };
 */
 const createUserClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: UserClient*/ => {
@@ -57,8 +57,8 @@ const createUserClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: Use
     return { admin, self, access };
   };
   const create = async (name) => {
-    const { body: { newUserId } } = await postNewClient.post(null, { name });
-    return { newUserId };
+    const { body: { newUser } } = await postNewClient.post(null, { name });
+    return { newUser };
   };
   const getById = async (userId) => {
     const { body: { user } } = await getByIdClient.get({ userId });
