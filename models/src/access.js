@@ -42,9 +42,9 @@ const toAccessGrant/*: Cast<AccessGrant>*/ = (value) => {
   const object = toObject(value)
   return {
     id: toAccessId(object.id),
-    grantSecret: toString(object.offerSecret),
+    grantSecret: toString(object.grantSecret),
     hostName: toNullable(object.hostName, toString),
-    deviceName: toString(object.creator),
+    deviceName: toString(object.deviceName),
   }
 };
 

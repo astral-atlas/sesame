@@ -20,7 +20,7 @@ const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null, access: null | 
     };
   }, 
 };
-const POSTNewUser/*: POSTEndpoint<{| name: string |}, {| newUserId: UserID |}, null>*/ = {
+const POSTNewUser/*: POSTEndpoint<{| name: string |}, {| newUser: User |}, null>*/ = {
   method: 'POST',
   path: '/users',
   toQuery: () => null,
@@ -33,7 +33,7 @@ const POSTNewUser/*: POSTEndpoint<{| name: string |}, {| newUserId: UserID |}, n
   toResponseBody: (value) => {
     const object = toObject(value);
     return {
-      newUserId: toUserId(object.newUserId),
+      newUser: toUser(object.newUser),
     };
   },
 };
