@@ -270,11 +270,11 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
       throw new Error('Subject with User ID does not exist');
     const newOffer = {
       id: uuid(),
-      creator: creatorId,
-      subject: subjectId,
+      creator: creator.id,
+      subject: subject.id,
       offerSecret: await asyncCryptoString({ length: 32, type: 'url-safe' })
     };
-    await tables.accessOffers.set([subjectId, newOffer.id], newOffer);
+    await tables.accessOffers.set([subject.id, newOffer.id], newOffer);
     const newOfferProof = {
       id: newOffer.id,
       subject: subject.id,
@@ -298,12 +298,12 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
     if (existingGrant)
       throw new Error(`Offer has already been accepted`);
     const newGrant = {
-      id: uuid(),
+      id: accessOffer.id,
       deviceName,
       hostName,
       grantSecret: await asyncCryptoString({ length: 32, type: 'url-safe' })
     };
-    await tables.accessGrants.set([newGrant.id, subject.id], newGrant);
+    await tables.accessGrants.set([subject.id, newGrant.id], newGrant);
     const newGrantProof = {
       id: newGrant.id,
       subject: subject.id,
@@ -312,6 +312,7 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
     return newGrantProof;
   };
   const validateUserAccess = async (accessGrantProof, hostName) => {
+    console.log(accessGrantProof);
     const { result: accessGrant } = await tables.accessGrants.get([accessGrantProof.subject, accessGrantProof.id]);
     if (!accessGrant)
       throw new Error(`No Grant for the provided proof`);
@@ -332,7 +333,7 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
     if (auth.type !== 'bearer')
       return null;
     const grantProof = accessGrantProofEncoder.decode(auth.token);
-    const { result: grant } = await tables.accessGrants.get([grantProof.id, grantProof.subject]);
+    const { result: grant } = await tables.accessGrants.get([grantProof.subject, grantProof.id]);
     if (!grant)
       return null;
     return {
@@ -379,12 +380,12 @@ const createAuthorizationService = (users/*: UserService*/, access/*: AccessServ
   };
   const authorizeUser = async (headers) => {
     const auth = getAuthorization(headers);
-    const user = await getUser(auth, headers['host']);
+    const user = await getUser(auth, headers['origin']);
     return user;
   };
   const authorizeAdmin = async (headers) => {
     const auth = getAuthorization(headers);
-    const user = await getUser(auth, headers['host']);
+    const user = await getUser(auth, headers['origin']);
     const admin = await users.getAdminFromUser(user.id);
     return [admin, user];
   };

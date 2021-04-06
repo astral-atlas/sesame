@@ -49,13 +49,13 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
     POST: withRouteMiddleware(createPOSTHandler(api.POSTNewUser, async ({ headers, body: { name } }) => {
       const [admin,] = await services.auth.authorizeAdmin(headers);
       const newUser = await services.user.createUser(name, admin.id);
-      return { status: created, body: { newUserId: newUser.id } };
+      return { status: created, body: { newUser: newUser } };
     })),
   }});
 
   const accessAccept = resource({ path: api.POSTAcceptAccess.path, access, methods: {
     POST: withRouteMiddleware(createPOSTHandler(api.POSTAcceptAccess, async ({ body: { deviceName, offerProof }, headers }) => {
-      const grantProof = await services.access.createNewGrant(offerProof, deviceName, headers['host']);
+      const grantProof = await services.access.createNewGrant(offerProof, deviceName, headers['origin']);
       return { status: ok, body: { grantProof } };
     })),
   }});
