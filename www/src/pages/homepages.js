@@ -7,7 +7,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { createAdminSesameClient, createGuestSesameClient, createUserSesameClient } from '@astral-atlas/sesame-client';
 import { createWebClient } from '@lukekaalim/http-client';
 import { useLocalStorage } from '../hooks/storage';
-import { loginTokenEncoder, toAccessToken, toUserId } from '@astral-atlas/sesame-models';
+import { accessOfferProofEncoder, toAccessGrantProof, toUserId } from '@astral-atlas/sesame-models';
 
 const GuestHomepage = () => {
 
@@ -43,20 +43,28 @@ const EncodedLoginForm = ({ onLogin }/*: {| onLogin: (t: LoginToken, n: string) 
   ]
 }
 
-const User = ({ http, baseURL, accessToken }) => {
-  const userClient = createUserSesameClient({ http, baseURL, accessToken });
-  const [user, setUser] = useState(null);
+const User = ({ http, baseURL, accessProof }) => {
+  const userClient = createUserSesameClient({ http, baseURL, authMode: 'grant', accessGrantProof: accessProof });
+  const [me, setMe] = useState(null);
   useEffect(() => {
-    userClient.getSelf().then(({ self, admin }) => setUser(self));
-  }, [accessToken]);
+    userClient.getSelfUser().then((newMe) => setMe(newMe));
+  }, [accessProof]);
 
-  if (!user)
+  if (!me)
     return null;
 
-  return h('section', {}, [
-    h('h3', {}, user.name),
-    h('p', {}, user.id),
-    user.adminId && h('p', {}, 'Admin'),
+  const style = {
+    border: '1px solid black',
+    borderRadius: '16px',
+    padding: '1em',
+    margin: '1em',
+  }
+
+  return h('section', { style }, [
+    h('h3', {}, me.self.name),
+    h('p', {}, me.self.id),
+    me.admin && h('p', {}, `Admin ${me.admin.id}`),
+    me.access && h('p', {}, `Logged as ${me.access.deviceName} (${me.access.hostName || ''})`),
   ]);
 };
 
@@ -107,7 +115,7 @@ const GrantForm = ({ http, baseURL, accessToken })/*: Node*/ => {
   ];
 };
 
-const Homepage = ()/*: Node*/ => {
+const HomepageOld = ()/*: Node*/ => {
   const [accessToken, setAccessToken] = useLocalStorage('sesame_access_token', null, v => toNullable(v, toAccessToken));
   const http = createWebClient(fetch);
   const baseURL = new URL('http://localhost:5543')
@@ -119,13 +127,73 @@ const Homepage = ()/*: Node*/ => {
   };
 
   return [
-    h('h1', {}, 'Sesame'),
+    h('h1', {}, 'Astral Atlas: Sesame'),
     h('pre', {}, JSON.stringify(accessToken)),
     h(EncodedLoginForm, { onLogin }),
     accessToken && h(User, { accessToken, http, baseURL }),
     accessToken && h(GrantForm, { accessToken, http, baseURL }),
     accessToken && h(CreateUserForm, { accessToken, http, baseURL })
   ];
+};
+
+const LoginForm = ({ onSubmitOfferProof })/*: Node*/  => {
+  const [encodedProof, setEncodedProof] = useState('');
+  const [deviceName, setDeviceName] = useState('');
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const proof = accessOfferProofEncoder.decode(encodedProof);
+    onSubmitOfferProof(proof, deviceName);
+  }
+  return [
+    h('form', { onSubmit }, [
+      h('p', {}, [
+        h('div', {}, 'You are currently not logged in'),
+        h('div', {}, 'Enter an Access Code to log in.'),
+      ]),
+      h('label', {}, [
+        h('p', {}, 'Access Code:'),
+        h('input', {
+          type: 'text',
+          placeholder: 'Long string of random characters',
+          onChange: e => setEncodedProof(e.currentTarget.value),
+          value: encodedProof,
+        })
+      ]),
+      h('label', {}, [
+        h('p', {}, 'Device Name:'),
+        h('input', {
+          type: 'text',
+          placeholder: 'Kitchen Laptop, Main Workstation, e.g.',
+          onChange: e => setDeviceName(e.currentTarget.value),
+          value: deviceName,
+        })
+      ]),
+      h('input', { type: 'submit', value: 'Login with Access Code' })
+    ])
+  ]
+};
+
+const Homepage = ()/*: Node*/ => {
+  const [accessProof, setAccessProof] = useLocalStorage('sesame_access_grant_proof', null, v => toNullable(v, toAccessGrantProof));
+  const http = createWebClient(fetch);
+  const baseURL = new URL('http://localhost:5543')
+  const style = {
+
+  };
+  const onSubmitOfferProof = async (accessOfferProof, deviceName) => {
+    const guestClient = createGuestSesameClient({ http, baseURL })
+    const { grantProof } = await guestClient.acceptAccess(deviceName, accessOfferProof);
+    setAccessProof(() => grantProof)
+  };
+  return [
+    h('header', { style }, [
+      h('h1', {}, 'Astral Atlas - OpenSesame'),
+    ]),
+    !accessProof ? h(LoginForm, { onSubmitOfferProof }) : null,
+    accessProof && h(User, { http, baseURL, accessProof }),
+    accessProof && h('pre', {}, JSON.stringify(accessProof, null, 2)),
+    accessProof && h('button', { onClick: () => setAccessProof(() => null) }, 'Logout')
+  ]
 };
 
 export {
