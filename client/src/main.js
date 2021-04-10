@@ -1,6 +1,6 @@
 // @flow strict
 /*:: import type { HTTPClient } from '@lukekaalim/http-client'; */
-/*:: import type { AccessGrantProof, AccessOfferProof, User, Admin, UserID } from '@astral-atlas/sesame-models'; */
+/*:: import type { AccessGrantProof, AccessOfferProof, User, Admin, UserID, AccessGrant, AccessOffer, AccessRevocation } from '@astral-atlas/sesame-models'; */
 /*:: import type { AccessClient, UserClient } from './api'; */
 const { toUser, accessGrantProofEncoder, accessOfferProofEncoder, api } = require('@astral-atlas/sesame-models');
 const { stringify } = require('@lukekaalim/cast');
@@ -13,16 +13,29 @@ export type GuestArgs = {|
   baseURL: URL, 
   http: HTTPClient,
 |};
-export type GuestSesameClient = {
+export type GuestSesameClient = {|
   acceptAccess: $PropertyType<AccessClient, 'acceptAccess'>,
-};
+  authorize: (auth: AuthArgs) => UserSesameClient,
+|};
 */
 const createGuestSesameClient = ({ baseURL, http }/*: GuestArgs*/)/*: GuestSesameClient*/ => {
   const authorization = createNoneAuthorization();
   const service = { baseURL, authorization };
   const accessClient = createAccessClient(http, service);
+  const authorize = (auth) => {
+    const { authMode } = auth;
+    switch (auth.authMode) {
+      case 'super':
+        const { username, password } = auth;
+        return createUserSesameClient({ http, baseURL, authMode: 'super', username, password });
+      case 'grant':
+        const { accessGrantProof } = auth;
+        return createUserSesameClient({ http, baseURL, authMode: 'grant', accessGrantProof });
+    }
+  };
   return {
     acceptAccess: accessClient.acceptAccess,
+    authorize,
   };
 };
 
@@ -33,14 +46,16 @@ export type AuthArgs =
   | {| authMode: 'super', username: string, password: string |}
 export type UserArgs = {|
   ...GuestArgs,
-  ...AuthArgs
+  ...AuthArgs,
 |};
-export type UserSesameClient = GuestSesameClient & {
+export type UserSesameClient = {|
+  ...GuestSesameClient,
   getSelfUser: $PropertyType<UserClient, 'getSelf'>,
   listAccess: $PropertyType<AccessClient, 'list'>,
   revokeAccess: $PropertyType<AccessClient, 'revoke'>,
   createAccessOfferForSelf: () => Promise<{ offerProof: AccessOfferProof }>,
-};
+  getAccessOfferForSelf: () => Promise<{ grants: AccessGrant[], offers: AccessOffer[], revocations: AccessRevocation[] }>,
+|};
 */
 
 const getAuthorization = (args/*: UserArgs*/) => {
@@ -60,24 +75,36 @@ const createUserSesameClient = (args/*: UserArgs*/)/*: UserSesameClient*/ => {
   const service = { baseURL, authorization };
   const userClient = createUserClient(http, service);
   const accessClient = createAccessClient(http, service);
+  console.log(authorization);
   const createAccessOfferForSelf = async () => {
     const { self } = await userClient.getSelf();
+    if (!self)
+      throw new Error('Must be logged in to create Access');
     return await accessClient.createOffer(self.id);
+  };
+  const getAccessOfferForSelf = async () => {
+    const { self } = await userClient.getSelf();
+    if (!self)
+      throw new Error('Must be logged in to list Access');
+    const { grants, offers, revocations } = await accessClient.list(self.id);
+    return { grants, offers, revocations };
   };
   return {
     ...createGuestSesameClient({ baseURL, http }),
-    getSelfUser: userClient.getSelf,
     listAccess: accessClient.list,
     revokeAccess: accessClient.revoke,
+    getSelfUser: userClient.getSelf,
     createAccessOfferForSelf,
+    getAccessOfferForSelf,
   }
 };
 /*::
-export type AdminSesameClient = UserSesameClient & {
+export type AdminSesameClient = {|
+  ...UserSesameClient,
   listUsers: $PropertyType<UserClient, 'list'>,
   createNewUser: $PropertyType<UserClient, 'create'>,
   createAccessOffer: $PropertyType<AccessClient, 'createOffer'>,
-};
+|};
 */
 
 const createAdminSesameClient = (args/*: UserArgs*/)/*: AdminSesameClient*/ => {

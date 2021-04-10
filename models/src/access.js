@@ -1,11 +1,17 @@
 // @flow strict
 /*:: import type { UserID } from './user'; */
 /*:: import type { Cast } from '@lukekaalim/cast'; */
-const { toObject, toString, toNullable } = require('@lukekaalim/cast');
+const { toObject, toString, toNullable, fromObject, castObject } = require('@lukekaalim/cast');
 const { toUserId } = require('./user');
 
 /*::
 export type AccessID = string;
+export type Access = {
+  id: AccessID,
+  offer: AccessOffer,
+  grant: null | AccessGrant,
+  revocation: AccessRevocation,
+};
 
 export type AccessOffer = {|
   id: AccessID,
@@ -27,6 +33,8 @@ export type AccessRevocation = {|
 */
 
 const toAccessId/*: Cast<AccessID>*/ = toString;
+const toAccess/*: Cast<Access>*/ = castObject(prop => ({
+}))
 
 const toAccessOffer/*: Cast<AccessOffer>*/ = (value) => {
   const object = toObject(value)

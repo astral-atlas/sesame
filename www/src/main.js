@@ -1,7 +1,9 @@
 // @flow strict
-import { h, render } from 'preact';
 import 'preact/debug';
+import { h, render } from 'preact';
 import { Homepage } from './pages/homepages';
+import { SesameClientProvider } from './context/sesameClient';
+import { ApplicationProvider } from './context/application';
 
 const SesamePage = ({ children }) => {
   const style = {
@@ -11,7 +13,14 @@ const SesamePage = ({ children }) => {
     flexDirection: 'column',
     alignItems: 'center',
   };
-  return h('span', { style }, children)
+  return h(ApplicationProvider, {},
+    h(SesameClientProvider, { baseURL: new URL('http://localhost:5543'), accessGrantProof: null },
+      h('span', { style }, [
+        h('header', {}, [
+          h('h1', {}, 'Astral Atlas - OpenSesame'),
+        ]),
+        children,
+      ])));
 }
 
 const SesameWebsite = () => {

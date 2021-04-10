@@ -11,11 +11,11 @@ declare module "preact" {
   declare type Component<T> = (props: T) => Node;
   declare var createElement: <T = {| children: Node |}>(
     component: Component<T> | string,
-    props: {| ...T, children?: $PropertyType<T, 'children'> |},
+    props: $Diff<T, {| children?: $PropertyType<T, 'children'> |}>,
     children?: Node
   ) => Element
 
-  declare type Context<T> = { Provider: Component<{ children: Node, value: T }>, Consumer: Component<{ children: T => Node }> }
+  declare type Context<T> = { Provider: Component<{| children: Node, value: T |}>, Consumer: Component<{| children: T => Node |}> }
   declare var createContext: <T>(defaultContent: T) => Context<T>;
 
   declare var render: <T>(node: Node, element: HTMLElement) => void;

@@ -1,6 +1,6 @@
 // @flow strict
 /*:: import type { POSTEndpoint, DELETEEndpoint, GETEndpoint } from '@lukekaalim/api-models'; */
-/*:: import type { UserID } from '../user'; */
+/*:: import type { User, UserID } from '../user'; */
 /*:: import type { AccessOfferProof, AccessGrantProof } from '../tokens'; */
 /*:: import type { AccessOffer, AccessGrant, AccessRevocation } from '../access'; */
 const { toString, castObject, toArray } = require('@lukekaalim/cast');
@@ -25,7 +25,7 @@ const POSTCreateAccessOffer/*: POSTEndpoint<
 
 const POSTAcceptAccess/*: POSTEndpoint<
   {| deviceName: string, offerProof: AccessOfferProof |},
-  {| grantProof: AccessGrantProof |}, null
+  {| grantProof: AccessGrantProof, user: User |}, null
 >*/ = {
   method: 'POST',
   path: '/user/access/accept',
@@ -36,17 +36,18 @@ const POSTAcceptAccess/*: POSTEndpoint<
   })),
   toResponseBody: castObject(prop => ({
     grantProof: prop('grantProof', toAccessGrantProof),
+    user: prop('user', toUser),
   })),
 };
 
 const GETAccessList/*: GETEndpoint<
   {| offers: AccessOffer[], grants: AccessGrant[], revocations: AccessRevocation[] |},
-  {| userId: UserID |}
+  {| subject: UserID |}
 >*/ = {
   method: 'GET',
   path: '/user/access',
   toQuery: castObject(prop => ({
-    userId: prop('userId', toUserId),
+    subject: prop('userId', toUserId),
   })),
   toResponseBody: castObject(prop => ({
     offers: prop('offers', toArray).map(toAccessOffer),

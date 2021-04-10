@@ -10,8 +10,8 @@ const { toGETSelfUserResponse, toGETUsersResponse } = require('./models');
 /*::
 export type AccessClient = {
   createOffer: (subject: UserID) => Promise<{ offerProof: AccessOfferProof }>,
-  acceptAccess: (deviceName: string, offerProof: AccessOfferProof) => Promise<{ grantProof: AccessGrantProof }>,
-  list: (userId: UserID) => Promise<{ offers: AccessOffer[], grants: AccessGrant[], revocations: AccessRevocation[] }>,
+  acceptAccess: (deviceName: string, offerProof: AccessOfferProof) => Promise<{ grantProof: AccessGrantProof, user: User }>,
+  list: (subject: UserID) => Promise<{ offers: AccessOffer[], grants: AccessGrant[], revocations: AccessRevocation[] }>,
   revoke: (subject: UserID) => Promise<null>,
 };
 */
@@ -25,11 +25,11 @@ const createAccessClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: A
     return { offerProof };
   };
   const acceptAccess = async (deviceName, offerProof) => {
-    const { body: { grantProof } } = await acceptAccessClient.post(null, { deviceName, offerProof });
-    return { grantProof };
+    const { body: { grantProof, user } } = await acceptAccessClient.post(null, { deviceName, offerProof });
+    return { grantProof, user };
   };
-  const list = async (userId) => {
-    const { body: { offers, grants, revocations } } = await listClient.get({ userId });
+  const list = async (subject) => {
+    const { body: { offers, grants, revocations } } = await listClient.get({ subject });
     return { offers, grants, revocations };
   };
   const revoke = async (subject) => {

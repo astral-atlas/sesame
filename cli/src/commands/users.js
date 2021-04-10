@@ -12,11 +12,11 @@ export type UserCommands =
   | ['whoami']
   | ['new', 'login']
   | ['new', 'user']
-export type CLI = {
+export type CLI2 = {
   handleCommand: (...args: string[]) => Promise<void>,
 };
 */
-const createUserCLI = (admin/*: AdminSesameClient*/)/*: CLI*/ => {
+const createUserCLI = (admin/*: AdminSesameClient*/)/*: CLI2*/ => {
   const newUser = async () => {
     if (!admin)
       throw new Error('Insufficient permission to create new User');
@@ -41,9 +41,11 @@ const createUserCLI = (admin/*: AdminSesameClient*/)/*: CLI*/ => {
   return { handleCommand };
 };
 
-const createSelfCLI = (client/*: UserSesameClient*/)/*: CLI*/ => {
+const createSelfCLI = (client/*: UserSesameClient*/)/*: CLI2*/ => {
   const whoami = async () => {
     const { self, admin, access } = await client.getSelfUser();
+    if (!self)
+      return console.log('Not logged in');
     console.log(`Logged in as ${self.name} (${self.id})`);
     if (access)
       console.log(`Using access granted to "${access.deviceName}"`)

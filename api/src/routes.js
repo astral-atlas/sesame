@@ -56,7 +56,8 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
   const accessAccept = resource({ path: api.POSTAcceptAccess.path, access, methods: {
     POST: withRouteMiddleware(createPOSTHandler(api.POSTAcceptAccess, async ({ body: { deviceName, offerProof }, headers }) => {
       const grantProof = await services.access.createNewGrant(offerProof, deviceName, headers['origin']);
-      return { status: ok, body: { grantProof } };
+      const user = await services.user.getUserById(grantProof.id);
+      return { status: ok, body: { grantProof, user } };
     })),
   }});
   const accessOffer = resource({ path: api.POSTCreateAccessOffer.path, access, methods: {
@@ -67,8 +68,10 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
     })),
   }});
   const accessList = resource({ path: api.GETAccessList.path, access, methods: {
-    GET: withRouteMiddleware(createGETHandler(api.GETAccessList, async ({ query: { userId }, headers }) => {
-      throw new Error('Unimplemented functionality')
+    GET: withRouteMiddleware(createGETHandler(api.GETAccessList, async ({ query: { subject }, headers }) => {
+      const self = await services.auth.authorizeUser(headers);
+      const { grants, offers, revocations } = await services.access.listAccessGrants(subject, self.id);
+      return { status: ok, body: { grants, offers, revocations } };
     })),
   }});
   const accessRevoke = resource({ path: api.POSTAccessRevoke.path, access, methods: {
