@@ -60,7 +60,7 @@ const AccessOfferLoginForm = ({ onOfferSubmit }/*: AccessOfferLoginFormProps*/)/
       }),
     h(LabeledTextInput,
         { label: 'Device Name', placeholder: 'Kitchen Laptop, Main Workstation, e.g.',
-        value: encodedOffer, onTextChange: v => setEncodedOffer(v)
+        value: deviceName, onTextChange: v => setDeviceName(v)
       }),
     h('input', { type: 'submit', value: 'Login with Access Code' })
   ])

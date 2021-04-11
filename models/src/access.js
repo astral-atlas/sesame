@@ -6,12 +6,12 @@ const { toUserId } = require('./user');
 
 /*::
 export type AccessID = string;
-export type Access = {
+export type Access = {|
   id: AccessID,
   offer: AccessOffer,
   grant: null | AccessGrant,
-  revocation: AccessRevocation,
-};
+  revocation: null | AccessRevocation,
+|};
 
 export type AccessOffer = {|
   id: AccessID,
@@ -34,7 +34,11 @@ export type AccessRevocation = {|
 
 const toAccessId/*: Cast<AccessID>*/ = toString;
 const toAccess/*: Cast<Access>*/ = castObject(prop => ({
-}))
+  id: prop('id', toAccessId),
+  offer: prop('offer', toAccessOffer),
+  grant: prop('grant', v => toNullable(v, toAccessGrant)),
+  revocation: prop('revocation', v => toNullable(v, toAccessRevocation))
+}));
 
 const toAccessOffer/*: Cast<AccessOffer>*/ = (value) => {
   const object = toObject(value)
@@ -65,6 +69,7 @@ const toAccessRevocation/*: Cast<AccessRevocation>*/ = (value) => {
 
 module.exports = {
   toAccessId,
+  toAccess,
   toAccessOffer,
   toAccessGrant,
   toAccessRevocation,

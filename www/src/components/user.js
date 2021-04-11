@@ -14,6 +14,12 @@ export type Props = {|
 |};
 */
 
+const AccessInfo = ()/*: Node*/ => {
+  const userClient = useUserSesameClient();
+  const [access] = useAsync(async () => userClient.getAccessForSelf(), [userClient]);
+  return null;
+};
+
 export const SelfInfo = ()/*: Node*/ => {
   const style = {
     border: '1px solid black',
@@ -31,6 +37,6 @@ export const SelfInfo = ()/*: Node*/ => {
     h('h3', {}, me.self.name),
     h('p', {}, me.self.id),
     me.admin && h('p', {}, `Admin ${me.admin.id}`),
-    me.access && h('p', {}, `Logged as ${me.access.deviceName} (${me.access.hostName || ''})`),
+    me.access && me.access.grant && h('p', {}, `Logged as ${me.access.grant.deviceName} (${me.access.grant.hostName || ''})`),
   ]);
 };

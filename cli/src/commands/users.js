@@ -47,8 +47,8 @@ const createSelfCLI = (client/*: UserSesameClient*/)/*: CLI2*/ => {
     if (!self)
       return console.log('Not logged in');
     console.log(`Logged in as ${self.name} (${self.id})`);
-    if (access)
-      console.log(`Using access granted to "${access.deviceName}"`)
+    if (access && access.grant)
+      console.log(`Using access granted to "${access.grant.deviceName}"`)
     if (admin)
       console.log(`${self.name} is an Admin (${admin.id})`);
   };

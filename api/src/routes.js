@@ -34,7 +34,7 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
   const userSelf = resource({ path: api.GETSelf.path, access, methods: {
     GET: withRouteMiddleware(createGETHandler(api.GETSelf, async ({ headers }) => {
       const self = await services.auth.authorizeUser(headers);
-      const access = await services.access.getAccessGrant(headers);
+      const access = await services.access.getAccess(headers);
       if (self.adminId)
         return { status: ok, body: { self, admin: await services.user.getAdminFromUser(self.id), access } };
       return { status: ok, body: { self, admin: null, access } };
@@ -56,7 +56,7 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
   const accessAccept = resource({ path: api.POSTAcceptAccess.path, access, methods: {
     POST: withRouteMiddleware(createPOSTHandler(api.POSTAcceptAccess, async ({ body: { deviceName, offerProof }, headers }) => {
       const grantProof = await services.access.createNewGrant(offerProof, deviceName, headers['origin']);
-      const user = await services.user.getUserById(grantProof.id);
+      const user = await services.user.getUserById(grantProof.subject);
       return { status: ok, body: { grantProof, user } };
     })),
   }});
@@ -70,8 +70,8 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
   const accessList = resource({ path: api.GETAccessList.path, access, methods: {
     GET: withRouteMiddleware(createGETHandler(api.GETAccessList, async ({ query: { subject }, headers }) => {
       const self = await services.auth.authorizeUser(headers);
-      const { grants, offers, revocations } = await services.access.listAccessGrants(subject, self.id);
-      return { status: ok, body: { grants, offers, revocations } };
+      const { access } = await services.access.listAccessGrants(subject, self.id);
+      return { status: ok, body: { access } };
     })),
   }});
   const accessRevoke = resource({ path: api.POSTAccessRevoke.path, access, methods: {
@@ -85,6 +85,8 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
     ...userSelf,
     ...accessAccept,
     ...accessOffer,
+    ...accessList,
+    ...accessRevoke,
   ];
   /*
   const users = resource({ path: '/users', methods: {

@@ -2,9 +2,9 @@
 /*:: import type { POSTEndpoint, DELETEEndpoint, GETEndpoint } from '@lukekaalim/api-models'; */
 /*:: import type { User, UserID } from '../user'; */
 /*:: import type { AccessOfferProof, AccessGrantProof } from '../tokens'; */
-/*:: import type { AccessOffer, AccessGrant, AccessRevocation } from '../access'; */
+/*:: import type { Access, AccessOffer, AccessGrant, AccessRevocation } from '../access'; */
 const { toString, castObject, toArray } = require('@lukekaalim/cast');
-const { toAccessOffer, toAccessGrant, toAccessRevocation } = require('../access');
+const { toAccessOffer, toAccessGrant, toAccessRevocation, toAccess } = require('../access');
 const { toAccessOfferProof, toAccessGrantProof } = require('../tokens');
 const { toUserId, toUser } = require('../user');
 
@@ -41,18 +41,16 @@ const POSTAcceptAccess/*: POSTEndpoint<
 };
 
 const GETAccessList/*: GETEndpoint<
-  {| offers: AccessOffer[], grants: AccessGrant[], revocations: AccessRevocation[] |},
+  {| access: Access[] |},
   {| subject: UserID |}
 >*/ = {
   method: 'GET',
   path: '/user/access',
   toQuery: castObject(prop => ({
-    subject: prop('userId', toUserId),
+    subject: prop('subject', toUserId),
   })),
   toResponseBody: castObject(prop => ({
-    offers: prop('offers', toArray).map(toAccessOffer),
-    grants: prop('grants', toArray).map(toAccessGrant),
-    revocations: prop('revocations', toArray).map(toAccessRevocation),
+    access: prop('access', v => toArray(v).map(toAccess)),
   })),
 };
 

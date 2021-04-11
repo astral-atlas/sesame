@@ -1,6 +1,6 @@
 // @flow strict
 /*:: import type { HTTPClient } from '@lukekaalim/http-client'; */
-/*:: import type { AccessGrantProof, AccessOfferProof, User, Admin, UserID, AccessGrant, AccessOffer, AccessRevocation } from '@astral-atlas/sesame-models'; */
+/*:: import type { AccessGrantProof, AccessOfferProof, User, Admin, UserID, Access } from '@astral-atlas/sesame-models'; */
 /*:: import type { AccessClient, UserClient } from './api'; */
 const { toUser, accessGrantProofEncoder, accessOfferProofEncoder, api } = require('@astral-atlas/sesame-models');
 const { stringify } = require('@lukekaalim/cast');
@@ -54,7 +54,7 @@ export type UserSesameClient = {|
   listAccess: $PropertyType<AccessClient, 'list'>,
   revokeAccess: $PropertyType<AccessClient, 'revoke'>,
   createAccessOfferForSelf: () => Promise<{ offerProof: AccessOfferProof }>,
-  getAccessOfferForSelf: () => Promise<{ grants: AccessGrant[], offers: AccessOffer[], revocations: AccessRevocation[] }>,
+  getAccessForSelf: () => Promise<{ access: Access[] }>,
 |};
 */
 
@@ -75,19 +75,18 @@ const createUserSesameClient = (args/*: UserArgs*/)/*: UserSesameClient*/ => {
   const service = { baseURL, authorization };
   const userClient = createUserClient(http, service);
   const accessClient = createAccessClient(http, service);
-  console.log(authorization);
   const createAccessOfferForSelf = async () => {
     const { self } = await userClient.getSelf();
     if (!self)
       throw new Error('Must be logged in to create Access');
     return await accessClient.createOffer(self.id);
   };
-  const getAccessOfferForSelf = async () => {
+  const getAccessForSelf = async () => {
     const { self } = await userClient.getSelf();
     if (!self)
       throw new Error('Must be logged in to list Access');
-    const { grants, offers, revocations } = await accessClient.list(self.id);
-    return { grants, offers, revocations };
+    const { access } = await accessClient.list(self.id);
+    return { access };
   };
   return {
     ...createGuestSesameClient({ baseURL, http }),
@@ -95,7 +94,7 @@ const createUserSesameClient = (args/*: UserArgs*/)/*: UserSesameClient*/ => {
     revokeAccess: accessClient.revoke,
     getSelfUser: userClient.getSelf,
     createAccessOfferForSelf,
-    getAccessOfferForSelf,
+    getAccessForSelf,
   }
 };
 /*::

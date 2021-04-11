@@ -4,6 +4,7 @@ import { h, render } from 'preact';
 import { Homepage } from './pages/homepages';
 import { SesameClientProvider } from './context/sesameClient';
 import { ApplicationProvider } from './context/application';
+import { ManageUsersPage, manageUsersPath } from './pages/users';
 
 const SesamePage = ({ children }) => {
   const style = {
@@ -24,10 +25,15 @@ const SesamePage = ({ children }) => {
 }
 
 const SesameWebsite = () => {
-  const path = '/';
+  const url = new URL(location.href);
+  const path = url.pathname;
   switch (path) {
     case '/':
       return h(SesamePage, {}, h(Homepage));
+    case manageUsersPath:
+      return h(SesamePage, {}, h(ManageUsersPage));
+    default:
+      return null;
   }
 };
 

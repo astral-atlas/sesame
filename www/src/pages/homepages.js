@@ -17,17 +17,16 @@ const AccessList = () => {
   const { user } = useContext(sesameClientContext)
   if (!appState.self)
     return null;
-  if (!appState.self.adminId)
-    return null;
   if (!user)
     return null;
 
-  const [access] = useAsync(async () => user.getAccessOfferForSelf(), [user])
-  if (!access)
+  const [accessResult] = useAsync(async () => user.getAccessForSelf(), [user])
+  if (!accessResult)
     return null;
+  const { access } = accessResult;
 
   return [
-    ...access.grants.map(grant => h('pre', {}, JSON.stringify(grant, null, 2)))
+    ...access.map(grant => h('pre', {}, JSON.stringify(grant, null, 2)))
   ];
 };
 
@@ -37,6 +36,7 @@ const Homepage = ()/*: Node*/ => {
   return [
     isLoggedIn(appState) ? null : h(LoginForm),
     appState.self && h(SelfInfo),
+    appState.self && h(AccessList),
     isLoggedIn(appState) ? h('button', {
       onClick: () => dispatch({ type: 'login', authentication: { type: 'none' }, self: null })
     }, 'Logout') : null,

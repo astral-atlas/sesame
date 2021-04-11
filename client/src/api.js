@@ -1,7 +1,7 @@
 // @flow strict
 /*:: import type { HTTPClient, HTTPService } from '@lukekaalim/http-client'; */
 /*:: import type { JSONValue } from '@lukekaalim/cast'; */
-/*:: import type { AccessOfferProof, AccessGrantProof, AccessOffer, AccessGrant, AccessRevocation, User, Admin, UserID } from '@astral-atlas/sesame-models'; */
+/*:: import type { AccessOfferProof, AccessGrantProof, Access, User, Admin, UserID } from '@astral-atlas/sesame-models'; */
 const { json: { createGETClient, createPOSTClient } } = require('@lukekaalim/http-client');
 const { api } = require('@astral-atlas/sesame-models');
 const { getObjectEntries } = require('./object');
@@ -11,7 +11,7 @@ const { toGETSelfUserResponse, toGETUsersResponse } = require('./models');
 export type AccessClient = {
   createOffer: (subject: UserID) => Promise<{ offerProof: AccessOfferProof }>,
   acceptAccess: (deviceName: string, offerProof: AccessOfferProof) => Promise<{ grantProof: AccessGrantProof, user: User }>,
-  list: (subject: UserID) => Promise<{ offers: AccessOffer[], grants: AccessGrant[], revocations: AccessRevocation[] }>,
+  list: (subject: UserID) => Promise<{ access: Access[] }>,
   revoke: (subject: UserID) => Promise<null>,
 };
 */
@@ -29,8 +29,8 @@ const createAccessClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: A
     return { grantProof, user };
   };
   const list = async (subject) => {
-    const { body: { offers, grants, revocations } } = await listClient.get({ subject });
-    return { offers, grants, revocations };
+    const { body: { access } } = await listClient.get({ subject });
+    return { access };
   };
   const revoke = async (subject) => {
     await revokeClient.post(null, { subject });
@@ -41,7 +41,7 @@ const createAccessClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: A
 
 /*::
 export type UserClient = {
-  getSelf: () => Promise<{ self: User, admin: null | Admin, access: null | AccessGrant }>,
+  getSelf: () => Promise<{ self: User, admin: null | Admin, access: null | Access }>,
   getById: (userId: UserID) => Promise<{ user: User }>,
   list: () => Promise<{ users: User[] }>,
   create: (name: string) => Promise<{ newUser: User }>,

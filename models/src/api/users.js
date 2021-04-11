@@ -2,12 +2,12 @@
 /*:: import type { Cast } from '@lukekaalim/cast'; */
 /*:: import type { GETEndpoint, POSTEndpoint, PUTEndpoint, DELETEEndpoint } from '@lukekaalim/api-models'; */
 /*:: import type { User, UserID, Admin } from '../user'; */
-/*:: import type { AccessGrant } from '../access'; */
+/*:: import type { Access } from '../access'; */
 const { toObject, toString, toArray, toNullable } = require('@lukekaalim/cast');
 const { toUser, toUserId, toAdmin } = require('../user');
-const { toAccessGrant } = require('../access');
+const { toAccess } = require('../access');
 
-const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null, access: null | AccessGrant |}, null>*/ = {
+const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null, access: null | Access |}, null>*/ = {
   method: 'GET',
   path: '/users/self',
   toQuery: () => null,
@@ -16,7 +16,7 @@ const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null, access: null | 
     return {
       self: toUser(object.self),
       admin: toNullable(object.admin, toAdmin),
-      access: toNullable(object.access, toAccessGrant),
+      access: toNullable(object.access, toAccess),
     };
   }, 
 };

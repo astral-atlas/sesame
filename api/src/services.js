@@ -4,6 +4,7 @@
   User, UserID,
   AccessID, AccessGrant, AccessOffer, AccessRevocation,
   AccessGrantProof, AccessOfferProof,
+  Access,
 } from '@astral-atlas/sesame-models'; */
 /*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
 /*:: import type { Authorization, HTTPHeaders } from '@lukekaalim/server'; */
@@ -16,7 +17,7 @@ const { async: asyncCryptoString } = require('crypto-random-string');
 const { toObject, toString, toArray, parse, stringify, toTuple } = require('@lukekaalim/cast');
 const {
   toAdmin, toUser,
-  toLoginGrant, toAccessGrant, toAccessOffer, toAccessRevocation, accessGrantProofEncoder, toAccessId,
+  toAccessGrant, toAccessOffer, toAccessRevocation, accessGrantProofEncoder, toAccessId,
 } = require('@astral-atlas/sesame-models');
 const { getSuperUser } = require('./config');
 const { getAuthorization } = require('@lukekaalim/server/src/authorization');
@@ -128,6 +129,7 @@ const createCompositeKeyTable = /*:: <PartitionKey, SortKey, Value>*/(
 )/*: CompositeTable<PartitionKey, SortKey, Value>*/ => {
   const get = async (key) => {
     const { result: partition } = await backingTable.get(key.partition);
+    console.log(key, partition);
     if (!partition)
       return { result: null };
     const value = partition.find(([sortKey]) => key.sort === sortKey);
@@ -141,7 +143,11 @@ const createCompositeKeyTable = /*:: <PartitionKey, SortKey, Value>*/(
     if (newValue) {
       if (!partition)
         return backingTable.set(key.partition, [[key.sort, newValue]])
-      const newPartition = partition.map(([sk, oldValue]) => sk === key.sort ? [sk, newValue] : [sk, oldValue]);
+
+      const newPartition = [
+        ...partition.filter(([sk, oldValue]) => sk !== key.sort),
+        [key.sort, newValue],
+      ];
       return await backingTable.set(key.partition, newPartition);
     } else {
       if (!partition)
@@ -286,11 +292,11 @@ const createUserService = (tables/*: TableServices*/, superUser/*: ?SuperUser*/)
 
 /*::
 export type AccessService = {
-  getAccessGrant: (headers: HTTPHeaders) => Promise<null | AccessGrant>,
+  getAccess: (headers: HTTPHeaders) => Promise<null | Access>,
   createNewOffer: (creatorId: UserID, subjectId: UserID) => Promise<AccessOfferProof>,
   createNewGrant: (offerProof: AccessOfferProof, deviceName: string, host: string | null) => Promise<AccessGrantProof>,
   validateUserAccess: (accessProof: AccessGrantProof, host: string | null) => Promise<{ userId: UserID, deviceName: string }>,
-  listAccessGrants: (subject: UserID, self: UserID) => Promise<{ grants: AccessGrant[], offers: AccessOffer[], revocations: AccessRevocation[] }>,
+  listAccessGrants: (subject: UserID, self: UserID) => Promise<{ access: Access[] }>,
 };
 */
 const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/*: AccessService*/ => {
@@ -307,15 +313,18 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
       subject: subject.id,
       offerSecret: await asyncCryptoString({ length: 32, type: 'url-safe' })
     };
+    console.log(newOffer);
     await tables.accessOffers.set({ partition: subject.id, sort: newOffer.id }, newOffer);
     const newOfferProof = {
       id: newOffer.id,
       subject: subject.id,
       offerSecret: newOffer.offerSecret,
     };
+    console.log(newOfferProof);
     return newOfferProof;
   };
   const createNewGrant = async (offerProof, deviceName, hostName) => {
+    console.log(offerProof);
     const { result: accessOffer } = await tables.accessOffers.get({ partition: offerProof.subject, sort: offerProof.id });
     if (!accessOffer)
       throw new Error(`No Offer found for proof "${offerProof.id}"`);
@@ -360,35 +369,51 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
       throw new Error(`Grant has no corresponding offer`);
     return { userId: accessOffer.subject, deviceName: accessGrant.deviceName };
   };
-  const getAccessGrant = async (headers) => {
+  const getAccess = async (headers) => {
     const auth = getAuthorization(headers);
     if (auth.type !== 'bearer')
       return null;
     const grantProof = accessGrantProofEncoder.decode(auth.token);
-    const { result: grant } = await tables.accessGrants.get({ partition: grantProof.subject, sort: grantProof.id });
-    if (!grant)
+    const { result: unsanitizedGrant } = await tables.accessGrants.get({ partition: grantProof.subject, sort: grantProof.id });
+    const { result: offer } = await tables.accessOffers.get({ partition: grantProof.subject, sort: grantProof.id });
+    const { result: revocation } = await tables.accessRevocations.get({ partition: grantProof.subject, sort: grantProof.id });
+    if (!unsanitizedGrant || !offer)
       return null;
-    return {
-      ...grant,
+    const grant = {
+      ...unsanitizedGrant,
       grantSecret: '******',
     };
+    const access = {
+      id: grant.id,
+      grant,
+      offer,
+      revocation,
+    }
+    return access;
   };
   const listAccessGrants = async (subjectId, selfId) => {
     const user = await users.getUserById(subjectId);
     if (!user)
       throw new Error('No user by that UserID');
-    const admin = await users.getAdminFromUser(selfId);
-    if (subjectId !== selfId && !admin)
+    if (subjectId !== selfId && !user.adminId)
       throw new Error(`Can\'t list Access for other users unless you are admin`);
+    const { result: offers } = await tables.accessOffers.query(subjectId);
     const { result: grants } = await tables.accessGrants.query(subjectId);
-    return { grants, offers: [], revocations: [] };
+    const { result: revocations } = await tables.accessRevocations.query(subjectId);
+    const access = offers.map(offer => ({
+      id: offer.id,
+      offer,
+      grant: grants.find(grant => grant.id === offer.id) || null,
+      revocation: revocations.find(revocation => revocation.id === offer.id) || null,
+    }))
+    return { access };
   };
 
   return {
     validateUserAccess,
     createNewOffer,
     createNewGrant,
-    getAccessGrant,
+    getAccess,
     listAccessGrants,
   };
 };
