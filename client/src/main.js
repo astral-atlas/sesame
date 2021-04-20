@@ -1,12 +1,12 @@
 // @flow strict
 /*:: import type { HTTPClient } from '@lukekaalim/http-client'; */
 /*:: import type { AccessGrantProof, AccessOfferProof, User, Admin, UserID, Access } from '@astral-atlas/sesame-models'; */
-/*:: import type { AccessClient, UserClient } from './api'; */
+/*:: import type { AccessClient, UserClient, AdminClient } from './api'; */
 const { toUser, accessGrantProofEncoder, accessOfferProofEncoder, api } = require('@astral-atlas/sesame-models');
 const { stringify } = require('@lukekaalim/cast');
 const { createNoneAuthorization, createBearerAuthorization, createBasicAuthorization } = require('@lukekaalim/http-client');
 const { toBase64 } = require('./base64');
-const { createAccessClient, createUserClient } = require('./api');
+const { createAccessClient, createUserClient, createAdminClient } = require('./api');
 
 /*::
 export type GuestArgs = {|
@@ -103,6 +103,7 @@ export type AdminSesameClient = {|
   listUsers: $PropertyType<UserClient, 'list'>,
   createNewUser: $PropertyType<UserClient, 'create'>,
   createAccessOffer: $PropertyType<AccessClient, 'createOffer'>,
+  createNewAdmin: $PropertyType<AdminClient, 'create'>,
 |};
 */
 
@@ -112,12 +113,14 @@ const createAdminSesameClient = (args/*: UserArgs*/)/*: AdminSesameClient*/ => {
   const service = { baseURL, authorization };
   const user = createUserClient(http, service);
   const accessClient = createAccessClient(http, service);
+  const adminClient = createAdminClient(http, service);
 
   return {
     ...createUserSesameClient(args),
     createNewUser: user.create,
     listUsers: user.list,
     createAccessOffer: accessClient.createOffer,
+    createNewAdmin: adminClient.create
   };
 };
 

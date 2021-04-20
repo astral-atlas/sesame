@@ -1,7 +1,7 @@
 // @flow strict
 /*:: import type { HTTPClient, HTTPService } from '@lukekaalim/http-client'; */
 /*:: import type { JSONValue } from '@lukekaalim/cast'; */
-/*:: import type { AccessOfferProof, AccessGrantProof, Access, User, Admin, UserID } from '@astral-atlas/sesame-models'; */
+/*:: import type { AccessOfferProof, AccessGrantProof, Access, AccessID, User, Admin, UserID } from '@astral-atlas/sesame-models'; */
 const { json: { createGETClient, createPOSTClient } } = require('@lukekaalim/http-client');
 const { api } = require('@astral-atlas/sesame-models');
 const { getObjectEntries } = require('./object');
@@ -12,7 +12,7 @@ export type AccessClient = {
   createOffer: (subject: UserID) => Promise<{ offerProof: AccessOfferProof }>,
   acceptAccess: (deviceName: string, offerProof: AccessOfferProof) => Promise<{ grantProof: AccessGrantProof, user: User }>,
   list: (subject: UserID) => Promise<{ access: Access[] }>,
-  revoke: (subject: UserID) => Promise<null>,
+  revoke: (subject: UserID, accessId: AccessID) => Promise<null>,
 };
 */
 const createAccessClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: AccessClient*/ => {
@@ -32,11 +32,26 @@ const createAccessClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: A
     const { body: { access } } = await listClient.get({ subject });
     return { access };
   };
-  const revoke = async (subject) => {
-    await revokeClient.post(null, { subject });
+  const revoke = async (subject, accessId) => {
+    const {} = await revokeClient.post(null, { subject, accessId });
     return null;
   };
   return { createOffer, acceptAccess, list, revoke };
+};
+/*::
+export type AdminClient = {
+  create: (subject: UserID) => Promise<{ admin: Admin }>, 
+};
+*/
+const createAdminClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: AdminClient*/ => {
+  const postNewClient = createPOSTClient(api.POSTNewAdmin, http, service);
+  const create = async (subject) => {
+    const { body: { admin } } = await postNewClient.post(null, { subject });
+    return { admin }; 
+  };
+  return {
+    create,
+  };
 };
 
 /*::
@@ -74,4 +89,5 @@ const createUserClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: Use
 module.exports = {
   createUserClient,
   createAccessClient,
+  createAdminClient,
 };
