@@ -129,7 +129,6 @@ const createCompositeKeyTable = /*:: <PartitionKey, SortKey, Value>*/(
 )/*: CompositeTable<PartitionKey, SortKey, Value>*/ => {
   const get = async (key) => {
     const { result: partition } = await backingTable.get(key.partition);
-    console.log(key, partition);
     if (!partition)
       return { result: null };
     const value = partition.find(([sortKey]) => key.sort === sortKey);
@@ -255,9 +254,9 @@ const createUserService = (tables/*: TableServices*/, superUser/*: ?SuperUser*/)
   const createAdmin = async (userId) => {
     const { result: user } = await tables.users.get(userId);
     if (!user)
-      throw new Error();
+      throw new Error('User does not exist');
     if (user.adminId)
-      throw new Error();
+      throw new Error('User is already admin');
 
     const newAdmin = {
       id: uuid(),
@@ -297,6 +296,7 @@ export type AccessService = {
   createNewGrant: (offerProof: AccessOfferProof, deviceName: string, host: string | null) => Promise<AccessGrantProof>,
   validateUserAccess: (accessProof: AccessGrantProof, host: string | null) => Promise<{ userId: UserID, deviceName: string }>,
   listAccessGrants: (subject: UserID, self: UserID) => Promise<{ access: Access[] }>,
+  revokeAccess: (subject: UserID, accessId: AccessID, selfId: UserID) => Promise<void>,
 };
 */
 const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/*: AccessService*/ => {
@@ -313,18 +313,15 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
       subject: subject.id,
       offerSecret: await asyncCryptoString({ length: 32, type: 'url-safe' })
     };
-    console.log(newOffer);
     await tables.accessOffers.set({ partition: subject.id, sort: newOffer.id }, newOffer);
     const newOfferProof = {
       id: newOffer.id,
       subject: subject.id,
       offerSecret: newOffer.offerSecret,
     };
-    console.log(newOfferProof);
     return newOfferProof;
   };
   const createNewGrant = async (offerProof, deviceName, hostName) => {
-    console.log(offerProof);
     const { result: accessOffer } = await tables.accessOffers.get({ partition: offerProof.subject, sort: offerProof.id });
     if (!accessOffer)
       throw new Error(`No Offer found for proof "${offerProof.id}"`);
@@ -408,6 +405,15 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
     }))
     return { access };
   };
+  const revokeAccess = async (subjectId, accessId, selfId) => {
+    const self = await users.getUserById(selfId);
+    if (subjectId !== selfId && !self.adminId)
+      throw new Error(`Can\'t revoke Access for other users unless you are admin`);
+    const revocation = {
+      id: accessId
+    };
+    await tables.accessRevocations.set({ partition: subjectId, sort: accessId }, revocation);
+  }
 
   return {
     validateUserAccess,
@@ -415,6 +421,7 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
     createNewGrant,
     getAccess,
     listAccessGrants,
+    revokeAccess,
   };
 };
 

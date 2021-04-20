@@ -2,9 +2,9 @@
 /*:: import type { POSTEndpoint, DELETEEndpoint, GETEndpoint } from '@lukekaalim/api-models'; */
 /*:: import type { User, UserID } from '../user'; */
 /*:: import type { AccessOfferProof, AccessGrantProof } from '../tokens'; */
-/*:: import type { Access, AccessOffer, AccessGrant, AccessRevocation } from '../access'; */
+/*:: import type { Access, AccessOffer, AccessGrant, AccessRevocation, AccessID } from '../access'; */
 const { toString, castObject, toArray } = require('@lukekaalim/cast');
-const { toAccessOffer, toAccessGrant, toAccessRevocation, toAccess } = require('../access');
+const { toAccessOffer, toAccessGrant, toAccessRevocation, toAccess, toAccessId } = require('../access');
 const { toAccessOfferProof, toAccessGrantProof } = require('../tokens');
 const { toUserId, toUser } = require('../user');
 
@@ -54,13 +54,14 @@ const GETAccessList/*: GETEndpoint<
   })),
 };
 
-const POSTAccessRevoke/*: POSTEndpoint<{| subject: UserID |}, null, null>*/ = {
+const POSTAccessRevoke/*: POSTEndpoint<{| subject: UserID, accessId: AccessID |}, null, null>*/ = {
   method: 'POST',
   path: '/user/access/revoke',
   toQuery: () => null,
   toResponseBody: () => null,
   toRequestBody: castObject(prop => ({
     subject: prop('subject',  toUserId),
+    accessId: prop('accessId', toAccessId)
   })),
 };
 

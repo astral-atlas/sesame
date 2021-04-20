@@ -1,8 +1,8 @@
 {
   "superUser": {
     "type": "static",
-    "username": "dev_admin",
-    "password": "dev_password"
+    "username": "super_luke",
+    "password": "super_secret"
   },
   "port": 5543
 }

@@ -3,7 +3,7 @@
 /*:: import type { GETEndpoint, POSTEndpoint, PUTEndpoint, DELETEEndpoint } from '@lukekaalim/api-models'; */
 /*:: import type { User, UserID, Admin } from '../user'; */
 /*:: import type { Access } from '../access'; */
-const { toObject, toString, toArray, toNullable } = require('@lukekaalim/cast');
+const { toObject, toString, toArray, toNullable, castObject } = require('@lukekaalim/cast');
 const { toUser, toUserId, toAdmin } = require('../user');
 const { toAccess } = require('../access');
 
@@ -36,6 +36,17 @@ const POSTNewUser/*: POSTEndpoint<{| name: string |}, {| newUser: User |}, null>
       newUser: toUser(object.newUser),
     };
   },
+};
+const POSTNewAdmin/*: POSTEndpoint<{| subject: UserID |}, {| admin: Admin |}, null>*/ = {
+  method: 'POST',
+  path: '/admins',
+  toQuery: () => null,
+  toRequestBody: castObject(prop => ({
+    subject: prop('subject', toUserId),
+  })),
+  toResponseBody: castObject(prop => ({
+    admin: prop('admin', toAdmin)
+  })),
 };
 const GETUserById/*: GETEndpoint<{| user: User |}, {| userId: UserID |}>*/ = {
   method: 'GET',
@@ -70,4 +81,5 @@ module.exports = {
   GETUserList,
   GETUserById,
   POSTNewUser,
+  POSTNewAdmin,
 };
