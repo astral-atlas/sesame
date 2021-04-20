@@ -79,7 +79,6 @@ export const LoginForm = ()/*: Node*/  => {
   const onSuperuserSubmit = async (username, password) => {
     const authorizedClient = client.authorize({ authMode: 'super', username, password });
     const { self } = await authorizedClient.getSelfUser();
-    console.log(self);
     dispatch({ type: 'login', self, authentication: { type: 'super', username, password } });
   };
 

@@ -5,6 +5,35 @@ import { Homepage } from './pages/homepages';
 import { SesameClientProvider } from './context/sesameClient';
 import { ApplicationProvider } from './context/application';
 import { ManageUsersPage, manageUsersPath } from './pages/users';
+import { locationContext, LocationProvider } from './context/location';
+import { NavigationSidePane } from './components/navigation';
+import { useContext } from 'preact/hooks';
+
+const sesameClientProviderProps = {
+  baseURL: new URL('http://localhost:5543'),
+  accessGrantProof: null
+};
+
+const SesameProviders = ({ children }) =>
+  h(ApplicationProvider, {},
+    h(SesameClientProvider, sesameClientProviderProps,
+      h(LocationProvider, {},
+        children
+      )
+    )
+  )
+
+const SesameRouter = () => {
+  const { url } = useContext(locationContext);
+  switch (url.pathname) {
+    case '/':
+      return h(Homepage);
+    case manageUsersPath:
+      return h(ManageUsersPage);
+    default:
+      return null;
+  }
+};
 
 const SesamePage = ({ children }) => {
   const style = {
@@ -14,28 +43,23 @@ const SesamePage = ({ children }) => {
     flexDirection: 'column',
     alignItems: 'center',
   };
-  return h(ApplicationProvider, {},
-    h(SesameClientProvider, { baseURL: new URL('http://localhost:5543'), accessGrantProof: null },
-      h('span', { style }, [
-        h('header', {}, [
-          h('h1', {}, 'Astral Atlas - OpenSesame'),
-        ]),
-        children,
-      ])));
+  return h(SesameProviders, {},
+    h('span', { style }, [
+      h('header', {}, [
+        h('h1', {}, 'Astral Atlas - OpenSesame'),
+        h(NavigationSidePane),
+      ]),
+      children,
+    ])
+  );
 }
 
-const SesameWebsite = () => {
-  const url = new URL(location.href);
-  const path = url.pathname;
-  switch (path) {
-    case '/':
-      return h(SesamePage, {}, h(Homepage));
-    case manageUsersPath:
-      return h(SesamePage, {}, h(ManageUsersPage));
-    default:
-      return null;
-  }
-};
+const SesameWebsite = () =>
+  h(SesameProviders, {},
+    h(SesamePage, {},
+      h(SesameRouter)
+    )
+  );
 
 const main = () => {
   const root = document.body

@@ -20,7 +20,7 @@
     "@astral-atlas/sesame-client": "file:../client",
     "@astral-atlas/sesame-models": "file:../models",
     "@lukekaalim/cast": "^1.1.1",
-    "@lukekaalim/http-client": "^3.0.4",
+    "@lukekaalim/http-client": "^3.1.0",
     "preact": "^10.5.9"
   }
 }
