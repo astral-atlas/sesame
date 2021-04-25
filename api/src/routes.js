@@ -40,7 +40,7 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
       const ETag = createETagFromBody(response);
       const requestETagMatch = request.headers['if-none-match'];
       if (requestETagMatch && requestETagMatch === ETag)
-        return empty(statusCodes.notModifier);
+        return empty(statusCodes.notModified);
       const responseWithETag = {
         ...response,
         headers: ETag ? { ...response.headers, 'ETag': ETag } : response.headers,
