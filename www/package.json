@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npx rollup -c -w\" \"npx serve -s dist\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:build": "npx rollup -c -w",
+    "dev:serve": "npx serve -s dist",
+    "dev": "npx concurrently npm:dev:build npm:dev:serve"
   },
   "author": "",
   "license": "ISC",
@@ -13,8 +14,8 @@
     "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-html": "^0.2.3",
     "@rollup/plugin-node-resolve": "^11.2.1",
-    "concurrently": "^6.0.1",
-    "rollup": "^2.44.0"
+    "rollup": "^2.44.0",
+    "serve": "^11.3.2"
   },
   "dependencies": {
     "@astral-atlas/sesame-client": "file:../client",
