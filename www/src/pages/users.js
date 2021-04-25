@@ -36,6 +36,7 @@ export const ManageUsersPage = ()/*: Node*/ => {
     h(NavigationHeader),
     h('main', {}, [
       h(ContentIsland, {}, [
+        h('h2', {}, 'Users'),
         offerProof && h('pre', {}, offerProof),
         h('table', {}, [
           h('caption', {}, 'Users'),
