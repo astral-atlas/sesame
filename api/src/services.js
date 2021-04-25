@@ -442,10 +442,13 @@ const createAuthorizationService = (users/*: UserService*/, access/*: AccessServ
         return await users.getUserById(userId);
       }
       case 'basic': {
-        if (superUser && authorization.username === superUser.adminId && authorization.password === superUser.password) {
-          return await users.getUserById(authorization.username);
-        }
-        throw new Error();
+        if (!superUser)
+          throw new Error(`Superuser is not enabled on this server`);
+        if (authorization.username !== superUser.adminId)
+          throw new Error(`Superuser username does not match`);
+        if (authorization.password !== superUser.password)
+          throw new Error(`Superuser password does not match`);
+        return await users.getUserById(authorization.username);
       }
       case 'none':
         throw new Error('Authorization header expected')
