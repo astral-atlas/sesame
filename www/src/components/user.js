@@ -1,5 +1,5 @@
 // @flow strict
-/*:: import type { User, AccessGrant, Admin } from '@astral-atlas/sesame-models'; */
+/*:: import type { User, AccessGrant, Admin, Access } from '@astral-atlas/sesame-models'; */
 /*:: import type { Node } from 'preact'; */
 
 import { useAsync } from "../hooks/async";
@@ -14,23 +14,16 @@ export type Props = {|
   grant: ?AccessGrant,
   admin: ?Admin,
 |};
+
+export type AccessListProps = {|
+  allAccess: Access[],
+  currentAccess: null | Access,
+  onRevoke: Access => mixed,
+|};
+
 */
 
-export const AccessInfo = ()/*: Node*/ => {
-  const [refreshTime, setRefreshTime] = useState(Date.now());
-  const userClient = useUserSesameClient();
-  const [self] = useAsync(async () => userClient.getSelfUser(), [userClient]);
-  const [accessResponse] = useAsync(async () => userClient.getAccessForSelf(), [userClient, refreshTime]);
-  if (!accessResponse || !self)
-    return null;
-  const { access: currentAccess, self: selfUser } = self;
-  const { access: allAccess } = accessResponse;
-
-  const onRevokeClick = (access) => async () => {
-    await userClient.revokeAccess(selfUser.id, access.id);
-    setRefreshTime(Date.now())
-  };
-
+export const AccessList = ({ allAccess, currentAccess, onRevoke }/*: AccessListProps*/)/*: Node*/ => {
   return [
     h('ul', {},
       allAccess
@@ -58,36 +51,43 @@ export const AccessInfo = ()/*: Node*/ => {
         h('span', { class: 'collapse' }, [
           h('button', {
             class: 'access-info-revoke', disabled: currentAccess && currentAccess.id === a.id,
-            onClick: onRevokeClick(a),
+            onClick: () => onRevoke(a),
           }, 'Revoke'),
         ]),
       ]))
     ),
-/*
-    h('table', {}, [
-      h('thead', {}, h('tr', {}, [
-        h('th', {}, 'Access ID'),
-        h('th', {}, 'Device Name'),
-        h('th', {}, 'Host Name'),
-        h('th', {}, 'Revocation ID'),
-        h('th', {}, 'Actions'),
-      ])),
-      h('tbody', {}, allAccess.map(a => [
-        h('tr', {}, [
-          h('td', {}, a.id),
-          h('td', {}, a.grant && a.grant.deviceName),
-          h('td', {}, a.grant && a.grant.hostName),
-          h('td', {}, a.revocation && a.revocation.id),
-          h('td', {}, [
-            h('button', {}, 'Revoke'),
-          ]),
-        ])
-      ]))
-    ]),
-    */
-    h(SelfAccessForm, { setRefreshTime }),
   ];
 };
+
+/*::
+
+export type AccessInfoProps = {|
+  from?: number,
+
+|};
+*/
+
+export const AccessInfo = ({ from }/*: AccessInfoProps*/)/*: Node*/ => {
+  const [refreshTime, setRefreshTime] = useState(Date.now());
+  const userClient = useUserSesameClient();
+  const [self] = useAsync(async () => userClient.getSelfUser(), [userClient]);
+  const [accessResponse] = useAsync(async () => userClient.getAccessForSelf(), [userClient, refreshTime]);
+  if (!accessResponse || !self)
+    return null;
+  const { access: currentAccess, self: selfUser } = self;
+  const { access: allAccess } = accessResponse;
+
+  const onRevoke = async (access) => {
+    await userClient.revokeAccess(selfUser.id, access.id);
+    setRefreshTime(Date.now())
+  };
+
+  return [
+    h(SelfAccessForm, { setRefreshTime }),
+    h(AccessList, { allAccess, currentAccess, onRevoke }),
+  ];
+};
+
 export const SelfAccessForm = ({ setRefreshTime }/*: { setRefreshTime: number => void }*/)/*: Node*/ => {
   const userClient = useUserSesameClient();
   const [offerProof, setOfferProof] = useState(null);
