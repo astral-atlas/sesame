@@ -13,21 +13,20 @@ jobs:
         working-directory: api
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 15
-          registry-url: https://registry.npmjs.org/
+          node-version: '16'
       - run: npm ci install --production
       - name: Archive
         uses: thedoctor0/zip-release@master
         with:
-          filename: ../api.zip
+          filename: ../sesame-api.zip
           directory: api
           exclusions: '*.git*'
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
-          files: api.zip
+          files: sesame-api.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
