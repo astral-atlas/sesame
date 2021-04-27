@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:build": "npx rollup -c -w",
-    "dev:serve": "npx serve -s dist",
+    "build": "rollup -c",
+    "dev:build": "rollup -c -w",
+    "dev:serve": "serve -s dist",
     "dev": "npx concurrently npm:dev:build npm:dev:serve",
     "postversion": "../scripts/postversion.sh"
   },
