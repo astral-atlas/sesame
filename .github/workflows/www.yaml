@@ -1,0 +1,32 @@
+name: "Publish @astral-atlas/sesame-www"
+
+on:
+  push:
+    tags:
+      - '@astral-atlas/sesame-www@*'
+
+jobs:
+  release-api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: www
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm ci install
+      - run: npm run build
+      - name: Archive
+        uses: thedoctor0/zip-release@master
+        with:
+          filename: ../www.zip
+          directory: www/dist
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: www.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
