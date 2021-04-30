@@ -1,12 +1,14 @@
 {
   "name": "@astral-atlas/sesame-www",
-  "version": "1.0.0",
+  "version": "1.1.2",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:build": "npx rollup -c -w",
-    "dev:serve": "npx serve -s dist",
-    "dev": "npx concurrently npm:dev:build npm:dev:serve"
+    "build": "rollup -c",
+    "dev:build": "rollup -c -w",
+    "dev:serve": "serve -s dist",
+    "dev": "npx concurrently npm:dev:build npm:dev:serve",
+    "postversion": "../scripts/postversion.sh"
   },
   "author": "",
   "license": "ISC",
