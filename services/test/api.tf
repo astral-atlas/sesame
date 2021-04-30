@@ -9,13 +9,7 @@ data "aws_iam_instance_profile" "elastic_beanstalk_default" {
   name = "aws-elasticbeanstalk-ec2-role"
 }
 
-resource "immutable-elastic-beanstalk_application-version" "latest_version" {
-  application_name = aws_elastic_beanstalk_application.sesame-api.name
-  source_bucket = aws_s3_bucket.application_versions.bucket
-  archive_path = "1.0.4.zip"
-}
-
-resource "aws_elastic_beanstalk_application" "sesame-api" {
+resource "aws_elastic_beanstalk_application" "api" {
   name        = "sesame-api"
   description = "The API behind Astral Atlas's single sign on"
 
@@ -26,25 +20,50 @@ resource "aws_elastic_beanstalk_application" "sesame-api" {
   }
 }
 
-data "aws_elastic_beanstalk_solution_stack" "node" {
-  most_recent = true
-
-  name_regex = "^64bit Amazon Linux 2 v(.*) running Node.js 12$"
+resource "immutable-elastic-beanstalk_application-version" "latest" {
+  application_name = aws_elastic_beanstalk_application.api.name
+  source_bucket = aws_s3_bucket.application_versions.bucket
+  archive_path = "../../api-1.2.0-2.zip"
 }
 
-resource "aws_elastic_beanstalk_environment" "tfenvtest" {
-  name                = "tf-test-name"
-  application         = aws_elastic_beanstalk_application.sesame-api.name
-  solution_stack_name = data.aws_elastic_beanstalk_solution_stack.node.name
-  version_label       = immutable-elastic-beanstalk_application-version.latest_version.version_label
+resource "aws_elastic_beanstalk_environment" "api_test" {
+  name                = "sesame-api-test"
+  application         = aws_elastic_beanstalk_application.api.name
+  solution_stack_name = "64bit Amazon Linux 2 v5.3.1 running Node.js 14"
+  version_label = immutable-elastic-beanstalk_application-version.latest.version_label
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "IamInstanceProfile"
-    value     = data.aws_iam_instance_profile.elastic_beanstalk_default.arn
+    value     = "aws-elasticbeanstalk-ec2-role"
+  }
+  setting {
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs"
+    name      = "StreamLogs"
+    value     = true
+  }
+  setting {
+    namespace = "aws:elasticbeanstalk:cloudwatch:logs"
+    name      = "DeleteOnTerminate"
+    value     = true
   }
 }
 
-output "api-cname" {
-  value = aws_elastic_beanstalk_environment.tfenvtest.cname
+resource "aws_route53_record" "api" {
+  zone_id = data.aws_route53_zone.root.zone_id
+  name    = "api.sesame"
+  type    = "A"
+
+  alias {
+    name                   = aws_elastic_beanstalk_environment.api_test.cname
+    zone_id                = "Z2PCDNR3VC2G1N"
+    evaluate_target_health = false
+  }
+}
+
+output "api-origin-name" {
+  value = aws_elastic_beanstalk_environment.api_test.cname
+}
+output "api-public-name" {
+  value = "${aws_route53_record.api.name}.${data.aws_route53_zone.root.name}"
 }
