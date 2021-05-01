@@ -10,6 +10,10 @@ variable "release_tag" {
 variable "release_asset_name" {
   type = string
 }
+variable "output_directory" {
+  type = string
+  default = "./temp"
+}
 
 
 data "github_release" "example" {
@@ -35,8 +39,9 @@ data "external" "example" {
   program = ["bash", "${path.module}/http_file.sh"]
 
   query = {
+    directory = var.output_directory
     url = local.release_asset.browser_download_url
-    file = abspath(local.release_asset.name)
+    file = local.release_asset.name
   }
 }
 
@@ -44,5 +49,5 @@ output "release_asset" {
   value = local.release_asset
 }
 output "output_file" {
-  value = abspath(local.release_asset.name)
+  value = abspath(data.external.example.result.file)
 }

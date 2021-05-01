@@ -17,6 +17,24 @@ locals {
   }
 }
 
+module "github_release" {
+  source = "../modules/github_release"
+  owner = "astral-atlas"
+  repository = "sesame"
+  release_tag = "@astral-atlas/sesame-www@1.2.0"
+  release_asset_name = "sesame-www.zip"
+  output_directory = "./temp"
+}
+
+data "external" "unzip" {
+  program = ["bash", "${path.module}/unzip.sh"]
+
+  query = {
+    zip_file = module.github_release.output_file
+    output_directory = "./temp/www"
+  }
+}
+
 resource "aws_s3_bucket_object" "www_objects" {
   for_each = local.www_objects
   bucket = aws_s3_bucket.www_test.bucket
@@ -25,10 +43,30 @@ resource "aws_s3_bucket_object" "www_objects" {
   content_type = each.value
 
   acl = "public-read"
-  source = "../../www/dist/${each.key}"
-  etag = filemd5("../../www/dist/${each.key}")
+  source = "${data.external.unzip.result.output_directory}/${each.key}"
+  etag = filemd5("${data.external.unzip.result.output_directory}/${each.key}")
 }
 
+locals {
+  www_config = {
+    api: {
+      sesame: {
+        baseURL: "api.sesame.astral-atlas.com"
+      }
+    }
+  }
+}
+
+resource "aws_s3_bucket_object" "www_config" {
+  bucket = aws_s3_bucket.www_test.bucket
+
+  key    = "config.json5"
+  content_type = "application/json5"
+
+  acl = "public-read"
+  content = jsonencode(local.www_config)
+  etag = md5(jsonencode(local.www_config))
+}
 
 resource "aws_route53_record" "www" {
   zone_id = data.aws_route53_zone.root.zone_id
