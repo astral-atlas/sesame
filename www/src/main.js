@@ -1,5 +1,6 @@
 // @flow strict
 import 'preact/debug';
+import JSON5 from 'json5';
 import { h, render } from 'preact';
 import { Homepage } from './pages/homepages';
 import { SesameClientProvider } from './context/sesameClient';
@@ -12,14 +13,9 @@ import { ProfilePage } from './pages/profile';
 import { AccessPage } from './pages/access';
 import { ManageUsersPage } from './pages/users';
 
-const sesameClientProviderProps = {
-  baseURL: new URL('http://localhost:5543'),
-  accessGrantProof: null
-};
-
-const SesameProviders = ({ children }) =>
+const SesameProviders = ({ config, children }) =>
   h(ApplicationProvider, {},
-    h(SesameClientProvider, sesameClientProviderProps,
+    h(SesameClientProvider, { baseURL: new URL(config.api.sesame.baseURL) },
       h(LocationProvider, {},
         children
       )
@@ -47,14 +43,16 @@ const SesameRouter = () => {
   }
 };
 
-const SesameWebsite = () => h(SesameProviders, {}, h(SesameRouter));
+const SesameWebsite = ({ config }) => h(SesameProviders, { config }, h(SesameRouter));
 
-const main = () => {
+const main = async () => {
+  const configResponse = await fetch('/config.json5');
+  const config = JSON5.parse(await configResponse.text());
   const root = document.body
   if (!root)
     return;
   insertStyleElement();
-  render(h(SesameWebsite), root)
+  render(h(SesameWebsite, { config }), root)
 };
 
 main();

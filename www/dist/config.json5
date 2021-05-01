@@ -1,0 +1,8 @@
+{
+  api: {
+    sesame: {
+      // Only for local development
+      baseURL: 'http://localhost:5543' 
+    }
+  }
+}

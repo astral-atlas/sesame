@@ -18,11 +18,10 @@ export const sesameClientContext/*: Context<{
 export type Props = {|
   children: Node,
   baseURL: URL,
-  accessGrantProof: ?AccessGrantProof,
 |};
 */
 
-const createClients = (authentication, baseURL, self) => {
+const createClients = (authentication, baseURL) => {
   const http = createWebClient(fetch);
   const guest = createGuestSesameClient({ baseURL, http });
   switch (authentication.type) {
@@ -47,8 +46,7 @@ const createClients = (authentication, baseURL, self) => {
 };
 
 export const SesameClientProvider = ({ children, baseURL }/*: Props*/)/*: Node*/ => {
-  const http = createWebClient(fetch);
-  const { appState: { authentication, self } } = useContext(applicationContext);
-  const clients = createClients(authentication, baseURL, self);
+  const { appState: { authentication } } = useContext(applicationContext);
+  const clients = createClients(authentication, baseURL );
   return h(sesameClientContext.Provider, { value: clients }, children);
 };
