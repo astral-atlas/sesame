@@ -11,7 +11,8 @@
     "scripts": {
         "dev:www": "cd www; npm run dev",
         "dev:api": "cd api; npm run dev",
-        "dev": "npx concurrently npm:dev:www npm:dev:api"
+        "dev:example-service": "cd example-service; npm run dev",
+        "dev": "npx concurrently npm:dev:*"
     },
     "devDependencies": {
         "concurrently": "^6.0.2",
