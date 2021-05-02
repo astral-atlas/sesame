@@ -51,7 +51,7 @@ locals {
   www_config = {
     api: {
       sesame: {
-        baseURL: "api.sesame.astral-atlas.com"
+        baseURL: "http://api.sesame.astral-atlas.com"
       }
     }
   }
