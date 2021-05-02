@@ -1,0 +1,14 @@
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script type="module">
+      const button = document.getElementById('button');
+      button.addEventListener('click', () => window.parent.postMessage(localStorage.getItem('sesame_application'), '*'));
+    </script>
+  </head>
+  <body>
+    <button id="button">Authorize!</button>
+  </body>
+</html>
