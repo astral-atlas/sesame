@@ -11,7 +11,7 @@ export const AccessPage = ()/*: Node*/ => {
     h('main', {}, [
       h(ContentIsland, {}, [
         h('h2', {}, 'Access'),
-        h(AccessInfo)
+        h(AccessInfo, {})
       ]),
     ])
   ];

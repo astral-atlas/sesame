@@ -12,6 +12,7 @@ import { allPages } from './pages';
 import { ProfilePage } from './pages/profile';
 import { AccessPage } from './pages/access';
 import { ManageUsersPage } from './pages/users';
+import { FramePage } from './pages/frame';
 
 const SesameProviders = ({ config, children }) =>
   h(ApplicationProvider, {},
@@ -26,14 +27,12 @@ const SesameRouter = () => {
   const { url } = useContext(locationContext);
   const { appState: { self } } = useContext(applicationContext);
   
-  const page = allPages.find(page => page.path === url.pathname);
-  if (!page)
-    return h('p', {}, '404 Not Found!');
-  
-  switch (page.path) {
+  switch (url.pathname) {
     default:
     case '/':
       return h(Homepage);
+    case '/frame':
+      return h(FramePage);
     case '/access':
       return h(AccessPage);
     case '/profile':
