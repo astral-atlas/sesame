@@ -12,7 +12,7 @@
     "scripts": {
         "dev:www": "cd www; npm run dev",
         "dev:api": "cd api; npm run dev",
-        "dev:example-service": "cd example-app; npm run dev",
+        "dev:ex-app": "cd example-app; npm run dev",
         "dev": "npx concurrently npm:dev:*"
     },
     "devDependencies": {
