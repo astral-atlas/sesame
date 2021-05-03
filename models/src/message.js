@@ -3,7 +3,7 @@
 /*:: import type { AccessOfferProof } from './tokens'; */
 
 import { castObject, toConstant, toNullable, toObject, toString } from "@lukekaalim/cast";
-import { toAccessOfferProof } from "./tokens";
+import { toAccessOfferProof } from "./tokens.js";
 
 /*::
 export type WWWMessage =
