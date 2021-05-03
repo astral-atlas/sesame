@@ -5,9 +5,6 @@ resource "aws_s3_bucket" "application_versions" {
 data "aws_iam_role" "beanstalk_service" {
   name = "aws-elasticbeanstalk-service-role"
 }
-data "aws_iam_instance_profile" "elastic_beanstalk_default" {
-  name = "aws-elasticbeanstalk-ec2-role"
-}
 
 resource "aws_elastic_beanstalk_application" "api" {
   name        = "sesame-api"
