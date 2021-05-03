@@ -11,8 +11,7 @@
   "author": "Luke Kaalim",
   "license": "MIT",
   "dependencies": {
-    "@astral-atlas/sesame-models": "../models",
-    "@lukekaalim/api-models": "^1.0.0",
+    "@astral-atlas/sesame-models": "^7.0.0",
     "@lukekaalim/cast": "^1.0.0",
     "@lukekaalim/test": "^8.1.0"
   },
