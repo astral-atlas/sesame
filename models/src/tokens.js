@@ -2,10 +2,10 @@
 /*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
 /*:: import type { UserID } from './user'; */
 /*:: import type { AccessID} from './access'; */
-const { toObject, toString, toNumber, toBoolean, toEnum, stringify, parse } = require('@lukekaalim/cast');
-const { toUserId } = require('./user');
-const { toBase64, fromBase64 } = require('./base64');
-const { toAccessId } = require('./access');
+import { toObject, toString, toNumber, toBoolean, toEnum, stringify, parse } from '@lukekaalim/cast';
+import { toUserId } from './user.js';
+import { toBase64, fromBase64 } from './base64.js';
+import { toAccessId } from './access.js';
 
 /*::
 export type AccessOfferProof = {|
@@ -19,7 +19,7 @@ export type AccessGrantProof = {|
   grantSecret: string,
 |};
 */
-const toAccessOfferProof/*: Cast<AccessOfferProof>*/ = (value) => {
+export const toAccessOfferProof/*: Cast<AccessOfferProof>*/ = (value) => {
   const object = toObject(value);
   return {
     subject: toUserId(object.subject),
@@ -27,7 +27,7 @@ const toAccessOfferProof/*: Cast<AccessOfferProof>*/ = (value) => {
     offerSecret: toString(object.offerSecret),
   };
 };
-const toAccessGrantProof/*: Cast<AccessGrantProof>*/ = (value) => {
+export const toAccessGrantProof/*: Cast<AccessGrantProof>*/ = (value) => {
   const object = toObject(value);
   return {
     subject: toUserId(object.subject),
@@ -43,7 +43,7 @@ export type Encoder<T> = {
   decode: string => T,
 };
 */
-const createJSONBase64Encoder = /*:: <T: JSONValue>*/(toDecoded/*: Cast<T>*/)/*: Encoder<T>*/ => {
+export const createJSONBase64Encoder = /*:: <T: JSONValue>*/(toDecoded/*: Cast<T>*/)/*: Encoder<T>*/ => {
   const encode = (value) => {
     return toBase64(stringify(value));
   };
@@ -56,13 +56,6 @@ const createJSONBase64Encoder = /*:: <T: JSONValue>*/(toDecoded/*: Cast<T>*/)/*:
   };
 };
 
-const accessOfferProofEncoder/*: Encoder<AccessOfferProof>*/ = createJSONBase64Encoder(toAccessOfferProof);
-const accessGrantProofEncoder/*: Encoder<AccessGrantProof>*/ = createJSONBase64Encoder(toAccessGrantProof);
+export const accessOfferProofEncoder/*: Encoder<AccessOfferProof>*/ = createJSONBase64Encoder(toAccessOfferProof);
+export const accessGrantProofEncoder/*: Encoder<AccessGrantProof>*/ = createJSONBase64Encoder(toAccessGrantProof);
 
-
-module.exports = {
-  toAccessOfferProof,
-  toAccessGrantProof,
-  accessOfferProofEncoder,
-  accessGrantProofEncoder,
-};

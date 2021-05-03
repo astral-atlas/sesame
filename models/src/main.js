@@ -7,9 +7,7 @@ export type * from './api';
 export type * from './access';
 */
 
-module.exports = {
-  ...require('./tokens'),
-  ...require('./user'),
-  ...require('./api'),
-  ...require('./access'),
-}
+export * from './tokens.js';
+export * from './user.js';
+export * from './api.js';
+export * from './access.js';

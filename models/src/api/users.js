@@ -3,11 +3,11 @@
 /*:: import type { GETEndpoint, POSTEndpoint, PUTEndpoint, DELETEEndpoint } from '@lukekaalim/api-models'; */
 /*:: import type { User, UserID, Admin } from '../user'; */
 /*:: import type { Access } from '../access'; */
-const { toObject, toString, toArray, toNullable, castObject } = require('@lukekaalim/cast');
-const { toUser, toUserId, toAdmin } = require('../user');
-const { toAccess } = require('../access');
+import { toObject, toString, toArray, toNullable, castObject } from '@lukekaalim/cast';
+import { toUser, toUserId, toAdmin } from '../user.js';
+import { toAccess } from '../access.js';
 
-const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null, access: null | Access |}, null>*/ = {
+export const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null, access: null | Access |}, null>*/ = {
   method: 'GET',
   path: '/users/self',
   toQuery: () => null,
@@ -20,7 +20,7 @@ const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null, access: null | 
     };
   }, 
 };
-const POSTNewUser/*: POSTEndpoint<{| name: string |}, {| newUser: User |}, null>*/ = {
+export const POSTNewUser/*: POSTEndpoint<{| name: string |}, {| newUser: User |}, null>*/ = {
   method: 'POST',
   path: '/users',
   toQuery: () => null,
@@ -37,7 +37,7 @@ const POSTNewUser/*: POSTEndpoint<{| name: string |}, {| newUser: User |}, null>
     };
   },
 };
-const POSTNewAdmin/*: POSTEndpoint<{| subject: UserID |}, {| admin: Admin |}, null>*/ = {
+export const POSTNewAdmin/*: POSTEndpoint<{| subject: UserID |}, {| admin: Admin |}, null>*/ = {
   method: 'POST',
   path: '/admins',
   toQuery: () => null,
@@ -48,7 +48,7 @@ const POSTNewAdmin/*: POSTEndpoint<{| subject: UserID |}, {| admin: Admin |}, nu
     admin: prop('admin', toAdmin)
   })),
 };
-const GETUserById/*: GETEndpoint<{| user: User |}, {| userId: UserID |}>*/ = {
+export const GETUserById/*: GETEndpoint<{| user: User |}, {| userId: UserID |}>*/ = {
   method: 'GET',
   path: '/users/byId',
   toQuery: (value) => {
@@ -64,7 +64,7 @@ const GETUserById/*: GETEndpoint<{| user: User |}, {| userId: UserID |}>*/ = {
     };
   }
 };
-const GETUserList/*: GETEndpoint<{| users: User[] |}, null>*/ = {
+export const GETUserList/*: GETEndpoint<{| users: User[] |}, null>*/ = {
   method: 'GET',
   path: '/users',
   toQuery: () => null,
@@ -74,12 +74,4 @@ const GETUserList/*: GETEndpoint<{| users: User[] |}, null>*/ = {
       users: toArray(object.users).map(toUser),
     };
   }
-};
-
-module.exports = {
-  GETSelf,
-  GETUserList,
-  GETUserById,
-  POSTNewUser,
-  POSTNewAdmin,
 };

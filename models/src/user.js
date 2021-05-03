@@ -1,6 +1,6 @@
 // @flow strict
 /*:: import type { Cast } from '@lukekaalim/cast'; */
-const { toObject, toString } = require('@lukekaalim/cast');
+import { toObject, toString } from '@lukekaalim/cast';
 
 /*::
 export type UserID = string;
@@ -11,8 +11,8 @@ export type User = {|
   creatorAdminId: null | AdminID,
 |};
 */
-const toUserId/*: Cast<UserID>*/ = toString;
-const toUser/*: Cast<User>*/ = (value) => {
+export const toUserId/*: Cast<UserID>*/ = toString;
+export const toUser/*: Cast<User>*/ = (value) => {
   const object = toObject(value);
   return {
     id: toUserId(object.id),
@@ -29,18 +29,11 @@ export type Admin = {|
   userId: UserID,
 |};
 */
-const toAdminId/*: Cast<AdminID>*/ = toString;
-const toAdmin/*: Cast<Admin>*/ = (value) => {
+export const toAdminId/*: Cast<AdminID>*/ = toString;
+export const toAdmin/*: Cast<Admin>*/ = (value) => {
   const object = toObject(value);
   return {
     id: toAdminId(object.id),
     userId: toUserId(object.userId),
   };
-};
-
-module.exports = {
-  toUserId,
-  toUser,
-  toAdminId,
-  toAdmin,
 };

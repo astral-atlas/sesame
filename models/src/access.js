@@ -1,8 +1,8 @@
 // @flow strict
 /*:: import type { UserID } from './user'; */
 /*:: import type { Cast } from '@lukekaalim/cast'; */
-const { toObject, toString, toNullable, fromObject, castObject } = require('@lukekaalim/cast');
-const { toUserId } = require('./user');
+import { toObject, toString, toNullable, fromObject, castObject } from '@lukekaalim/cast';
+import { toUserId } from './user.js';
 
 /*::
 export type AccessID = string;
@@ -32,15 +32,15 @@ export type AccessRevocation = {|
 |};
 */
 
-const toAccessId/*: Cast<AccessID>*/ = toString;
-const toAccess/*: Cast<Access>*/ = castObject(prop => ({
+export const toAccessId/*: Cast<AccessID>*/ = toString;
+export const toAccess/*: Cast<Access>*/ = castObject(prop => ({
   id: prop('id', toAccessId),
   offer: prop('offer', toAccessOffer),
   grant: prop('grant', v => toNullable(v, toAccessGrant)),
   revocation: prop('revocation', v => toNullable(v, toAccessRevocation))
 }));
 
-const toAccessOffer/*: Cast<AccessOffer>*/ = (value) => {
+export const toAccessOffer/*: Cast<AccessOffer>*/ = (value) => {
   const object = toObject(value)
   return {
     id: toAccessId(object.id),
@@ -50,7 +50,7 @@ const toAccessOffer/*: Cast<AccessOffer>*/ = (value) => {
   }
 };
 
-const toAccessGrant/*: Cast<AccessGrant>*/ = (value) => {
+export const toAccessGrant/*: Cast<AccessGrant>*/ = (value) => {
   const object = toObject(value)
   return {
     id: toAccessId(object.id),
@@ -60,17 +60,9 @@ const toAccessGrant/*: Cast<AccessGrant>*/ = (value) => {
   }
 };
 
-const toAccessRevocation/*: Cast<AccessRevocation>*/ = (value) => {
+export const toAccessRevocation/*: Cast<AccessRevocation>*/ = (value) => {
   const object = toObject(value)
   return {
     id: toAccessId(object.id),
   }
 };
-
-module.exports = {
-  toAccessId,
-  toAccess,
-  toAccessOffer,
-  toAccessGrant,
-  toAccessRevocation,
-}

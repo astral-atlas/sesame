@@ -3,6 +3,7 @@
   "version": "6.1.0",
   "description": "User and Identity data structures and converters for Astral Atlas",
   "main": "src/main.js",
+  "type": "module",
   "author": "luke@kaal.im",
   "license": "MIT",
   "scripts": {

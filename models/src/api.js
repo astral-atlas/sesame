@@ -1,8 +1,8 @@
 // @flow strict
+import * as users from './api/users.js';
+import * as access from './api/access.js';
 
-module.exports = {
-  api: {
-    ...require('./api/users'),
-    ...require('./api/access'),
-  }
+export const api = {
+  ...users,
+  ...access,
 };

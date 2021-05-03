@@ -3,12 +3,12 @@
 /*:: import type { User, UserID } from '../user'; */
 /*:: import type { AccessOfferProof, AccessGrantProof } from '../tokens'; */
 /*:: import type { Access, AccessOffer, AccessGrant, AccessRevocation, AccessID } from '../access'; */
-const { toString, castObject, toArray } = require('@lukekaalim/cast');
-const { toAccessOffer, toAccessGrant, toAccessRevocation, toAccess, toAccessId } = require('../access');
-const { toAccessOfferProof, toAccessGrantProof } = require('../tokens');
-const { toUserId, toUser } = require('../user');
+import { toString, castObject, toArray } from '@lukekaalim/cast';
+import { toAccess, toAccessId } from '../access.js';
+import { toAccessOfferProof, toAccessGrantProof } from '../tokens.js';
+import { toUserId, toUser } from '../user.js';
 
-const POSTCreateAccessOffer/*: POSTEndpoint<
+export const POSTCreateAccessOffer/*: POSTEndpoint<
   {| subject: UserID |},
   {| offerProof: AccessOfferProof |}, null
 >*/ = {
@@ -23,7 +23,7 @@ const POSTCreateAccessOffer/*: POSTEndpoint<
   })),
 };
 
-const POSTAcceptAccess/*: POSTEndpoint<
+export const POSTAcceptAccess/*: POSTEndpoint<
   {| deviceName: string, offerProof: AccessOfferProof |},
   {| grantProof: AccessGrantProof, user: User |}, null
 >*/ = {
@@ -40,7 +40,7 @@ const POSTAcceptAccess/*: POSTEndpoint<
   })),
 };
 
-const GETAccessList/*: GETEndpoint<
+export const GETAccessList/*: GETEndpoint<
   {| access: Access[] |},
   {| subject: UserID |}
 >*/ = {
@@ -54,7 +54,7 @@ const GETAccessList/*: GETEndpoint<
   })),
 };
 
-const POSTAccessRevoke/*: POSTEndpoint<{| subject: UserID, accessId: AccessID |}, null, null>*/ = {
+export const POSTAccessRevoke/*: POSTEndpoint<{| subject: UserID, accessId: AccessID |}, null, null>*/ = {
   method: 'POST',
   path: '/user/access/revoke',
   toQuery: () => null,
@@ -63,11 +63,4 @@ const POSTAccessRevoke/*: POSTEndpoint<{| subject: UserID, accessId: AccessID |}
     subject: prop('subject',  toUserId),
     accessId: prop('accessId', toAccessId)
   })),
-};
-
-module.exports = {
-  POSTCreateAccessOffer,
-  POSTAcceptAccess,
-  GETAccessList,
-  POSTAccessRevoke,
 };

@@ -1,6 +1,6 @@
 // @flow strict
-const { } = require('..');
-const { assert, colorReporter, exitCodeReporter } = require('@lukekaalim/test');
+import './main.js';
+import { assert, colorReporter, exitCodeReporter } from '@lukekaalim/test';
 
 const test = async () => {
   const assertion = assert('@astral-atlas/sesame-models', [
