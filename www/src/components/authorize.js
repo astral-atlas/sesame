@@ -14,7 +14,7 @@ export const authorizationFormStyles = `
   background-color: #9d3b4d;
   width: 100%;
   height: 100%;
-  padding: 32px;
+  padding: 16px;
   color: white;
   box-sizing: border-box;
   display: flex;
