@@ -2,8 +2,8 @@ name: "Publish Sesame Services"
 
 on:
   push:
-    tags:
-      - 'services/test@*'
+    paths:
+      - 'services/*'
 
 jobs:
   publish-test-service:
