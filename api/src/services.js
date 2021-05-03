@@ -10,17 +10,18 @@
 /*:: import type { Authorization, HTTPHeaders } from '@lukekaalim/server'; */
 /*:: import type { SesameAPIConfig } from './config'; */
 /*:: import type { SuperUser } from './models'; */
-const { v4: uuid } = require('uuid');
-const { dirname } = require('path');
-const { writeFile, readFile, mkdir } = require('fs').promises;
-const { async: asyncCryptoString } = require('crypto-random-string');
-const { toObject, toString, toArray, parse, stringify, toTuple } = require('@lukekaalim/cast');
-const {
+import { v4 as uuid } from 'uuid';
+import { dirname } from 'path';
+import { promises } from 'fs';
+import { async as asyncCryptoString } from 'crypto-random-string';
+import { toString, toArray, toTuple } from '@lukekaalim/cast';
+import {
   toAdmin, toUser,
   toAccessGrant, toAccessOffer, toAccessRevocation, accessGrantProofEncoder, toAccessId,
-} = require('@astral-atlas/sesame-models');
-const { getSuperUser } = require('./config');
-const { getAuthorization } = require('@lukekaalim/server/src/authorization');
+} from '@astral-atlas/sesame-models';
+import { getSuperUser } from './config.js';
+import { getAuthorization } from '@lukekaalim/server';
+const { writeFile, readFile, mkdir } = promises;
 
 /*::
 
@@ -483,7 +484,7 @@ export type Services = {
 };
 */
 
-const createServices = async (config/*: SesameAPIConfig*/)/*: Promise<Services>*/ => {
+export const createServices = async (config/*: SesameAPIConfig*/)/*: Promise<Services>*/ => {
   const superUser = getSuperUser(config);
   const tables = await createTableServices();
   const user = createUserService(tables, superUser);
@@ -496,8 +497,4 @@ const createServices = async (config/*: SesameAPIConfig*/)/*: Promise<Services>*
     auth,
     user
   };
-};
-
-module.exports = {
-  createServices,
 };

@@ -4,6 +4,7 @@
   "private": true,
   "description": "Identity Service API for Astral Atlas",
   "main": "src/main.js",
+  "type": "module",
   "scripts": {
     "dev": "npx nodemon src/main.js dev-config.json",
     "start": "node src/main.js dev-config.json",

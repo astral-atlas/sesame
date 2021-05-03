@@ -1,10 +1,10 @@
 // @flow strict
-const { createServer } = require('http');
-const { router } = require('@lukekaalim/server');
-const { createRoutes } = require('./routes');
-const { createServices } = require('./services');
+import { createServer } from 'http';
+import { router } from '@lukekaalim/server';
+import { createRoutes } from './routes.js';
+import { createServices } from './services.js';
 
-const { readConfig } = require('./config');
+import { readConfig } from './config.js';
 
 const main = async (configPath) => {
   try {

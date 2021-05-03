@@ -3,20 +3,11 @@
 /*:: import type { JSONValue } from '@lukekaalim/cast'; */
 /*:: import type { Services } from './services'; */
 /*:: import type { Admin, User } from './models'; */
-const { createHash } = require('crypto');
-const { api: { GETSelf } } = require('@astral-atlas/sesame-models');
-const { api, toPOSTUserRequest, toPOSTLoginRequest, toPOSTAdminRequest, toPUTUserRequest } = require('./models');
-const { toObject, toString, parse } = require('@lukekaalim/cast');
-const { resource, readJSONBody, getContent, application, empty, statusCodes, createGETHandler, createPOSTHandler } = require('@lukekaalim/server');
-const { getAuthorization } = require('@lukekaalim/server/src/authorization');
-const { createPUTHandler } = require('@lukekaalim/server/src/endpoint');
-const { readStream } = require('@lukekaalim/server/src/stream');
+import { createHash } from 'crypto';
+import { api } from '@astral-atlas/sesame-models';
+import server from '@lukekaalim/server';
+const { resource, application, empty, statusCodes, createGETHandler, createPOSTHandler } = server;
 
-const options = {
-  allowedOrigins: { type: 'wildcard' },
-  authorized: true,
-  cacheSeconds: 600,
-};
 const { ok, created, internalServerError } = statusCodes;
 
 const createETagFromBody = (response) => {
@@ -33,7 +24,7 @@ const createETagFromBody = (response) => {
   return hash.digest('hex');
 }
 
-const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
+export const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
   const withRouteMiddleware = (handler/*: RouteHandler*/)/*: RouteHandler*/ => async (request) => {
     try {
       const response =  await handler(request);
@@ -127,70 +118,4 @@ const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
     ...accessRevoke,
     ...admins,
   ];
-  /*
-  const users = resource({ path: '/users', methods: {
-    GET: createAdminHandler(async ({}, user, admin) => {
-      const users = await services.user.listSomeUsers();
-      return application.json(ok, { users });
-    }),
-    POST: createAdminHandler(async ({ headers, incoming }, user, admin) => {
-      const userRequestBody = toPOSTUserRequest(await readJSONBody(incoming, getContent(headers)));
-      const newUser = await services.user.createUser(userRequestBody.name, admin.id);
-      return application.json(created, { newUser });
-    }),
-  }});
-  const admins = resource({ path: '/admins', methods: {
-    POST: createAdminHandler(async ({ headers, incoming }, user, admin) => {
-      const adminRequestBody = toPOSTAdminRequest(await readJSONBody(incoming, getContent(headers)));
-      const newAdmin = await services.user.createAdmin(adminRequestBody.userId);
-      return application.json(created, { newAdmin });
-    }),
-  }});
-  const loginGrants = resource({ path: '/grants/login', methods: {
-    POST: createUserHandler(async ({ headers, incoming }, user) => {
-      const loginRequestBody = toPOSTLoginRequest(await readJSONBody(incoming, getContent(headers)));
-      const loginToken = await services.access.createNewLogin(user.id, loginRequestBody.subjectId);
-      return application.json(created, { loginToken });
-    }),
-  }});
-  const accessGrants = resource({ path: '/grants/access', methods: {
-    POST: createSesameHandler(async ({ headers, incoming }) => {
-      const accessRequestBody = toPOSTAccessRequest(await readJSONBody(incoming, getContent(headers)));
-      const accessToken = await services.access.createNewAccess(accessRequestBody.loginToken, accessRequestBody.deviceName, headers['origin'] || null);
-      return application.json(created, { accessToken });
-    }),
-  }});
-  const tables = resource({ path: '/tables', methods: {
-    GET: createAdminHandler(async ({ query }, user, admin) => {
-      const getTable = () => {
-        switch (query.get('tableName')) {
-          case 'users':
-            return services.tables.users;
-          case 'grants/login':
-            return services.tables.loginGrants;
-          case 'grants/access':
-            return services.tables.accessGrants;
-          default:
-            throw new Error();
-        }
-      };
-      const table = getTable();
-      const { result: tableContents } = await table.scan();
-      return application.json(ok, { tableContents });
-    }),
-  }})
-
-  return [
-    ...loginGrants,
-    ...accessGrants,
-    ...self,
-    ...admins,
-    ...users,
-    ...tables,
-  ];
-  */
-};
-
-module.exports = {
-  createRoutes,
 };

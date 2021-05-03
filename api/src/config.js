@@ -1,8 +1,10 @@
 // @flow strict
 /*:: import type { UserID, AdminID } from '@astral-atlas/sesame-models'; */
 /*:: import type { Cast } from '@lukekaalim/cast'; */
-const { readFile } = require('fs').promises;
-const { toObject, toString, toNumber } = require('@lukekaalim/cast');
+import { promises } from 'fs';
+import { toObject, toString, toNumber } from '@lukekaalim/cast';
+const { readFile } = promises;
+
 
 /*::
 export type SuperUser = {
@@ -32,7 +34,7 @@ export type SesameAPIConfig = {|
 |};
 */
 
-const toStaticSuperUser/*: Cast<StaticSuperUser>*/ = (value) => {
+export const toStaticSuperUser/*: Cast<StaticSuperUser>*/ = (value) => {
   const object = toObject(value);
   return {
     type: 'static',
@@ -42,7 +44,7 @@ const toStaticSuperUser/*: Cast<StaticSuperUser>*/ = (value) => {
   }
 };
 
-const toSuperUserConfig/*: Cast<SuperUserConfig>*/ = (value) => {
+export const toSuperUserConfig/*: Cast<SuperUserConfig>*/ = (value) => {
   const object = toObject(value);
   switch (toString(object.type)) {
     case 'static':
@@ -56,7 +58,7 @@ const toSuperUserConfig/*: Cast<SuperUserConfig>*/ = (value) => {
   }
 };
 
-const getSuperUser = ({ superUser }/*: SesameAPIConfig*/)/*: ?SuperUser*/ => {
+export const getSuperUser = ({ superUser }/*: SesameAPIConfig*/)/*: ?SuperUser*/ => {
   switch (superUser.type) {
     case 'static':
       return {
@@ -76,7 +78,7 @@ const getSuperUser = ({ superUser }/*: SesameAPIConfig*/)/*: ?SuperUser*/ => {
   }
 };
 
-const toSesameAPIConfig/*: Cast<SesameAPIConfig>*/ = (value) => {
+export const toSesameAPIConfig/*: Cast<SesameAPIConfig>*/ = (value) => {
   const object = toObject(value);
   
   return {
@@ -85,15 +87,9 @@ const toSesameAPIConfig/*: Cast<SesameAPIConfig>*/ = (value) => {
   }
 };
 
-const readConfig = async (path/*: string*/ = './sesame_config.json')/*: Promise<SesameAPIConfig>*/ => {
+export const readConfig = async (path/*: string*/ = './sesame_config.json')/*: Promise<SesameAPIConfig>*/ => {
   console.log(`Reading "${path}"`)
   const configFileContents = await readFile(path, 'utf8');
   const sesameConfig = toSesameAPIConfig(JSON.parse(configFileContents));
   return sesameConfig;
-};
-
-module.exports = {
-  readConfig,
-  getSuperUser,
-  toSesameAPIConfig,
 };

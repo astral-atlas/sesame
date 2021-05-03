@@ -2,8 +2,8 @@
 /*:: import type { Cast } from '@lukekaalim/cast'; */
 /*:: import type { UserID, AdminID } from '@astral-atlas/sesame-models'; */
 /*:: export type * from '@astral-atlas/sesame-models'; */
-const { toUserId, toAdminId } = require('@astral-atlas/sesame-models');
-const { toObject, toString, stringify } = require('@lukekaalim/cast');
+import { toUserId, toAdminId } from '@astral-atlas/sesame-models';
+import { toObject, toString, stringify } from '@lukekaalim/cast';
 
 /*::
 export type SuperUser = {
