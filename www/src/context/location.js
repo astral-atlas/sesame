@@ -2,7 +2,7 @@
 /*:: import type { Context, Node } from 'preact'; */
 /*:: import type { Updater } from 'preact/hooks'; */
 import { createContext, h } from "preact";
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 
 /*::
 export type Location = {|
@@ -29,6 +29,13 @@ export const LocationProvider = ({
   initialURL = new URL(document.location.href)
 }/*: LocationProviderProps*/)/*: Node*/ => {
   const [currentLocationURL, setCurrentLocationURL] = useState/*:: <URL>*/(initialURL);
+  useEffect(() => {
+    const onPopState = (event) => {
+      setCurrentLocationURL(new URL(document.location.href));
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener(onPopState);
+  }, []);
   const navigate = (value) => {
     setCurrentLocationURL(value);
     history.pushState(null, '', value.href);
