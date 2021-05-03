@@ -1,17 +1,20 @@
 {
   "name": "@astral-atlas/sesame-client",
   "version": "0.2.0",
+  "type": "module",
   "description": "Client for making sesame-api requests",
   "main": "src/main.js",
   "scripts": {
-    "postversion": "../scripts/postversion.sh"
+    "postversion": "../scripts/postversion.sh",
+    "test": "node test"
   },
   "author": "Luke Kaalim",
   "license": "MIT",
   "dependencies": {
     "@astral-atlas/sesame-models": "../models",
     "@lukekaalim/api-models": "^1.0.0",
-    "@lukekaalim/cast": "^1.0.0"
+    "@lukekaalim/cast": "^1.0.0",
+    "@lukekaalim/test": "^8.1.0"
   },
   "peerDependencies": {
     "@lukekaalim/http-client": "^3.1.0"

@@ -2,10 +2,10 @@
 /*:: import type { HTTPClient, HTTPService } from '@lukekaalim/http-client'; */
 /*:: import type { JSONValue } from '@lukekaalim/cast'; */
 /*:: import type { AccessOfferProof, AccessGrantProof, Access, AccessID, User, Admin, UserID } from '@astral-atlas/sesame-models'; */
-const { json: { createGETClient, createPOSTClient } } = require('@lukekaalim/http-client');
-const { api } = require('@astral-atlas/sesame-models');
-const { getObjectEntries } = require('./object');
-const { toGETSelfUserResponse, toGETUsersResponse } = require('./models');
+import { json } from '@lukekaalim/http-client';
+import { api } from '@astral-atlas/sesame-models';
+
+const { createGETClient, createPOSTClient } = json;
 
 /*::
 export type AccessClient = {
@@ -15,7 +15,7 @@ export type AccessClient = {
   revoke: (subject: UserID, accessId: AccessID) => Promise<null>,
 };
 */
-const createAccessClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: AccessClient*/ => {
+export const createAccessClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: AccessClient*/ => {
   const createOfferClient = createPOSTClient(api.POSTCreateAccessOffer, http, service);
   const acceptAccessClient = createPOSTClient(api.POSTAcceptAccess, http, service);
   const listClient = createGETClient(api.GETAccessList, http, service);
@@ -43,7 +43,7 @@ export type AdminClient = {
   create: (subject: UserID) => Promise<{ admin: Admin }>, 
 };
 */
-const createAdminClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: AdminClient*/ => {
+export const createAdminClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: AdminClient*/ => {
   const postNewClient = createPOSTClient(api.POSTNewAdmin, http, service);
   const create = async (subject) => {
     const { body: { admin } } = await postNewClient.post(null, { subject });
@@ -62,7 +62,7 @@ export type UserClient = {
   create: (name: string) => Promise<{ newUser: User }>,
 };
 */
-const createUserClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: UserClient*/ => {
+export const createUserClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: UserClient*/ => {
   const getSelfClient = createGETClient(api.GETSelf, http, service);
   const postNewClient = createPOSTClient(api.POSTNewUser, http, service);
   const getByIdClient = createGETClient(api.GETUserById, http, service);
@@ -84,10 +84,4 @@ const createUserClient = (http/*: HTTPClient*/, service/*: HTTPService*/)/*: Use
     return { users };
   };
   return { getSelf, create, getById, list };
-};
-
-module.exports = {
-  createUserClient,
-  createAccessClient,
-  createAdminClient,
 };

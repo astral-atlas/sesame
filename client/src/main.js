@@ -2,11 +2,9 @@
 /*:: import type { HTTPClient } from '@lukekaalim/http-client'; */
 /*:: import type { AccessGrantProof, AccessOfferProof, User, Admin, UserID, Access } from '@astral-atlas/sesame-models'; */
 /*:: import type { AccessClient, UserClient, AdminClient } from './api'; */
-const { toUser, accessGrantProofEncoder, accessOfferProofEncoder, api } = require('@astral-atlas/sesame-models');
-const { stringify } = require('@lukekaalim/cast');
-const { createNoneAuthorization, createBearerAuthorization, createBasicAuthorization } = require('@lukekaalim/http-client');
-const { toBase64 } = require('./base64');
-const { createAccessClient, createUserClient, createAdminClient } = require('./api');
+import { accessGrantProofEncoder } from '@astral-atlas/sesame-models';
+import { createNoneAuthorization, createBearerAuthorization, createBasicAuthorization } from '@lukekaalim/http-client';
+import { createAccessClient, createUserClient, createAdminClient } from './api.js';
 
 /*::
 export type GuestArgs = {|
@@ -18,7 +16,7 @@ export type GuestSesameClient = {|
   authorize: (auth: AuthArgs) => UserSesameClient,
 |};
 */
-const createGuestSesameClient = ({ baseURL, http }/*: GuestArgs*/)/*: GuestSesameClient*/ => {
+export const createGuestSesameClient = ({ baseURL, http }/*: GuestArgs*/)/*: GuestSesameClient*/ => {
   const authorization = createNoneAuthorization();
   const service = { baseURL, authorization };
   const accessClient = createAccessClient(http, service);
@@ -69,7 +67,7 @@ const getAuthorization = (args/*: UserArgs*/) => {
   }
 };
 
-const createUserSesameClient = (args/*: UserArgs*/)/*: UserSesameClient*/ => {
+export const createUserSesameClient = (args/*: UserArgs*/)/*: UserSesameClient*/ => {
   const { baseURL, http } = args;
   const authorization = getAuthorization(args);
   const service = { baseURL, authorization };
@@ -107,7 +105,7 @@ export type AdminSesameClient = {|
 |};
 */
 
-const createAdminSesameClient = (args/*: UserArgs*/)/*: AdminSesameClient*/ => {
+export const createAdminSesameClient = (args/*: UserArgs*/)/*: AdminSesameClient*/ => {
   const { baseURL, http } = args;
   const authorization = getAuthorization(args);
   const service = { baseURL, authorization };
@@ -122,10 +120,4 @@ const createAdminSesameClient = (args/*: UserArgs*/)/*: AdminSesameClient*/ => {
     createAccessOffer: accessClient.createOffer,
     createNewAdmin: adminClient.create
   };
-};
-
-module.exports = {
-  createGuestSesameClient,
-  createUserSesameClient,
-  createAdminSesameClient,
 };
