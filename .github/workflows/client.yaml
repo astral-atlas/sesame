@@ -6,7 +6,7 @@ on:
       - '@astral-atlas/sesame-client@*'
 
 jobs:
-  publish-models:
+  publish-client:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 15
+          node-version: 16
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm publish --access public
