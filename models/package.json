@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@lukekaalim/api-models": "^3.0.2",
-    "@lukekaalim/cast": "^1.1.1"
+    "@lukekaalim/cast": "^1.3.1"
   },
   "devDependencies": {
     "@lukekaalim/test": "^8.0.2"

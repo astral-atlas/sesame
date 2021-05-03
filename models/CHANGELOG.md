@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
  - Add readme
+ - Add WWWMessage models
 ## [7.0.0]
  - Migrated to ESM
  - So many changes
