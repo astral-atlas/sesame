@@ -17,7 +17,7 @@ locals {
   }
 }
 
-module "github_release" {
+module "www_release" {
   source = "../modules/github_release"
   owner = "astral-atlas"
   repository = "sesame"
@@ -30,7 +30,7 @@ data "external" "unzip" {
   program = ["bash", "${path.module}/unzip.sh"]
 
   query = {
-    zip_file = module.github_release.output_file
+    zip_file = module.www_release.output_file
     output_directory = "./temp/www"
   }
 }

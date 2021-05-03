@@ -19,11 +19,28 @@ resource "aws_elastic_beanstalk_application" "api" {
     delete_source_from_s3 = true
   }
 }
+module "api_release" {
+  source = "../modules/github_release"
+  owner = "astral-atlas"
+  repository = "sesame"
+  release_tag = "@astral-atlas/sesame-api@1.2.0"
+  release_asset_name = "api.zip"
+  output_directory = "./temp"
+}
+
+data "external" "rename" {
+  program = ["bash", "${path.module}/rename.sh"]
+
+  query = {
+    input_file = module.api_release.output_file
+    new_name = "temp/api-1.2.0-3.zip"
+  }
+}
 
 resource "immutable-elastic-beanstalk_application-version" "latest" {
   application_name = aws_elastic_beanstalk_application.api.name
   source_bucket = aws_s3_bucket.application_versions.bucket
-  archive_path = "../../api-1.2.0-2.zip"
+  archive_path = data.external.rename.result.output_file
 }
 
 resource "aws_elastic_beanstalk_environment" "api_test" {
