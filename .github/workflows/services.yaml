@@ -1,0 +1,33 @@
+name: "Publish Sesame Services"
+
+on:
+  push:
+    tags:
+      - 'services/test@*'
+
+jobs:
+  publish-test-service:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/test
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: apt-get update && apt-get install -y zip unzip curl jq
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - name: Initialize
+        id: init
+        run: terraform init
+      - name: Apply
+        id: apply
+        run: terraform apply -auto-approve
+        with:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          
+
