@@ -1,0 +1,19 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "snowpack dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "rollup-plugin-cleanup": "^3.2.1",
+    "snowpack": "^3.3.7"
+  },
+  "dependencies": {
+    "@astral-atlas/sesame-components": "file:..",
+    "preact": "^10.5.13"
+  }
+}

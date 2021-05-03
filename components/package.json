@@ -1,0 +1,19 @@
+{
+  "name": "@astral-atlas/sesame-components",
+  "version": "1.0.0",
+  "description": "Preact components for rendering Sesame elements and forms",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "cd example; npm run dev",
+    "test": "node test",
+    "postversion": "../scripts/postversion.sh"
+  },
+  "author": "Luke Kaalim",
+  "license": "MIT",
+  "dependencies": {
+    "@astral-atlas/sesame-client": "^1.0.0"
+  },
+  "peerDependencies": {
+    "preact": "^10.5.13"
+  }
+}
