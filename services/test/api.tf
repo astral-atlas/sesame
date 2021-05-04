@@ -16,22 +16,14 @@ resource "aws_elastic_beanstalk_application" "api" {
     delete_source_from_s3 = true
   }
 }
-module "api_release" {
-  source = "../modules/github_release"
-  owner = "astral-atlas"
-  repository = "sesame"
-  release_tag = "@astral-atlas/sesame-api@1.3.0"
-  release_asset_name = "sesame-api.zip"
-  output_directory = "./temp"
-}
 data "external" "create_api_bundle" {
   program = ["bash", "${path.module}/create_api_bundle.sh"]
 
   query = {
-    release_zip_file = module.api_release.output_file,
-    output_directory = "temp/api",
-    application_version_label = "sesame-api@1.3.0-0",
-    config = jsonencode(local.api_config),
+    "release_tag": "@astral-atlas/sesame-api@1.3.0",
+    "application_version_label": "sesame-api@1.3.0-2",
+    "temp_workspace": "temp/api",
+    "config": jsonencode(local.api_config),
   }
 }
 locals {
