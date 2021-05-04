@@ -22,6 +22,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v1
         with:
+          terraform_version: 0.15.1
           cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
       - name: Initialize
         id: init
