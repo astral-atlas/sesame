@@ -20,30 +20,41 @@ module "api_release" {
   source = "../modules/github_release"
   owner = "astral-atlas"
   repository = "sesame"
-  release_tag = "@astral-atlas/sesame-api@1.2.0"
-  release_asset_name = "api.zip"
+  release_tag = "@astral-atlas/sesame-api@1.3.0"
+  release_asset_name = "sesame-api.zip"
   output_directory = "./temp"
 }
-
-data "external" "rename" {
-  program = ["bash", "${path.module}/rename.sh"]
+data "external" "create_api_bundle" {
+  program = ["bash", "${path.module}/create_api_bundle.sh"]
 
   query = {
-    input_file = module.api_release.output_file
-    new_name = "temp/api-1.2.0-3.zip"
+    release_zip_file = module.api_release.output_file,
+    output_directory = "temp/api",
+    application_version_label = "sesame-api@1.3.0-0",
+    config = jsonencode(local.api_config),
+  }
+}
+locals {
+  api_config = {
+    "superUser": {
+      "type": "static",
+      "username": "super_luke",
+      "password": "super_secret"
+    },
+    "port": 8080 // this is the default port elastic beanstalk will listen to
   }
 }
 
 resource "immutable-elastic-beanstalk_application-version" "latest" {
   application_name = aws_elastic_beanstalk_application.api.name
   source_bucket = aws_s3_bucket.application_versions.bucket
-  archive_path = data.external.rename.result.output_file
+  archive_path = data.external.create_api_bundle.result.application_version_source_bundle
 }
 
 resource "aws_elastic_beanstalk_environment" "api_test" {
   name                = "sesame-api-test"
   application         = aws_elastic_beanstalk_application.api.name
-  solution_stack_name = "64bit Amazon Linux 2 v5.3.1 running Node.js 14"
+  solution_stack_name = "64bit Amazon Linux 2 v5.3.2 running Node.js 14"
   version_label = immutable-elastic-beanstalk_application-version.latest.version_label
 
   setting {

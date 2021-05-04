@@ -26,7 +26,7 @@ module "www_release" {
   output_directory = "./temp"
 }
 
-data "external" "unzip" {
+data "external" "unzip_www" {
   program = ["bash", "${path.module}/unzip.sh"]
 
   query = {
@@ -43,8 +43,8 @@ resource "aws_s3_bucket_object" "www_objects" {
   content_type = each.value
 
   acl = "public-read"
-  source = "${data.external.unzip.result.output_directory}/${each.key}"
-  etag = filemd5("${data.external.unzip.result.output_directory}/${each.key}")
+  source = "${data.external.unzip_www.result.output_directory}/${each.key}"
+  etag = filemd5("${data.external.unzip_www.result.output_directory}/${each.key}")
 }
 
 locals {
