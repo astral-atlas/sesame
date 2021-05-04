@@ -1,12 +1,6 @@
 #!/bin/bash
 set -e
 
-if [ -z "$GITHUB_TOKEN" ]
-then
-  >&2 echo "GITHUB_TOKEN is not set"
-  exit 1
-fi
-
 # Download the JSON response of a github release by tag
 get_release() {
   set -e
