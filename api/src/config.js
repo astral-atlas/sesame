@@ -88,8 +88,9 @@ export const toSesameAPIConfig/*: Cast<SesameAPIConfig>*/ = (value) => {
 };
 
 export const readConfig = async (path/*: string*/ = './sesame_config.json')/*: Promise<SesameAPIConfig>*/ => {
-  console.log(`Reading "${path}"`)
+  console.log(`Reading "${path}"`);
   const configFileContents = await readFile(path, 'utf8');
+  console.log(configFileContents);
   const sesameConfig = toSesameAPIConfig(JSON.parse(configFileContents));
   return sesameConfig;
 };
