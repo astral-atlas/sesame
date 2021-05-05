@@ -4,7 +4,7 @@
   "description": "Preact components for rendering Sesame elements and forms",
   "main": "src/main.js",
   "scripts": {
-    "dev": "cd example; npm run dev",
+    "dev": "",
     "test": "node test",
     "postversion": "../scripts/postversion.sh"
   },
