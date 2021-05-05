@@ -1,0 +1,21 @@
+{
+  "name": "@lukekaalim/deci",
+  "version": "1.0.0",
+  "description": "Rollup-powered opinionated bundler",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "deci": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Luke Kaalim",
+  "license": "MIT",
+  "dependencies": {
+    "@rollup/plugin-alias": "^3.1.2",
+    "@rollup/plugin-commonjs": "^18.1.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "rollup": "^2.47.0"
+  }
+}
