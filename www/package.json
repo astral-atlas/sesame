@@ -1,29 +1,16 @@
 {
-  "name": "@astral-atlas/sesame-www",
-  "version": "1.5.2",
-  "description": "",
-  "main": "index.js",
   "scripts": {
-    "build": "rollup -c",
-    "dev:build": "rollup -c -w",
-    "dev:serve": "serve -s dist",
-    "dev": "npx concurrently npm:dev:build npm:dev:serve",
-    "postversion": "../scripts/postversion.sh"
+    "build": "snowpack build",
+    "dev": "snowpack dev"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^18.0.0",
-    "@rollup/plugin-html": "^0.2.3",
-    "@rollup/plugin-node-resolve": "^11.2.1",
-    "rollup": "^2.44.0",
-    "serve": "^11.3.2"
+    "snowpack": "^3.8.8"
   },
   "dependencies": {
     "@astral-atlas/sesame-client": "^1.0.0",
     "@astral-atlas/sesame-models": "^7.1.0",
     "@lukekaalim/cast": "^1.1.1",
-    "@lukekaalim/http-client": "^3.1.0",
+    "@lukekaalim/http-client": "^4.0.1",
     "json5": "^2.2.0",
     "preact": "^10.5.9"
   }

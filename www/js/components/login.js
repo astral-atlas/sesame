@@ -33,9 +33,9 @@ const SuperuserLoginForm = ({ onSuperuserSubmit, accessError = null }/*: Superus
         h('p', {}, `The Super User should only be used to create other normal users and then should be disabled.`),
       ]),
     ]),
-    accessError && h(FormHint, { tone: 'error' },
-      h('pre', { style: { whiteSpace: 'break-spaces' } }, JSON.stringify(JSON.parse(accessError.response.body), null, 2))
-    ),
+    //accessError && h(FormHint, { tone: 'error' },
+    //  h('pre', { style: { whiteSpace: 'break-spaces' } }, JSON.stringify(JSON.parse(accessError.response.body), null, 2))
+    //),
     h(LabeledTextInput,
         { label: 'Username', placeholder: 'Special value set by admin',
         value: username, onTextChange: v => setUsername(v)
@@ -100,9 +100,9 @@ const AccessOfferLoginForm = ({ onOfferSubmit, accessError = null }/*: AccessOff
       h('pre', { style: { whiteSpace: 'break-spaces' } }, encodingError.message),
       h('p', {}, `Try ensuring the code is exactly copied from it's source, or try getting a new one.`),
     ]),
-    accessError && h(FormHint, { tone: 'error' },
-      h('pre', { style: { whiteSpace: 'break-spaces' } }, JSON.stringify(JSON.parse(accessError.response.body), null, 2))
-    ),
+    //accessError && h(FormHint, { tone: 'error' },
+    //  h('pre', { style: { whiteSpace: 'break-spaces' } }, JSON.stringify(JSON.parse(accessError.response.body), null, 2))
+    //),
     h(LabeledTextInput,
         { label: 'Access Code', placeholder: 'Special Code',
         value: encodedOffer, onTextChange: v => setEncodedOffer(v)

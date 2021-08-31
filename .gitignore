@@ -101,3 +101,5 @@ typings/
 
 
 .DS_Store
+
+.secrets.env
