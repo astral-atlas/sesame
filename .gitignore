@@ -102,4 +102,6 @@ typings/
 
 .DS_Store
 
-.secrets.env
+*.secrets.env
+dist
+artifacts

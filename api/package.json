@@ -15,7 +15,7 @@
   "dependencies": {
     "@astral-atlas/sesame-models": "^7.1.0",
     "@lukekaalim/cast": "^1.2.0",
-    "@lukekaalim/server": "^9.4.1",
+    "@lukekaalim/server": "^11.0.0",
     "crypto-random-string": "^3.3.0",
     "uuid": "^8.3.2"
   }

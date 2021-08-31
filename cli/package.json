@@ -10,7 +10,7 @@
     "@astral-atlas/sesame-client": "../client",
     "@astral-atlas/sesame-models": "../models",
     "@lukekaalim/api-models": "^1.0.0",
-    "@lukekaalim/http-client": "^3.0.2"
+    "@lukekaalim/http-client": "^4.0.0"
   },
   "author": "",
   "license": "ISC"

@@ -1,5 +1,7 @@
 [ignore]
-
+.*/_snowpack/.*
+.*/.cache/.*
+.*/artifacts/.*
 [include]
 
 [libs]
