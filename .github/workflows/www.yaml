@@ -1,6 +1,7 @@
 name: "Publish @astral-atlas/sesame-www"
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'www/**'
