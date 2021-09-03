@@ -9,16 +9,13 @@ on:
 jobs:
   release-www:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: www
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
       - run: npm ci install
-      - run: npm run build
+      - run: npm run build --workspace=www
       - uses: papeloto/action-zip@v1
         with:
           files: www/artifacts/
