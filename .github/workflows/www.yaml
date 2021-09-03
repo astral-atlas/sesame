@@ -2,8 +2,8 @@ name: "Publish @astral-atlas/sesame-www"
 
 on:
   push:
-    tags:
-      - '@astral-atlas/sesame-www@*'
+    paths:
+      - 'www/**'
 
 jobs:
   release-www:
@@ -20,7 +20,7 @@ jobs:
       - run: npm run build
       - uses: papeloto/action-zip@v1
         with:
-          files: www/dist/
+          files: www/artifacts/
           dest: sesame-www.zip
       - name: Release
         uses: softprops/action-gh-release@v1
