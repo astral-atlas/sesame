@@ -428,6 +428,7 @@ const createAccessService = (tables/*: TableServices*/, users/*: UserService*/)/
 
 /*::
 export type AuthorizationService = {
+  authorizeGuest(headers: HTTPHeaders): Promise<?User>,
   authorizeUser(headers: HTTPHeaders): Promise<User>,
   authorizeAdmin(headers: HTTPHeaders): Promise<[Admin, User]>,
 };
@@ -452,24 +453,34 @@ const createAuthorizationService = (users/*: UserService*/, access/*: AccessServ
         return await users.getUserById(authorization.username);
       }
       case 'none':
-        throw new Error('Authorization header expected')
+        return null;
       default:
         throw new Error('Unknown type of Authorization Header, can\;t proceed.');
     }
   };
+  const authorizeGuest = async (headers) => {
+    const auth = getAuthorization(headers);
+    const user = await getUser(auth, headers['origin']);
+    return user;
+  };
   const authorizeUser = async (headers) => {
     const auth = getAuthorization(headers);
     const user = await getUser(auth, headers['origin']);
+    if (!user)
+      throw new Error(`Expected Authorization Header`);
     return user;
   };
   const authorizeAdmin = async (headers) => {
     const auth = getAuthorization(headers);
     const user = await getUser(auth, headers['origin']);
+    if (!user)
+      throw new Error(`Expected Authorization Header`);
     const admin = await users.getAdminFromUser(user.id);
     return [admin, user];
   };
 
   return {
+    authorizeGuest,
     authorizeUser,
     authorizeAdmin,
   };

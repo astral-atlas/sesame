@@ -1,5 +1,6 @@
 // @flow strict
 /*:: import type { POSTEndpoint, DELETEEndpoint, GETEndpoint } from '@lukekaalim/api-models'; */
+/*:: import type { JSONValue } from '@lukekaalim/cast'; */
 /*:: import type { User, UserID } from '../user'; */
 /*:: import type { AccessOfferProof, AccessGrantProof } from '../tokens'; */
 /*:: import type { Access, AccessOffer, AccessGrant, AccessRevocation, AccessID } from '../access'; */
@@ -8,8 +9,12 @@ import { toAccess, toAccessId } from '../access.js';
 import { toAccessOfferProof, toAccessGrantProof } from '../tokens.js';
 import { toUserId, toUser } from '../user.js';
 
+/*::
+export type AtLeast<T> = { ...T, +[string]: JSONValue };
+*/
+
 export const POSTCreateAccessOffer/*: POSTEndpoint<
-  {| subject: UserID |},
+  AtLeast<{ subject: UserID }>,
   {| offerProof: AccessOfferProof |}, null
 >*/ = {
   method: 'POST',

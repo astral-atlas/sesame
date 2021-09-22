@@ -14,7 +14,10 @@ export type AuthorizerFrameProps = {|
 
 const style = {
   border: 'none',
-  borderRadius: '4px'
+  margin: 0,
+  padding: 0,
+  width: '100%',
+  height: '100%'
 };
 
 export const AuthorizerFrame = ({
@@ -38,3 +41,5 @@ export const AuthorizerFrame = ({
   }, []);
   return h('iframe', { style, src: new URL('/frame', wwwBaseURL), width: 512, height: 128 });
 };
+
+export * from './trusted.js';

@@ -40,3 +40,24 @@ export const toWWWMessage/*: Cast<WWWMessage>*/ = (value) => {
       throw new TypeError();
   }
 }
+
+/*::
+export type SiteMessage =
+  | ListeningSiteMessage
+  | ConfigureSiteMessage
+  | RequestAccessSiteMessage
+  | RespondAccessSiteMessage
+
+export type ListeningSiteMessage = {|
+  type: 'listening',
+|};
+export type ConfigureSiteMessage = {|
+  type: 'configure',
+|};
+export type RequestAccessSiteMessage = {|
+  type: 'request-access',
+|};
+export type RespondAccessSiteMessage = {|
+  type: 'respond-access',
+|};
+*/

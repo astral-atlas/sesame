@@ -53,11 +53,11 @@ export const createRoutes = (services/*: Services*/)/*: Route[]*/ => {
 
   const userSelf = resource({ path: api.GETSelf.path, access, cache, methods: {
     GET: withRouteMiddleware(createGETHandler(api.GETSelf, async ({ headers }) => {
-      const self = await services.auth.authorizeUser(headers);
+      const user = await services.auth.authorizeGuest(headers) || null;
       const access = await services.access.getAccess(headers);
-      if (self.adminId)
-        return { status: ok, body: { self, admin: await services.user.getAdminFromUser(self.id), access } };
-      return { status: ok, body: { self, admin: null, access } };
+      const admin = user && user.adminId ? await services.user.getAdminFromUser(user.id) : null;
+      
+      return { status: ok, body: { user, admin, access } };
     })),
   }});
   const user = resource({ path: api.GETUserList.path, access, cache, methods: {

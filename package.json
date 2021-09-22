@@ -8,13 +8,14 @@
         "models",
         "www",
         "components",
-        "components/example",
-        "deci"
+        "examples/third-party",
+        "examples/trusted"
     ],
     "scripts": {
         "dev:www": "cd www; npm run dev",
         "dev:api": "cd api; npm run dev",
-        "dev:comp": "cd components; npm run dev",
+        "dev:example/third-party": "npm run dev --workspace=examples/third-party",
+        "dev:example/trusted": "npm run dev --workspace=examples/trusted",
         "dev": "concurrently npm:dev:*"
     },
     "devDependencies": {

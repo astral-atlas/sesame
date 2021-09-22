@@ -19,4 +19,18 @@ export type GETEndpoint<Res, Q> = {| ...Endpoint<Q>, ...WithResponseBody<Res>, m
 export type PUTEndpoint<Req, Q> = {| ...Endpoint<Q>, ...WithRequestBody<Req>, method: 'PUT' |};
 export type POSTEndpoint<Req, Res, Q> = {| ...Endpoint<Q>, ...WithResponseBody<Res>, ...WithRequestBody<Req>, method: 'POST' |};
 export type DELETEEndpoint<Req, Res, Q> = {| ...Endpoint<Q>, ...WithResponseBody<Res>, ...WithRequestBody<Req>, method: 'DELETE' |};
+
+export type MyAPI = {|
+  '/home': {
+     GET: { query: { no: string }, response: null }
+  },
+|};
+
 */
+
+const a = /*:: <T>*/ (implementation/*: $ObjMap<T, <Z>(_: Z) => Z['GET']['query']>*/) => {
+
+};
+
+
+a/*::<MyAPI>*/({ "/home": { no: 'hello' } });

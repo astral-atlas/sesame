@@ -1,0 +1,15 @@
+{
+  "name": "trusted-example",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@astral-atlas/sesame-components": "1.1.1",
+    "preact": "^10.5.13"
+  },
+  "devDependencies": {
+    "vite": "^2.5.3"
+  }
+}

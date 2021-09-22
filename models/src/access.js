@@ -1,43 +1,86 @@
 // @flow strict
 /*:: import type { UserID } from './user'; */
-/*:: import type { Cast } from '@lukekaalim/cast'; */
+/*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
 import { toObject, toString, toNullable, fromObject, castObject } from '@lukekaalim/cast';
 import { toUserId } from './user.js';
+import { toUser } from "./user";
 
 /*::
-export type AccessID = string;
-export type Access = {|
-  id: AccessID,
-  offer: AccessOffer,
-  grant: null | AccessGrant,
-  revocation: null | AccessRevocation,
-|};
+export type AccessDescription = {
+  user: UserID,
+  grants: {
+    identity: IdentityGrant[],
+    login: LoginGrant[]
+  }
+};
+*/
 
-export type AccessOffer = {|
-  id: AccessID,
-  offerSecret: string,
-  subject: UserID,
-  creator: UserID,
-|};
+// An "Identity Grant" allows the bearer to act as if
+// they had the contained identity
+/*::
+export type IdentityGrantID = string;
+export type IdentityGrant = {|
+  id: IdentityGrantID,
+  type: 'identity',
+  user: UserID,
+  targetOrigin: string,
 
-export type AccessGrant = {|
-  id: AccessID,
-  grantSecret: string,
-  hostName: null | string,
-  deviceName: string, 
-|};
-
-export type AccessRevocation = {|
-  id: AccessID,
+  granteeName: null | string
 |};
 */
+
+export const castIdentityGrantId/*: Cast<IdentityGrantID>*/ = toString;
+export const castIdentityGrant/*: Cast<IdentityGrant>*/ = castObject(prop => ({
+  id: prop('id', castIdentityGrantId),
+  type: prop('')
+}));
+
+
+// A "Login Grant" allows the bearer to create an "Identity Grant"
+// for themselves
+/*::
+export type LoginGrantID = string;
+export type LoginGrant = {|
+  id: LoginGrantID,
+  type: 'login',
+  user: UserID,
+
+  identityGrantId: null | IdentityGrantID,
+|};
+*/
+
+export const PROOF_TYPE_IDS = {
+  login: 0,
+  identity: 1,
+};
+/*::
+export type Secret = string;
+
+export type LoginGrantProof = {|
+  type: 'login',
+  id: LoginGrantID,
+  user: UserID,
+  secret: Secret,
+|};
+
+export type IdentityGrantProof = {|
+  type: 'identity',
+  id: IdentityGrantID,
+  user: UserID,
+  secret: Secret,
+|};
+*/
+
+
 
 export const toAccessId/*: Cast<AccessID>*/ = toString;
 export const toAccess/*: Cast<Access>*/ = castObject(prop => ({
   id: prop('id', toAccessId),
-  offer: prop('offer', toAccessOffer),
-  grant: prop('grant', v => toNullable(v, toAccessGrant)),
-  revocation: prop('revocation', v => toNullable(v, toAccessRevocation))
+  subject: prop('subject', toUserId),
+  origin: prop('origin', toString),
+
+  //grant: prop('grant', v => toNullable(v, toAccessGrant)),
+  //revocation: prop('revocation', v => toNullable(v, toAccessRevocation))
 }));
 
 export const toAccessOffer/*: Cast<AccessOffer>*/ = (value) => {

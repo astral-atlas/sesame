@@ -7,14 +7,14 @@ import { toObject, toString, toArray, toNullable, castObject } from '@lukekaalim
 import { toUser, toUserId, toAdmin } from '../user.js';
 import { toAccess } from '../access.js';
 
-export const GETSelf/*: GETEndpoint<{| self: User, admin: Admin | null, access: null | Access |}, null>*/ = {
+export const GETSelf/*: GETEndpoint<{| user: User | null, admin: Admin | null, access: null | Access |}, null>*/ = {
   method: 'GET',
   path: '/users/self',
   toQuery: () => null,
   toResponseBody: (value) => {
     const object = toObject(value);
     return {
-      self: toUser(object.self),
+      user: toNullable(object.user, toUser),
       admin: toNullable(object.admin, toAdmin),
       access: toNullable(object.access, toAccess),
     };

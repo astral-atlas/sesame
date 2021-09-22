@@ -56,7 +56,7 @@ export const createAdminClient = (http/*: HTTPClient*/, service/*: HTTPService*/
 
 /*::
 export type UserClient = {
-  getSelf: () => Promise<{ self: User, admin: null | Admin, access: null | Access }>,
+  getSelf: () => Promise<{| user: null | User, admin: null | Admin, access: null | Access |}>,
   getById: (userId: UserID) => Promise<{ user: User }>,
   list: () => Promise<{ users: User[] }>,
   create: (name: string) => Promise<{ newUser: User }>,
@@ -67,9 +67,10 @@ export const createUserClient = (http/*: HTTPClient*/, service/*: HTTPService*/)
   const postNewClient = createPOSTClient(api.POSTNewUser, http, service);
   const getByIdClient = createGETClient(api.GETUserById, http, service);
   const listClient = createGETClient(api.GETUserList, http, service);
+
   const getSelf = async () => {
-    const { body: { admin, self, access } } = await getSelfClient.get(null);
-    return { admin, self, access };
+    const { body: { admin, user, access } } = await getSelfClient.get(null);
+    return { admin, user, access };
   };
   const create = async (name) => {
     const { body: { newUser } } = await postNewClient.post(null, { name });
