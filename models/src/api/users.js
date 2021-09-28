@@ -1,77 +1,84 @@
 // @flow strict
-/*:: import type { Cast } from '@lukekaalim/cast'; */
-/*:: import type { GETEndpoint, POSTEndpoint, PUTEndpoint, DELETEEndpoint } from '@lukekaalim/api-models'; */
-/*:: import type { User, UserID, Admin } from '../user'; */
-/*:: import type { Access } from '../access'; */
-import { toObject, toString, toArray, toNullable, castObject } from '@lukekaalim/cast';
-import { toUser, toUserId, toAdmin } from '../user.js';
-import { toAccess } from '../access.js';
+/*:: import type { User, Admin, UserID } from '../user.js'; */
+/*:: import type { ResourceDescription } from "@lukekaalim/net-description"; */
+import { castUserId, castUser } from '../user.js';
+import { createObjectCaster as obj, castString as str, createConstantCaster as lit, createArrayCaster as arr } from '@lukekaalim/cast';
 
-export const GETSelf/*: GETEndpoint<{| user: User | null, admin: Admin | null, access: null | Access |}, null>*/ = {
-  method: 'GET',
-  path: '/users/self',
-  toQuery: () => null,
-  toResponseBody: (value) => {
-    const object = toObject(value);
-    return {
-      user: toNullable(object.user, toUser),
-      admin: toNullable(object.admin, toAdmin),
-      access: toNullable(object.access, toAccess),
-    };
-  }, 
-};
-export const POSTNewUser/*: POSTEndpoint<{| name: string |}, {| newUser: User |}, null>*/ = {
-  method: 'POST',
-  path: '/users',
-  toQuery: () => null,
-  toRequestBody: (value) => {
-    const object = toObject(value);
-    return {
-      name: toString(object.name),
-    };
+/*::
+export type UsersAPI = {
+  '/users': {|
+    GET: {
+      query: { userId: UserID },
+      request: empty,
+      response: { type: 'found', user: User },
+    },
+    POST: {
+      query: empty,
+      request: { name: string },
+      response: { type: 'created', user: User },
+    },
+    PATCH: {
+      query: { userId: UserID },
+      request: { name: string },
+      response: { type: 'updated', user: User },
+    },
+    DELETE: {
+      query: { userId: UserID },
+      request: empty,
+      response: { type: 'deleted' },
+    }
+  |},
+  '/users/all': {
+    GET: {
+      query: empty,
+      request: empty,
+      response: { type: 'found', users: $ReadOnlyArray<User> },
+    },
   },
-  toResponseBody: (value) => {
-    const object = toObject(value);
-    return {
-      newUser: toUser(object.newUser),
-    };
-  },
-};
-export const POSTNewAdmin/*: POSTEndpoint<{| subject: UserID |}, {| admin: Admin |}, null>*/ = {
-  method: 'POST',
-  path: '/admins',
-  toQuery: () => null,
-  toRequestBody: castObject(prop => ({
-    subject: prop('subject', toUserId),
-  })),
-  toResponseBody: castObject(prop => ({
-    admin: prop('admin', toAdmin)
-  })),
-};
-export const GETUserById/*: GETEndpoint<{| user: User |}, {| userId: UserID |}>*/ = {
-  method: 'GET',
-  path: '/users/byId',
-  toQuery: (value) => {
-    const object = toObject(value);
-    return {
-      userId: toUserId(object.userId),
-    };
-  },
-  toResponseBody: (value) => {
-    const object = toObject(value);
-    return {
-      user: toUser(object.user),
-    };
+  '/users/self': {
+    GET: {
+      query: empty,
+      request: empty,
+      response: { type: 'found', user: User },
+    },
   }
 };
-export const GETUserList/*: GETEndpoint<{| users: User[] |}, null>*/ = {
-  method: 'GET',
+*/
+
+export const usersResourceDescription/*: ResourceDescription<UsersAPI['/users']>*/ = {
   path: '/users',
-  toQuery: () => null,
-  toResponseBody: (value) => {
-    const object = toObject(value);
-    return {
-      users: toArray(object.users).map(toUser),
-    };
+
+  GET: {
+    toQuery: obj({ userId: castUserId }),
+    toResponseBody: obj({ type: lit('found'), user: castUser }),
+  },
+  POST: {
+    toRequestBody: obj({ name: str }),
+    toResponseBody: obj({ type: lit('created'), user: castUser }),
+  },
+  PATCH: {
+    toQuery: obj({ userId: castUserId }),
+    toRequestBody: obj({ name: str }),
+    toResponseBody: obj({ type: lit('updated'), user: castUser }),
+  },
+  DELETE: {
+    toQuery: obj({ userId: castUserId }),
+    toResponseBody: obj({ type: lit('deleted') }),
+  }
+};
+
+export const usersAllResourceDescription/*: ResourceDescription<UsersAPI['/users/all']> */ = {
+  path: '/users/all',
+
+  GET: {
+    toResponseBody: obj({ type: lit('found'), users: arr(castUser) })
+  }
+};
+
+export const usersSelfResourceDescription/*: ResourceDescription<UsersAPI['/users/self']> */ = {
+  path: '/users/self',
+
+  GET: {
+    toResponseBody: obj({ type: lit('found'), user: castUser })
   }
 };

@@ -1,8 +1,10 @@
 {
+  origin: 'http://localhost:8080',
+  name: 'Open Sesame',
   api: {
     sesame: {
       // Only for local development
-      baseURL: 'http://localhost:5543' 
+      origin: 'http://localhost:5543' 
     }
   }
 }

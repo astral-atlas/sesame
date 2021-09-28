@@ -1,5 +1,9 @@
 {
   "cSpell.words": [
     "Postable"
-  ]
+  ],
+  "javascript.suggest.autoImports": false,
+  "javascript.suggest.enabled": false,
+  "javascript.suggest.includeCompletionsForImportStatements": false,
+  "typescript.validate.enable": false
 }

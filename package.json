@@ -2,14 +2,13 @@
     "private": true,
     "workspaces": [
         "api",
-        "api-models",
-        "cli",
         "client",
         "models",
         "www",
         "components",
-        "examples/third-party",
-        "examples/trusted"
+        "examples/trusted",
+        "data",
+        "cli"
     ],
     "scripts": {
         "dev:www": "cd www; npm run dev",
@@ -19,7 +18,6 @@
         "dev": "concurrently npm:dev:*"
     },
     "devDependencies": {
-        "concurrently": "^6.2.1",
-        "nodemon": "^2.0.12"
+        "flow-bin": "^0.160.2"
     }
 }

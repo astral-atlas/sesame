@@ -5,17 +5,16 @@
   "description": "Client for making sesame-api requests",
   "main": "src/main.js",
   "scripts": {
-    "postversion": "../scripts/postversion.sh",
-    "test": "node test"
+    "postversion": "../scripts/postversion.sh"
   },
   "author": "Luke Kaalim",
   "license": "MIT",
   "dependencies": {
     "@astral-atlas/sesame-models": "^7.0.0",
-    "@lukekaalim/cast": "^1.0.0",
-    "@lukekaalim/test": "^8.1.0"
+    "@lukekaalim/cast": "^4.0.0",
+    "@lukekaalim/net-description": "^1.1.0"
   },
   "peerDependencies": {
-    "@lukekaalim/http-client": "^3.1.0"
+    "@lukekaalim/http-client": "^5.2.0"
   }
 }

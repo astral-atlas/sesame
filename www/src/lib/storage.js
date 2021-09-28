@@ -8,7 +8,7 @@ export type StoredValue<T> = {
   set: T => void,
 };
 */
-export const createStoredValue = /*:: <T: JSONValue>*/(
+export const createStoredValue = /*:: <T>*/(
   key/*: string*/,
   toValue/*: Cast<T>*/,
   defaultValue/*: T*/
@@ -20,7 +20,7 @@ export const createStoredValue = /*:: <T: JSONValue>*/(
     return toValue(parse(valueOrNull));
   };
   const set = (value) => {
-    localStorage.setItem(key, stringify(value));
+    localStorage.setItem(key, JSON.stringify(value));
   };
 
   return {

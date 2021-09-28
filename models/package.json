@@ -7,13 +7,13 @@
   "author": "luke@kaal.im",
   "license": "MIT",
   "scripts": {
-    "test": "node src/main.test.js",
-    "preversion": "npm test",
     "postversion": "../scripts/postversion.sh"
   },
   "dependencies": {
-    "@lukekaalim/api-models": "^3.0.2",
-    "@lukekaalim/cast": "^1.3.1"
+    "@lukekaalim/cast": "^3.0.0"
+  },
+  "peerDependencies": {
+    "@lukekaalim/net-description": "^1.0.0"
   },
   "devDependencies": {
     "@lukekaalim/test": "^8.0.2"

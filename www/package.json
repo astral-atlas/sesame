@@ -1,16 +1,20 @@
 {
+  "name": "@astral-atlas/sesame-www",
+  "private": true,
   "scripts": {
     "build": "snowpack build",
     "dev": "vite"
   },
   "devDependencies": {
-    "vite": "^2.5.3"
+    "vite": "^2.5.10"
   },
   "dependencies": {
     "@astral-atlas/sesame-client": "^1.0.0",
     "@astral-atlas/sesame-models": "^7.1.0",
-    "@lukekaalim/cast": "^1.1.1",
-    "@lukekaalim/http-client": "^4.0.1",
+    "@lukekaalim/act": "^2.2.0",
+    "@lukekaalim/act-web": "^0.4.1",
+    "@lukekaalim/cast": "^4.0.0",
+    "@lukekaalim/http-client": "^5.2.0",
     "json5": "^2.2.0",
     "preact": "^10.5.9"
   }

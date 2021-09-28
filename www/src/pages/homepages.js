@@ -1,59 +1,64 @@
 // @flow strict
-/*:: import type { Node } from 'preact'; */
-import { h } from 'preact';
-import { useContext } from 'preact/hooks';
+/*:: import type { Component } from '@lukekaalim/act'; */
+/*:: import type { Config } from '../config'; */
+import { h } from '@lukekaalim/act';
+import * as styles from './pages.module.css';
 
-/*:: import type { User } from '@astral-atlas/sesame-models'; */
-import { LoginForm } from '../components/login';
-import { applicationContext } from '../context/application';
-import { SelfInfo } from '../components/user';
-import { ContentIsland } from '../components/island';
-import { NavigationHeader } from '../components/navigation';
-import { Form, FormHint } from '../components/form';
-import { useAsync } from '../hooks/async';
-import { useAPI } from "../context/api";
+import { createClient } from '@astral-atlas/sesame-client';
+import { createWebClient } from '@lukekaalim/http-client';
 
-const GuestHomepageContent = ()/*: Node*/ => {
-  return [
-    h('h2', {}, 'Login to Astral Atlas'),
-    h(LoginForm),
-  ];
-};
+import { identityStore } from '../storage/identity.js';
+import { useStoredValue } from '../hooks/storage.js'
+import { useAsync } from "../hooks/async.js";
 
-const UserHomePageContent = ()/*: Node*/ => {
-  const [{ self: { user, admin, access } },dispatch] = useContext(applicationContext);
-
+const LoggedIn = ({ config, user, setIdentity }) => {
   const onLogoutClick = () => {
-    dispatch({
-      type: 'login',
-      authentication: { type: 'none' },
-      self: null
-    });
+    setIdentity(() => null);
   }
 
   return [
-    h('h2', {}, 'Astral Atlas'),
-    h('p', {}, `You are logged in as "${self.name}".`),
-    h('p', {}, `You can create more access codes for other devices to login in at the Access Page.`),
-    h('p', {}, `You can view or modify your own details in the Profile Page.`),
-    self.adminId && h('p', {}, `You are also an administrator; You can create or modify users at the Users Page.`),
-    access && access.grant && h('p', {}, `You are loggin in from device "${access.grant.deviceName}"`),
-    //h(SelfInfo),
-    h(Form, {}, [
-      h(FormHint, { tone: 'warning' }, 'You can\'t use the same Access Token to log back in. Make sure you have another device or spare access token before logging out.'),
-      h('button', { onClick: onLogoutClick }, 'Logout'),
+    h('div', { class: styles.loggedInInfo }, [
+      h('p', {}, [`Welcome, `, h('strong', {}, user.name), `.`]),
+      h('div', {}, [
+        h('button', { class: styles.logout, onClick: onLogoutClick }, `Logout of ${config.name}`)
+      ]),
+    ])
+  ]
+};
+
+const NotLoggedIn = ({ userError, identity, config }) => {
+  if (userError)
+    return [
+      h('p', {}, 'Something went wrong trying to log you in'),
+      h('pre', {}, userError.toString())
+    ]
+  if (identity)
+    return [
+      h('p', {}, 'Loading User Data...')
+    ];
+
+  return [
+    h('div', { class: styles.loggedOutInfo }, [
+      h('p', {}, `You are not currently logged in.`),
+      h('p', {}, `Get in touch with your ${config.name} administrator to get a login URL.`)
     ]),
   ];
 };
 
-export const Homepage = ()/*: Node*/ => {
-  const [{ self: { user } }] = useContext(applicationContext);
+export const Homepage/*: Component<{ config: Config }>*/ = ({ config }) => {
+  const [identity, setIdentity] = useStoredValue(identityStore);
+  const httpClient = createWebClient(fetch);
+  const sesameClient = createClient(new URL(config.api.sesame.origin), httpClient, identity && identity.proof);
+  const [user, userError] = useAsync(async () => identity && sesameClient.user.get(identity.proof.userId), [identity && identity.proof.userId]);
+
   return [
-    h(NavigationHeader, {}, []),
-    h('main', {}, [
-      h(ContentIsland, {}, [
-        user ? h(UserHomePageContent) : h(GuestHomepageContent),
-      ])
+    h('div', { class: styles.homepage }, [
+      h('h1', { class: styles.homepageTitle }, config.name),
+      h('p', { class: styles.homepageSubTitle }, 'Astral Atlas Identity Service'),
+
+      h('hr', { class: styles.titleDivdier }),
+  
+      user ? h(LoggedIn, { user, config, setIdentity }) : h(NotLoggedIn, { userError, identity, config }),
     ]),
-  ]
+  ];
 };

@@ -1,63 +1,25 @@
 // @flow strict
 /*:: import type { Cast } from '@lukekaalim/cast'; */
-/*:: import type { AccessOfferProof } from './tokens'; */
+/*:: import type { IdentityGrant } from './access'; */
 
-import { castObject, toConstant, toNullable, toObject, toString } from "@lukekaalim/cast";
-import { toAccessOfferProof } from "./tokens.js";
+import { createKeyedUnionCaster, createObjectCaster, createConstantCaster, castString } from "@lukekaalim/cast";
+import { castIdentityGrant } from "./access.js";
 
 /*::
 export type WWWMessage =
-  | InitWWWMessage
-  | OfferWWWMessage
+  | NewIdentityGrant
 
-export type InitWWWMessage = {|
-  type: 'sesame-www-init'
-|};
-export type OfferWWWMessage = {|
-  type: 'sesame-www-offer',
-  offer: AccessOfferProof,
-  deviceName: null | string,
+export type NewIdentityGrant = {|
+  type: 'sesame:new-identity-grant',
+  grant: IdentityGrant,
+  secret: string,
 |};
 */
 
-export const toInitWWWMessage/*: Cast<InitWWWMessage>*/ = castObject(p => ({
-  type: p('type', v => toConstant(v, 'sesame-www-init')),
-}))
-export const toOfferWWWMessage/*: Cast<OfferWWWMessage>*/ = castObject(p => ({
-  type: p('type', v => toConstant(v, 'sesame-www-offer')),
-  offer: p('offer', toAccessOfferProof),
-  deviceName: p('deviceName', v => toNullable(v, toString)),
-}))
-
-export const toWWWMessage/*: Cast<WWWMessage>*/ = (value) => {
-  const object = toObject(value);
-  switch (object.type) {
-    case 'sesame-www-init':
-      return toInitWWWMessage(object);
-    case 'sesame-www-offer':
-      return toOfferWWWMessage(object);
-    default:
-      throw new TypeError();
-  }
-}
-
-/*::
-export type SiteMessage =
-  | ListeningSiteMessage
-  | ConfigureSiteMessage
-  | RequestAccessSiteMessage
-  | RespondAccessSiteMessage
-
-export type ListeningSiteMessage = {|
-  type: 'listening',
-|};
-export type ConfigureSiteMessage = {|
-  type: 'configure',
-|};
-export type RequestAccessSiteMessage = {|
-  type: 'request-access',
-|};
-export type RespondAccessSiteMessage = {|
-  type: 'respond-access',
-|};
-*/
+export const castWWWMessage/*: Cast<WWWMessage>*/ = createKeyedUnionCaster('type', {
+  'sesame:new-identity-grant': createObjectCaster({
+    type: createConstantCaster('sesame:new-identity-grant'),
+    grant: castIdentityGrant,
+    secret: castString,
+  })
+});

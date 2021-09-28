@@ -1,16 +1,20 @@
 // @flow strict
 /*:: import type { Node } from 'preact'; */
-/*:: import type { AccessOfferProof } from '@astral-atlas/sesame-models'; */
+/*:: import type { IdentityGrant } from '@astral-atlas/sesame-models'; */
 import { h } from 'preact';
-import { useEffect } from 'preact/hooks';
-import { toWWWMessage } from '@astral-atlas/sesame-models';
+import { useEffect, useMemo } from 'preact/hooks';
+import { castWWWMessage } from '@astral-atlas/sesame-models';
 
 /*::
 export type AuthorizerFrameProps = {|
-  wwwBaseURL: URL,
-  onAuthorizeOffer?: (offer: AccessOfferProof, deviceName: null | string) => mixed
+  identityOrigin: URL,
+  onIdentityGrant?: (grant: IdentityGrant, secret: string) => mixed
 |};
 */
+const containerStyle = {
+  resize: 'both',
+  overflow: 'hidden'
+};
 
 const style = {
   border: 'none',
@@ -21,16 +25,16 @@ const style = {
 };
 
 export const AuthorizerFrame = ({
-  wwwBaseURL,
-  onAuthorizeOffer = () => {},
+  identityOrigin,
+  onIdentityGrant = () => {},
 }/*: AuthorizerFrameProps*/)/*: Node*/ => {
   useEffect(() => {
     const onMessage = (event/*: MessageEvent*/) => {
       try {
-        const message = toWWWMessage(event.data);
+        const message = castWWWMessage(event.data);
         switch (message.type) {
-          case 'sesame-www-offer':
-            return onAuthorizeOffer(message.offer, message.deviceName);
+          case 'sesame:new-identity-grant':
+            return onIdentityGrant(message.grant, message.secret);
           default:
             return;
         }
@@ -39,7 +43,11 @@ export const AuthorizerFrame = ({
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
   }, []);
-  return h('iframe', { style, src: new URL('/frame', wwwBaseURL), width: 512, height: 128 });
-};
 
-export * from './trusted.js';
+  const src = new URL('/frame/login.html', identityOrigin);
+  src.searchParams.append('service', encodeURI(window.location.href));
+
+  return h('div', { style: containerStyle },
+    h('iframe', { style, src: src.href, width: 512, height: 128 })
+  );
+};

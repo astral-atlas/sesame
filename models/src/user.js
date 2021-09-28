@@ -1,27 +1,16 @@
 // @flow strict
 /*:: import type { Cast } from '@lukekaalim/cast'; */
-import { toObject, toString } from '@lukekaalim/cast';
+import { createObjectCaster, createNullableCaster, castString } from '@lukekaalim/cast';
 
 /*::
 export type UserID = string;
 export type User = {|
   id: UserID,
   name: string,
-  adminId: null | AdminID,
-  creatorAdminId: null | AdminID,
+  adminId: ?AdminID,
+  creatorAdminId: ?AdminID,
 |};
 */
-export const toUserId/*: Cast<UserID>*/ = toString;
-export const toUser/*: Cast<User>*/ = (value) => {
-  const object = toObject(value);
-  return {
-    id: toUserId(object.id),
-    name: toString(object.name),
-    adminId: object.adminId ? toAdminId(object.adminId) : null,
-    creatorAdminId: object.creatorAdminId ? toAdminId(object.creatorAdminId) : null,
-  }
-};
-
 /*::
 export type AdminID = string;
 export type Admin = {|
@@ -29,11 +18,17 @@ export type Admin = {|
   userId: UserID,
 |};
 */
-export const toAdminId/*: Cast<AdminID>*/ = toString;
-export const toAdmin/*: Cast<Admin>*/ = (value) => {
-  const object = toObject(value);
-  return {
-    id: toAdminId(object.id),
-    userId: toUserId(object.userId),
-  };
-};
+
+export const castUserId/*: Cast<UserID>*/ = castString;
+export const castAdminId/*: Cast<AdminID>*/ = castString;
+
+export const castUser/*: Cast<User>*/ = createObjectCaster({
+  id: castUserId,
+  name: castString,
+  adminId: createNullableCaster(castAdminId),
+  creatorAdminId: createNullableCaster(castAdminId),
+});
+export const castAdmin/*: Cast<Admin>*/ = createObjectCaster({
+  id: castAdminId,
+  userId: castUserId,
+});

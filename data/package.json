@@ -1,0 +1,25 @@
+{
+  "name": "@astral-atlas/sesame-data",
+  "version": "1.0.0",
+  "description": "",
+  "main": "entry.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/astral-atlas/sesame.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/astral-atlas/sesame/issues"
+  },
+  "homepage": "https://github.com/astral-atlas/sesame#readme",
+  "dependencies": {
+    "@astral-atlas/sesame-models": "^7.1.0",
+    "@aws-sdk/client-s3": "^3.34.0",
+    "@lukekaalim/cast": "^4.0.0"
+  }
+}

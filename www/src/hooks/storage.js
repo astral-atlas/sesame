@@ -1,7 +1,7 @@
 // @flow strict
 /*:: import type { JSONValue, Cast } from '@lukekaalim/cast'; */
 /*:: import type { StoredValue } from '../lib/storage.js'; */
-import { useMemo, useState } from 'preact/hooks';
+import { useMemo, useState } from '@lukekaalim/act';
 import { stringify, parse } from '@lukekaalim/cast';
 
 export const useLocalStorage = /*:: <T: JSONValue>*/(

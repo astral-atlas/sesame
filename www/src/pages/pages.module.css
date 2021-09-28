@@ -1,0 +1,51 @@
+
+.homepage {
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
+
+.homepageTitle {
+  margin-top: 15vh;
+  font-size: 32px;
+}
+.homepageSubTitle {
+  font-size: 24px;
+  margin: 0;
+}
+.titleDivdier {
+  width: calc(50% - 2px);
+  min-width: 498px;
+  margin: 0;
+}
+
+.logout {
+  padding: 8px;
+  margin-top: 32px;
+}
+.loggedInInfo {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 50%;
+  min-width: 500px;
+  background-color: #def4de;
+  padding: 32px;
+  flex-grow: 1;
+  box-sizing: border-box;
+}
+.loggedOutInfo {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 50%;
+  min-width: 500px;
+  background-color: #d8d7e3;
+  padding: 32px;
+  flex-grow: 1;
+  box-sizing: border-box;
+}

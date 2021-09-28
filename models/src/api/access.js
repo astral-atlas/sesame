@@ -1,71 +1,110 @@
 // @flow strict
-/*:: import type { POSTEndpoint, DELETEEndpoint, GETEndpoint } from '@lukekaalim/api-models'; */
-/*:: import type { JSONValue } from '@lukekaalim/cast'; */
-/*:: import type { User, UserID } from '../user'; */
-/*:: import type { AccessOfferProof, AccessGrantProof } from '../tokens'; */
-/*:: import type { Access, AccessOffer, AccessGrant, AccessRevocation, AccessID } from '../access'; */
-import { toString, castObject, toArray } from '@lukekaalim/cast';
-import { toAccess, toAccessId } from '../access.js';
-import { toAccessOfferProof, toAccessGrantProof } from '../tokens.js';
-import { toUserId, toUser } from '../user.js';
+/*:: import type { Cast } from '@lukekaalim/cast'; */
+/*:: import type { ResourceDescription } from '@lukekaalim/net-description'; */
+
+/*:: import type { GrantTarget, IdentityProof, IdentityGrant, IdentityGrantID, LoginGrant } from '../access.js'; */
+/*:: import type { User, UserID } from '../user.js'; */
+/*:: import type { APIResponse } from './meta.js'; */
+import { createObjectCaster as obj, createArrayCaster as arr, createConstantCaster as lit, createKeyedUnionCaster as or, castString as str } from '@lukekaalim/cast';
+import { castUserId } from '../user.js';
+import { castIdentityGrant, castLoginGrant, castIdentityGrantId, castIdentityProof } from '../access.js';
+import { createAPIResponseCaster as res } from './meta.js';
 
 /*::
-export type AtLeast<T> = { ...T, +[string]: JSONValue };
+export type AccessAPI = {
+  '/grants': {|
+    GET: {
+      query: { userId: UserID },
+      request: empty,
+      response: APIResponse<{ type: 'found', identity: $ReadOnlyArray<IdentityGrant>, login: $ReadOnlyArray<LoginGrant> }>
+    },
+  |},
+  '/grants/identity': {|
+    POST: {
+      query: empty,
+      request: { userId: UserID, service: string, granteeName: string },
+      response: APIResponse<{ type: 'created', grant: IdentityGrant, secret: string }>
+    },
+    DELETE: {
+      query: { userId: UserID, grantId: IdentityGrantID },
+      request: empty,
+      response: APIResponse<{ type: 'deleted' }>
+    }
+  |},
+  '/grants/identity/validate': {|
+    POST: {
+      query: empty,
+      request: { proof: IdentityProof },
+      response: APIResponse<
+        | { type: 'valid', grant: IdentityGrant }
+        | {| type: 'invalid' |}
+        >
+    }
+  |},
+  '/grants/login': {|
+    POST: {
+      query: empty,
+      request: { userId: UserID },
+      response: { grant: LoginGrant, secret: string }
+    }
+  |},
+};
 */
 
-export const POSTCreateAccessOffer/*: POSTEndpoint<
-  AtLeast<{ subject: UserID }>,
-  {| offerProof: AccessOfferProof |}, null
->*/ = {
-  method: 'POST',
-  path: '/user/access/offer',
-  toQuery: () => null,
-  toRequestBody: castObject(prop => ({
-    subject: prop('subject', toUserId),
-  })),
-  toResponseBody: castObject(prop => ({
-    offerProof: prop('offerProof', toAccessOfferProof),
-  })),
+export const grantsResource/*: ResourceDescription<AccessAPI['/grants']>*/ = {
+  path: '/grants',
+
+  GET: {
+    toQuery: obj({ userId: castUserId }),
+    toResponseBody: res(obj({
+      type: lit('found'),
+      identity: arr(castIdentityGrant),
+      login: arr(castLoginGrant),
+    })),
+  }
 };
 
-export const POSTAcceptAccess/*: POSTEndpoint<
-  {| deviceName: string, offerProof: AccessOfferProof |},
-  {| grantProof: AccessGrantProof, user: User |}, null
->*/ = {
-  method: 'POST',
-  path: '/user/access/accept',
-  toQuery: () => null,
-  toRequestBody: castObject(prop => ({
-    deviceName: prop('deviceName', toString),
-    offerProof: prop('offerProof', toAccessOfferProof),
-  })),
-  toResponseBody: castObject(prop => ({
-    grantProof: prop('grantProof', toAccessGrantProof),
-    user: prop('user', toUser),
-  })),
+export const grantsIdentityResource/*: ResourceDescription<AccessAPI['/grants/identity']>*/ = {
+  path: '/grants/identity',
+
+  POST: {
+    toRequestBody: obj({ userId: castUserId, service: str, granteeName: str }),
+    toResponseBody: res(obj({
+      type: lit('created'),
+      grant: castIdentityGrant,
+      secret: str,
+    })),
+  },
+  DELETE: {
+    toQuery: obj({ userId: castUserId, grantId: castIdentityGrantId }),
+    toResponseBody: res(obj({
+      type: lit('deleted')
+    })),
+  }
 };
 
-export const GETAccessList/*: GETEndpoint<
-  {| access: Access[] |},
-  {| subject: UserID |}
->*/ = {
-  method: 'GET',
-  path: '/user/access',
-  toQuery: castObject(prop => ({
-    subject: prop('subject', toUserId),
-  })),
-  toResponseBody: castObject(prop => ({
-    access: prop('access', v => toArray(v).map(toAccess)),
-  })),
+export const grantsIdentityValidateResource/*: ResourceDescription<AccessAPI['/grants/identity/validate']>*/ = {
+  path: '/grants/identity/validate',
+
+  POST: {
+    toRequestBody: obj({ proof: castIdentityProof }),
+    toResponseBody: res(or('type', {
+      'valid': obj({
+        type: lit('valid'),
+        grant: castIdentityGrant
+      }),
+      'invalid': obj({
+        type: lit('invalid')
+      }),
+    }))
+  }
 };
 
-export const POSTAccessRevoke/*: POSTEndpoint<{| subject: UserID, accessId: AccessID |}, null, null>*/ = {
-  method: 'POST',
-  path: '/user/access/revoke',
-  toQuery: () => null,
-  toResponseBody: () => null,
-  toRequestBody: castObject(prop => ({
-    subject: prop('subject',  toUserId),
-    accessId: prop('accessId', toAccessId)
-  })),
+export const grantsLogin/*: ResourceDescription<AccessAPI['/grants/login']>*/ = {
+  path: '/grants/login',
+
+  POST: {
+    toRequestBody: obj({ userId: castUserId }),
+    toResponseBody: obj({ type: lit('created'), grant: castLoginGrant, secret: str })
+  }
 };

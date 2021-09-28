@@ -1,17 +1,27 @@
 {
   "name": "@astral-atlas/sesame-cli",
   "version": "1.0.0",
-  "description": "CLI program for interacting with the sesame API",
-  "main": "src/main.js",
-  "bin": {
-    "sesame": "src/main.js"
-  },
+  "description": "Administrative tool for managing Sesame Data",
+  "main": "entry.js",
+  "type": "module",
   "dependencies": {
-    "@astral-atlas/sesame-client": "../client",
-    "@astral-atlas/sesame-models": "../models",
-    "@lukekaalim/api-models": "^1.0.0",
-    "@lukekaalim/http-client": "^4.0.0"
+    "@astral-atlas/sesame-data": "^1.0.0",
+    "@aws-sdk/client-s3": "^3.34.0"
+  },
+  "bin": {
+    "sesame": "./entry.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/astral-atlas/sesame.git"
   },
   "author": "",
-  "license": "ISC"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/astral-atlas/sesame/issues"
+  },
+  "homepage": "https://github.com/astral-atlas/sesame#readme"
 }
