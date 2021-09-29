@@ -2,7 +2,7 @@
   "name": "@astral-atlas/sesame-www",
   "private": true,
   "scripts": {
-    "build": "snowpack build",
+    "build": "vite build",
     "dev": "vite"
   },
   "devDependencies": {
