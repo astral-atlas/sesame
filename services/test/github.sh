@@ -1,21 +1,20 @@
-#!/bin/bash
-set -e
+#!/bin/bash -e
 
 # Download the JSON response of a github release by tag
 get_release() {
-  set -e
   owner=$1
   repo=$2
   tag=$3
+  url="https://api.github.com/repos/$owner/$repo/releases/tags/$tag"
+  echo $url
   curl -sf \
     -H "Accept: application/vnd.github.v3+json" \
     -H "Authorization: token $GITHUB_TOKEN" \
-    "https://api.github.com/repos/$owner/$repo/releases/tags/$tag"
+    $url
 }
 
 # Download a release asset from github
 download_release_asset() {
-  set -e
   release=$1
   output_directory=$2
   file_name=$3

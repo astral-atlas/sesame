@@ -1,11 +1,10 @@
-#!/bin/bash
-set -e
+#!/bin/bash -e
 
 # import some github utilities
-source ./github.sh
+source "${BASH_SOURCE%/*}/github.sh"
 
-#input=$(<input.json)
-input=$(</dev/stdin)
+input=$(<input.json)
+#input=$(</dev/stdin)
 
 temp_workspace=$(echo $input | jq -r '.temp_workspace')
 application_version_label=$(echo $input | jq -r '.application_version_label')
@@ -26,8 +25,8 @@ create_bundle() {
     release_asset=$(download_release_asset "$release" "$temp_workspace" 'sesame-api.zip')
     # Assemble Bundle
     unzip -o $release_asset -d $temp_workspace/bundle
-    echo $config                                > $temp_workspace/bundle/config.json
-    echo "web: node src/main.js ./config.json"  > $temp_workspace/bundle/Procfile
+    echo $config                                        > $temp_workspace/bundle/config.json
+    echo "api: node api/entry/main.js ../config.json"   > $temp_workspace/bundle/Procfile
     # Zip Bundle
     (cd $temp_workspace/bundle; zip -r ../$application_version_label.zip .)
   ) > /dev/null

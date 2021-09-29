@@ -20,8 +20,8 @@ data "external" "create_api_bundle" {
   program = ["bash", "${path.module}/create_api_bundle.sh"]
 
   query = {
-    "release_tag": "@astral-atlas/sesame-api@1.3.0",
-    "application_version_label": "sesame-api@1.3.0-2",
+    "release_tag": "@astral-atlas/sesame-api@2.0.0",
+    "application_version_label": "sesame-api@2.0.0",
     "temp_workspace": "temp/api",
     "config": jsonencode(local.api_config),
   }
