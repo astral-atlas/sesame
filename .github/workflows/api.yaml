@@ -8,20 +8,17 @@ on:
 jobs:
   release-api:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: api
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - run: npm ci install --production
+      - run: npm ci --workspace api --production
       - name: Archive
         uses: thedoctor0/zip-release@master
         with:
-          filename: ../sesame-api.zip
-          directory: api
+          filename: sesame-api.zip
+          directory: .
           exclusions: '*.git*'
       - name: Release
         uses: softprops/action-gh-release@v1
