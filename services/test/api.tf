@@ -21,7 +21,7 @@ data "external" "create_api_bundle" {
 
   query = {
     "release_tag": "@astral-atlas/sesame-api@2.0.0",
-    "application_version_label": "sesame-api@2.0.0-9",
+    "version_label_prefix": "2.0.0",
     "temp_workspace": "temp/api",
     "config": jsonencode(local.api_config),
   }
