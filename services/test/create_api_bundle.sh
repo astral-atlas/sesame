@@ -19,7 +19,7 @@ create_bundle() {
   (
     # Clean and Prepare
     rm -rf $temp_workspace
-    mkdir -p $temp_workspace $temp_workspace/bundle $temp_workspace/version
+    mkdir -p $temp_workspace $temp_workspace/bundle $temp_workspace/archives
     # Download release
     release=$(get_release "$owner" "$repo" "$release_tag")
     echo "$release" "$temp_workspace" "sesame-api.zip" >> out.log
@@ -29,17 +29,17 @@ create_bundle() {
     echo $config                                        > $temp_workspace/bundle/config.json
     echo "api: node api/src/entry.js config.json"       > $temp_workspace/bundle/Procfile
     # Zip Bundle
-    (cd $temp_workspace/bundle; zip -r ../version/source_bundle.zip .)
+    (cd $temp_workspace/bundle; zip -r ../archives/source_bundle.zip .)
   ) > /dev/null
 
   # Get Bundle hash
-  hash=$(sha1sum $temp_workspace"/version/source_bundle.zip")
+  hash=$(sha1sum $temp_workspace"/archives/source_bundle.zip" | head -c 6)
   application_version_label=$version_label_prefix"_"$hash
   cp -T \
-    $temp_workspace"/version/source_bundle.zip" \
-    $temp_workspace"/version/"$application_version_label".zip"
+    $temp_workspace"/archives/source_bundle.zip" \
+    $temp_workspace"/archives/"$application_version_label".zip"
 
-  echo $temp_workspace/version/$application_version_label.zip
+  echo $temp_workspace/archives/$application_version_label.zip
 }
 
 bundle=$(create_bundle)

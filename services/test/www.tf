@@ -1,3 +1,13 @@
+## The specific source code
+module "www_release" {
+  source = "../modules/github_release"
+  owner = "astral-atlas"
+  repository = "sesame"
+  release_tag = "@astral-atlas/sesame-www@2.0.1"
+  release_asset_name = "sesame-www.zip"
+  output_directory = "./temp"
+}
+
 resource "aws_s3_bucket" "www_test" {
   bucket = "sesame.astral-atlas.com"
 
@@ -18,15 +28,6 @@ locals {
   }
   www_dir = data.external.unzip_www.result.output_directory
   www_objects = [for o in fileset(local.www_dir, "**") : o if o != "config.json5"]
-}
-
-module "www_release" {
-  source = "../modules/github_release"
-  owner = "astral-atlas"
-  repository = "sesame"
-  release_tag = "@astral-atlas/sesame-www@2"
-  release_asset_name = "sesame-www.zip"
-  output_directory = "./temp"
 }
 
 data "external" "unzip_www" {
