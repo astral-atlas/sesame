@@ -21,6 +21,11 @@ export type Config = {
   port: ?number,
   host: ?string,
   data: ?DataConfig,
+  www: ?{
+    identity: ?{
+      origin: ?string
+    }
+  }
 };
 */
 export const castDataConfig/*: Cast<DataConfig>*/ = or('type', {
@@ -33,6 +38,11 @@ export const castConfig/*: Cast<Config>*/ = obj({
   host: maybe(str),
   port: maybe(num),
   data: maybe(castDataConfig),
+  www: maybe(obj({
+    identity: maybe(obj({
+      origin: maybe(str)
+    })),
+  }))
 });
 
 export const loadConfigFromFile = async (path/*: string*/ = './sesame_config.json')/*: Promise<Config>*/ => {
@@ -43,7 +53,7 @@ export const loadConfigFromFile = async (path/*: string*/ = './sesame_config.jso
     return sesameConfig;
   } catch (error) {
     if(error.code === 'ENOENT') {
-      return { port: null, host: null, data: null };
+      return { port: null, host: null, data: null, www: null };
     }
     throw error;
   }
