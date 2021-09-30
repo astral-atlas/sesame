@@ -8,6 +8,7 @@
     "@astral-atlas/sesame-data": "^1.0.0",
     "@aws-sdk/client-s3": "^3.34.0",
     "crypto-random-string": "^4.0.0",
+    "qrcode-terminal": "^0.12.0",
     "uuid": "^8.3.2"
   },
   "bin": {

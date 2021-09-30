@@ -7,7 +7,7 @@ source "${BASH_SOURCE%/*}/github.sh"
 input=$(</dev/stdin)
 
 temp_workspace=$(echo $input | jq -r '.temp_workspace')
-version_label_prefix=$(echo $input | jq -r '.version_label_prefix')
+application_version_label=$(echo $input | jq -r '.application_version_label')
 release_tag=$(echo $input | jq -r '.release_tag')
 config=$(echo $input | jq -r '.config')
 
@@ -27,18 +27,10 @@ create_bundle() {
     # Assemble Bundle
     unzip -o "$release_asset" -d $temp_workspace/bundle
     echo $config                                        > $temp_workspace/bundle/config.json
-    echo "api: node api/src/entry.js config.json"       > $temp_workspace/bundle/Procfile
+    echo "web: node api/src/entry.js config.json"       > $temp_workspace/bundle/Procfile
     # Zip Bundle
-    (cd $temp_workspace/bundle; zip -r ../archives/source_bundle.zip .)
+    (cd $temp_workspace/bundle; zip -r ../archives/$application_version_label.zip .)
   ) > /dev/null
-
-  # Get Bundle hash
-  hash=$(sha1sum $temp_workspace"/archives/source_bundle.zip" | head -c 6)
-  application_version_label=$version_label_prefix"_"$hash
-  cp -T \
-    $temp_workspace"/archives/source_bundle.zip" \
-    $temp_workspace"/archives/"$application_version_label".zip"
-
   echo $temp_workspace/archives/$application_version_label.zip
 }
 

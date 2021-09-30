@@ -24,14 +24,15 @@ data "external" "create_api_bundle" {
 
   query = {
     "release_tag": "@astral-atlas/sesame-api@2.0.0",
-    "version_label_prefix": "2.0.0",
+    "application_version_label": "sesame-api@2.0.0-${substr(md5(jsonencode(local.api_config)), 0, 6)}",
     "temp_workspace": "temp/api",
     "config": jsonencode(local.api_config),
   }
 }
 locals {
   api_config = {
-    "data": { "type": "awsS3", "bucket": aws_s3_bucket.api_data.arn, "prefix": "/" },
+    "md5_breaker": 2
+    "data": { "type": "awsS3", "bucket": aws_s3_bucket.api_data.bucket, "prefix": "/" },
     "port": 8080 // this is the default port elastic beanstalk will listen to
   }
 }
@@ -70,7 +71,10 @@ data "aws_iam_policy_document" "api_role_policy" {
   statement {
     sid = "DataAccess"
     actions   = ["s3:Get*", "s3:List*", "s3:PutObject"]
-    resources = [aws_s3_bucket.api_data.arn]
+    resources = [
+      aws_s3_bucket.api_data.arn,
+      "${aws_s3_bucket.api_data.arn}/*"
+    ]
     effect = "Allow"
   }
 }
@@ -83,7 +87,7 @@ resource "aws_iam_role" "api_role" {
     name = "api_role_policy"
     policy = data.aws_iam_policy_document.api_role_policy.json
   }
-  
+
   managed_policy_arns = [
     data.aws_iam_policy.elastic_beanstalk_web_policy.arn,
     data.aws_iam_policy.elastic_beanstalk_worker_policy.arn,
@@ -142,4 +146,7 @@ output "api-origin-name" {
 }
 output "api-public-name" {
   value = "${aws_route53_record.api.name}.${data.aws_route53_zone.root.name}"
+}
+output "api-data-origin" {
+  value = aws_s3_bucket.api_data.bucket
 }

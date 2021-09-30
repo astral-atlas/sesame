@@ -1,5 +1,5 @@
 {
   "port": 5543,
   "host": "localhost",
-  "data": { type: "awsS3", "bucket": "sesame-test-data", "prefix": "sesame/" }
+  "data": { type: "awsS3", "bucket": 'sesame-test-data20210930112954914600000001', "prefix": "/" }
 }

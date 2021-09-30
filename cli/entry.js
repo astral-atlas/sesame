@@ -5,19 +5,29 @@ import { createAWSS3SesameData } from "@astral-atlas/sesame-data";
 import { createLoginProof, encodeProofToken } from "@astral-atlas/sesame-models";
 import generateString from 'crypto-random-string';
 import { v4 as uuid } from 'uuid';
+import qrcode from 'qrcode-terminal';
 
+const bucketName = 'sesame-test-data20210930112954914600000001';
 
 const initAWS = async () => {
   const s3 = new S3({ region: 'ap-southeast-2' });
 
   const emptyTable = Buffer.from(JSON.stringify([]));
+  const { keys } = createAWSS3SesameData(s3, bucketName, '/');
 
-  await Promise.all([
-    s3.putObject({ Body: emptyTable, Bucket: 'sesame-test-data', Key: 'sesame/users.json', ContentType: 'application/json' }),
-    s3.putObject({ Body: emptyTable, Bucket: 'sesame-test-data', Key: 'sesame/identity.json', ContentType: 'application/json' }),
-    s3.putObject({ Body: emptyTable, Bucket: 'sesame-test-data', Key: 'sesame/login.json', ContentType: 'application/json' }),
-    s3.putObject({ Body: emptyTable, Bucket: 'sesame-test-data', Key: 'sesame/secrets.json', ContentType: 'application/json' })
-  ]);
+  await Promise.all(
+    Object.values(keys)
+      .map(k => typeof k === 'string' ? k : null)
+      .filter(Boolean)
+      .map(bucketKey =>
+        s3.putObject({
+          Body: emptyTable,
+          Bucket: bucketName,
+          Key: bucketKey,
+          ContentType: 'application/json'
+        })
+      )
+  );
 
   console.log('done');
 };
@@ -25,7 +35,7 @@ const initAWS = async () => {
 const addUser = async (name) => {
   const s3 = new S3({ region: 'ap-southeast-2' });
 
-  const { data } = createAWSS3SesameData(s3, 'sesame-test-data', 'sesame');
+  const { data, keys } = createAWSS3SesameData(s3, 'sesame-test-data20210930112954914600000001', '/');
   const user = {
     id: uuid(),
     name,
@@ -40,10 +50,14 @@ const addUser = async (name) => {
   const secret = generateString({ length: 32 });
   await data.grants.login.set({ partition: user.id, sort: grant.id }, grant)
   await data.grants.secrets.set({ partition: user.id, sort: grant.id }, secret)
+  await data.users.set(user.id, user);
   const proof = createLoginProof(grant, secret);
-  const token = encodeProofToken(proof)
-  console.log(token)
-  console.log(encodeURI(token));
+  const token = encodeProofToken(proof);
+  const loginUrl = new URL('/token/login.html', 'http://sesame.astral-atlas.com');
+  loginUrl.searchParams.append('token', token);
+
+  console.log(loginUrl.href);
+  qrcode.generate(loginUrl.href, { small: true });
 };
 
 const entry = async (command, ...subcommands) => {
