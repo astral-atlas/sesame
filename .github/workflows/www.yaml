@@ -20,10 +20,14 @@ jobs:
         with:
           files: www/artifacts/
           dest: sesame-www.zip
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 6
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: sesame-www-${{ github.sha }}
+          tag_name: sesame-www-${{ steps.short-sha.outputs.sha }}
           draft: true
           files: sesame-www.zip
         env:
