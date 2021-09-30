@@ -2,6 +2,7 @@
 .*/_snowpack/.*
 .*/.cache/.*
 .*/artifacts/.*
+.*/temp/.*
 [include]
 
 [libs]

@@ -5,7 +5,7 @@ terraform {
       version = "~> 3.0"
     }
     immutable-elastic-beanstalk = {
-      source = "lukekaalim/immutable-elastic-beanstalk"
+      source = "registry.terraform.io/lukekaalim/immutable-elastic-beanstalk"
       version = "2.0.4"
     }
   }

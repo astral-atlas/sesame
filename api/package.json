@@ -4,6 +4,9 @@
   "private": true,
   "description": "Identity Service API for Astral Atlas",
   "main": "src/entry.js",
+  "engines": {
+    "node": ">= 14"
+  },
   "type": "module",
   "scripts": {
     "dev": "npx nodemon src/entry.js",

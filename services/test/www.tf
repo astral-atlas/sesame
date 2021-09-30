@@ -8,20 +8,23 @@ resource "aws_s3_bucket" "www_test" {
 }
 
 locals {
-  www_objects = {
-    "index.html": "text/html",
-    "bundle.js": "application/javascript",
-    "bundle.js.map": "application/javascript",
-    "style.css": "text/css",
-    "favicon.ico": "image/png",
+  mime_types = {
+    ".html": "text/html",
+    ".css": "text/css",
+    ".js": "application/javascript",
+    ".json": "application/json",
+    ".json5": "application/json5",
+    ".ico": "image/png",
   }
+  www_dir = data.external.unzip_www.result.output_directory
+  www_objects = [for o in fileset(local.www_dir, "**") : o if o != "config.json5"]
 }
 
 module "www_release" {
   source = "../modules/github_release"
   owner = "astral-atlas"
   repository = "sesame"
-  release_tag = "@astral-atlas/sesame-www@1.5.2"
+  release_tag = "@astral-atlas/sesame-www@2"
   release_asset_name = "sesame-www.zip"
   output_directory = "./temp"
 }
@@ -36,22 +39,24 @@ data "external" "unzip_www" {
 }
 
 resource "aws_s3_bucket_object" "www_objects" {
-  for_each = local.www_objects
+  for_each = toset(local.www_objects)
   bucket = aws_s3_bucket.www_test.bucket
 
   key    = each.key
-  content_type = each.value
+  content_type = lookup(local.mime_types, regex("\\.[^.]+$", each.key), null)
 
   acl = "public-read"
-  source = "${data.external.unzip_www.result.output_directory}/${each.key}"
-  etag = filemd5("${data.external.unzip_www.result.output_directory}/${each.key}")
+  source = join("/", [local.www_dir, each.key])
+  etag = filemd5(join("/", [local.www_dir, each.key]))
 }
 
 locals {
   www_config = {
+    origin: "http://${aws_route53_record.www.fqdn}",
+    name: "Open Sesame",
     api: {
       sesame: {
-        baseURL: "http://api.sesame.astral-atlas.com"
+        origin: "http://${aws_route53_record.api.fqdn}"
       }
     }
   }
