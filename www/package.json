@@ -1,9 +1,11 @@
 {
   "name": "@astral-atlas/sesame-www",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "postversion": "../scripts/postversion.sh"
   },
   "devDependencies": {
     "vite": "^2.5.10"
