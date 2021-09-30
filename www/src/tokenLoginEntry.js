@@ -56,12 +56,10 @@ const TokenLogin = ({ config, token, service }) => {
 
 const tokenLoginEntry = async () => {
   try {
-    const exampleToken = "%7B%22type%22:%22login%22,%22grantId%22:%220%22,%22userId%22:%22f06f27ef-7274-49d1-b9ef-40ef19015ee8%22,%22secret%22:%22yes%22%7D";
-
     const config = await loadConfigFromURL('/config.json5');
     const params = new URL(document.URL).searchParams;
     const service = config.origin;
-    const encodedToken = exampleToken;//params.get('token');
+    const encodedToken = params.get('token');
     if (!encodedToken)
       throw new Error();
     const token = decodeURI(encodedToken);
