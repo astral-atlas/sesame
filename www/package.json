@@ -15,7 +15,6 @@
     "@lukekaalim/act-web": "^0.4.1",
     "@lukekaalim/cast": "^4.0.0",
     "@lukekaalim/http-client": "^5.2.0",
-    "json5": "^2.2.0",
-    "preact": "^10.5.9"
+    "json5": "^2.2.0"
   }
 }
