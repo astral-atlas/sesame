@@ -1,14 +1,14 @@
 // @flow strict
 /*:: import type { Node } from 'preact'; */
-/*:: import type { IdentityGrant } from '@astral-atlas/sesame-models'; */
+/*:: import type { IdentityGrant, IdentityProof } from '@astral-atlas/sesame-models'; */
 import { h } from 'preact';
-import { useEffect, useMemo } from 'preact/hooks';
-import { castWWWMessage } from '@astral-atlas/sesame-models';
+import { useEffect } from 'preact/hooks';
+import { castWWWMessage, encodeProofToken, createIdentityProof } from '@astral-atlas/sesame-models';
 
 /*::
 export type AuthorizerFrameProps = {|
-  identityOrigin: URL,
-  onIdentityGrant?: (grant: IdentityGrant, secret: string) => mixed
+  identityOrigin: URL | string,
+  onIdentityGrant?: ({ token: string, proof: IdentityProof, grant: IdentityGrant, secret: string }) => mixed
 |};
 */
 const containerStyle = {
@@ -34,7 +34,10 @@ export const AuthorizerFrame = ({
         const message = castWWWMessage(event.data);
         switch (message.type) {
           case 'sesame:new-identity-grant':
-            return onIdentityGrant(message.grant, message.secret);
+            const { grant, secret } = message;
+            const proof = createIdentityProof(message.grant, message.secret);
+            const token = encodeProofToken(proof);
+            return onIdentityGrant({ token, grant, secret, proof });
           default:
             return;
         }
