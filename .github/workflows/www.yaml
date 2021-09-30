@@ -23,6 +23,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: sesame-www-${{ github.sha }}
           draft: true
           files: sesame-www.zip
         env:
