@@ -8,9 +8,6 @@ on:
 jobs:
   publish-models:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: models
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -18,6 +15,6 @@ jobs:
           node-version: 16
           registry-url: https://registry.npmjs.org/
       - run: npm ci
-      - run: npm publish --access public
+      - run: npm publish --access public -w models
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
