@@ -8,15 +8,17 @@ import { castWWWMessage, encodeProofToken, createIdentityProof } from '@astral-a
 /*::
 export type AuthorizerFrameProps = {|
   identityOrigin: URL | string,
-  onIdentityGrant?: ({ token: string, proof: IdentityProof, grant: IdentityGrant, secret: string }) => mixed
+  onIdentityGrant?: ({ token: string, proof: IdentityProof, grant: IdentityGrant, secret: string }) => mixed,
+  frameStyle?: { [string]: mixed },
+  containerStyle?: { [string]: mixed },
 |};
 */
-const containerStyle = {
+const defaultContainerStyle = {
   resize: 'both',
   overflow: 'hidden'
 };
 
-const style = {
+const defaultFrameStyle = {
   border: 'none',
   margin: 0,
   padding: 0,
@@ -27,6 +29,8 @@ const style = {
 export const AuthorizerFrame = ({
   identityOrigin,
   onIdentityGrant = () => {},
+  containerStyle = defaultContainerStyle,
+  frameStyle = defaultFrameStyle,
 }/*: AuthorizerFrameProps*/)/*: Node*/ => {
   useEffect(() => {
     const onMessage = (event/*: MessageEvent*/) => {
@@ -51,6 +55,6 @@ export const AuthorizerFrame = ({
   src.searchParams.append('service', encodeURI(window.location.href));
 
   return h('div', { style: containerStyle },
-    h('iframe', { style, src: src.href, width: 512, height: 128 })
+    h('iframe', { style: frameStyle, src: src.href, width: 512, height: 128 })
   );
 };
