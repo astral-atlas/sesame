@@ -39,3 +39,19 @@ export const createClient = (baseURL/*: URL*/, httpClient/*: HTTPClient*/, proof
     },
   };
 };
+
+/*::
+export type SesameSDK = {
+  authorize: (authorizationHeader: Authorization) => { type: 'valid', user: User } | { type: 'invalid' }
+};
+*/
+
+export const createSesameSDK = (baseURL/*: URL*/, httpClient/*: HTTPClient*/, sdkKey/*: string*/)/*: SesameSDK*/ => {
+  const authorize = async (header) => {
+    
+  };
+
+  return {
+    authorize,
+  };
+};
