@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/astral-atlas/sesame#readme",
   "dependencies": {
-    "@astral-atlas/sesame-models": "^7.1.0",
+    "@astral-atlas/sesame-models": "^8.0.1",
     "@aws-sdk/client-s3": "^3.34.0",
     "@lukekaalim/cast": "^4.0.0"
   }
