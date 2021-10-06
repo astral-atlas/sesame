@@ -1,6 +1,6 @@
 {
   "name": "@astral-atlas/sesame-client",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "type": "module",
   "description": "Client for making sesame-api requests",
   "main": "src/main.js",
