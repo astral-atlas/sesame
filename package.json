@@ -8,7 +8,8 @@
         "components",
         "examples/trusted",
         "data",
-        "cli"
+        "cli",
+        "sdk"
     ],
     "scripts": {
         "dev:www": "cd www; npm run dev",
