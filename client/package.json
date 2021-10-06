@@ -10,7 +10,7 @@
   "author": "Luke Kaalim",
   "license": "MIT",
   "dependencies": {
-    "@astral-atlas/sesame-models": "^7.0.0",
+    "@astral-atlas/sesame-models": "^8.0.1",
     "@lukekaalim/cast": "^4.0.0",
     "@lukekaalim/net-description": "^1.1.0"
   },
