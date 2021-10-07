@@ -10,7 +10,7 @@
     "postversion": "../scripts/postversion.sh"
   },
   "dependencies": {
-    "@lukekaalim/cast": "^3.0.0"
+    "@lukekaalim/cast": "^4.1.0"
   },
   "peerDependencies": {
     "@lukekaalim/net-description": "^1.0.0"

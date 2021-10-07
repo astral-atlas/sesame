@@ -1,25 +1,41 @@
 // @flow strict
 /*:: import type { Cast } from '@lukekaalim/cast'; */
-/*:: import type { IdentityGrant } from './access'; */
+/*:: import type { IdentityGrant, LinkGrant } from './grant'; */
 
 import { createKeyedUnionCaster, createObjectCaster, createConstantCaster, castString } from "@lukekaalim/cast";
-import { castIdentityGrant } from "./access.js";
+import { castIdentityGrant, castLinkGrant } from "./grant.js";
 
 /*::
 export type WWWMessage =
-  | NewIdentityGrant
+  | IdentityProviderReady
+  | PromptLinkGrant
+  | UpdateLinkedIdentityGrant
 
-export type NewIdentityGrant = {|
-  type: 'sesame:new-identity-grant',
-  grant: IdentityGrant,
+export type IdentityProviderReady = {|
+  type: 'sesame:identity-provider-ready',
+|};
+
+export type PromptLinkGrant = {|
+  type: 'sesame:prompt-link-grant',
+|}
+
+export type UpdateLinkedIdentityGrant = {|
+  type: 'sesame:update-link-grant',
+  grant: LinkGrant,
   secret: string,
 |};
 */
 
 export const castWWWMessage/*: Cast<WWWMessage>*/ = createKeyedUnionCaster('type', {
-  'sesame:new-identity-grant': createObjectCaster({
-    type: createConstantCaster('sesame:new-identity-grant'),
-    grant: castIdentityGrant,
+  'sesame:udpate-linked-identity-grant': createObjectCaster({
+    type: createConstantCaster('sesame:update-link-grant'),
+    grant: castLinkGrant,
     secret: castString,
-  })
+  }),
+  'sesame:prompt-link-grant': createObjectCaster({
+    type: createConstantCaster('sesame:prompt-link-grant'),
+  }),
+  'sesame:identity-provider-ready': createObjectCaster({
+    type: createConstantCaster('sesame:identity-provider-ready'),
+  }),
 });

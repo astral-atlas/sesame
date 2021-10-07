@@ -8,15 +8,13 @@
         "components",
         "examples/trusted",
         "data",
-        "cli",
-        "sdk"
+        "cli"
     ],
     "scripts": {
-        "dev:www": "cd www; npm run dev",
-        "dev:api": "cd api; npm run dev",
-        "dev:example/third-party": "npm run dev --workspace=examples/third-party",
-        "dev:example/trusted": "npm run dev --workspace=examples/trusted",
-        "dev": "concurrently npm:dev:*"
+        "dev:www": "npm run dev -w www",
+        "dev:api": "npm run dev -w api",
+        "dev:example/trusted": "npm run dev -w examples/trusted",
+        "dev": "npx concurrently npm:dev:*"
     },
     "devDependencies": {
         "flow-bin": "^0.160.2"
