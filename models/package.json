@@ -1,6 +1,6 @@
 {
   "name": "@astral-atlas/sesame-models",
-  "version": "8.0.1",
+  "version": "9.0.0",
   "description": "User and Identity data structures and converters for Astral Atlas",
   "main": "src/main.js",
   "type": "module",
