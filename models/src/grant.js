@@ -1,11 +1,13 @@
 // @flow strict
-/*:: import type { AdminID, UserID } from "./user"; */
 /*:: import type { Cast, JSONValue } from '@lukekaalim/cast'; */
+/*:: import type { ServiceID } from './services.js' */
+/*:: import type { AdminID, UserID } from "./user.js"; */
 import {
   createObjectCaster, createConstantCaster, castString, c,
   createConstantUnionCaster, createKeyedUnionCaster, createNullableCaster, castBoolean
 } from '@lukekaalim/cast';
 import { castUserId } from "./user.js";
+import { castServiceId } from "./services.js";
 
 /*::
 // Describe in total a user's access
@@ -102,9 +104,11 @@ export type ServiceGrantID = string;
 export type ServiceGrant = {
   type: 'service',
   id: ServiceGrantID,
+  serviceId: ServiceID,
 }
 */
 export const castServiceGrant/*: Cast<ServiceGrant>*/ = createObjectCaster({
   type: createConstantCaster('service'),
   id: castServiceGrantId,
+  serviceId: castServiceId,
 });
