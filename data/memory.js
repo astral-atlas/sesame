@@ -3,25 +3,32 @@
 /*:: import type { SesameData } from './entry.js'; */
 import { createMemoryTable, createCompositeKeyTable } from './table.js';
 
-/*::
-export type MemoryInit = {
-  users: User[],
-};
-*/
 
-export const createMemorySesameData = (init/*: MemoryInit*/ = { users: [] })/*: { data: SesameData }*/ => {
-  const users = createMemoryTable(init.users.map(u => [u.id, u]));
-  const identity = createCompositeKeyTable(createMemoryTable());
-  const login = createCompositeKeyTable(createMemoryTable());
-  const secrets = createCompositeKeyTable(createMemoryTable());
+export const createMemorySesameData = ()/*: { data: SesameData }*/ => {
+  const users = createMemoryTable();
+  const services = createMemoryTable();
+  const admins = createMemoryTable();
+
+  const grants = {
+    identity: createCompositeKeyTable(createMemoryTable()),
+    login:    createCompositeKeyTable(createMemoryTable()),
+    link:     createCompositeKeyTable(createMemoryTable()),
+    service:  createCompositeKeyTable(createMemoryTable()),
+  }
+
+  const secrets = {
+    identity: createMemoryTable(),
+    login:    createMemoryTable(),
+    link:     createMemoryTable(),
+    service:  createMemoryTable(),
+  }
 
   const data =  {
     users,
-    grants: {
-      identity,
-      secrets,
-      login,
-    }
+    services,
+    admins,
+    secrets,
+    grants
   }
   return {
     data,
