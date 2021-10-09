@@ -1,37 +1,32 @@
 // @flow strict
-/*:: import type { UserID, User } from '@astral-atlas/sesame-models'; */
-/*:: import type {
-  IdentityGrantID, IdentityGrant,
-  LoginGrantID, LoginGrant,
-  Service, ServiceID,
-  ServiceGrant, ServiceGrantID,
-  LinkGrant, LinkGrantID,
-  AdminID, Admin,
-} from '@astral-atlas/sesame-models'; */
+/*:: import type { S3 } from "@aws-sdk/client-s3"; */
+/*:: import type { SesameData } from './data'; */
+import { resolve, join } from 'path';
+import { createBufferedSesameData } from './data.js';
+import { createFileBufferStore, createMemoryBufferStore, createS3BufferStore } from "./sources/buffer";
 
-/*:: import type { Table, CompositeTable } from './table.js'; */
-
-/*::
-export type SesameData = {
-  users:      Table<UserID, User>,
-  admins:     Table<AdminID, Admin>,
-  services:   Table<ServiceID, Service>,
-
-  secrets: {
-    login:    Table<LoginGrantID, string>,
-    identity: Table<IdentityGrantID, string>,
-    service:  Table<ServiceGrantID, string>,
-    link:     Table<LinkGrantID, string>,
-  },
-  grants: {
-    identity: CompositeTable<UserID, IdentityGrantID, IdentityGrant>,
-    login:    CompositeTable<UserID, LoginGrantID, LoginGrant>,
-    service:  CompositeTable<ServiceID, ServiceGrantID, ServiceGrant>,
-    link:     CompositeTable<UserID, LinkGrantID, LinkGrant>,
-  }
-};
-*/
-
-export * from './memory.js';
-export * from './file.js';
-export * from './aws.js';
+export const createMemoryData = ()/*: { data: SesameData }*/ => {
+  const { data } = createBufferedSesameData(() => createMemoryBufferStore());
+  return { data };
+}
+export const createFileData = (directory/*: string*/)/*: { data: SesameData, files: string[] }*/ => {
+  const files = [];
+  const createBackingBufferBuffer = (name) => {
+    const path = resolve(directory, `${name}.json`);
+    files.push(path);
+    return createFileBufferStore(path);
+  };
+  const { data } = createBufferedSesameData(createBackingBufferBuffer);
+  return { data, files };
+}
+export const createS3Data = (S3/*: S3*/, bucket/*: string*/, keyPrefix/*: string*/)/*: { data: SesameData, keys: string[] }*/ => {
+  const keys = [];
+  const createBackingBufferBuffer = (name) => {
+    const key = join(keyPrefix, name);
+    keys.push(key);
+    return createS3BufferStore(S3, bucket, key);
+  };
+  const { data } = createBufferedSesameData(createBackingBufferBuffer);
+  return { data, keys };
+}
+/*:: export type * from './data'; */
