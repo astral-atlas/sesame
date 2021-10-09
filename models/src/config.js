@@ -12,12 +12,7 @@ export type APIDataConfig =
 export type APIConfig = {
   port: ?number,
   host: ?string,
-  data: ?APIDataConfig,
-  www: {
-    sesame: {
-      origin: string
-    }
-  }
+  data: ?APIDataConfig
 };
 */
 
@@ -29,12 +24,7 @@ export const castAPIDataConfig/*: Cast<APIDataConfig>*/ = c.or('type', {
 export const castAPIConfig/*: Cast<APIConfig>*/ = c.obj({
   port: c.maybe(c.num),
   host: c.maybe(c.str),
-  data: c.maybe(castAPIDataConfig),
-  www: c.obj({
-    sesame: c.obj({
-      origin: c.str
-    })
-  })
+  data: c.maybe(castAPIDataConfig)
 });
 
 
