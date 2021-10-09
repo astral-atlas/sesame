@@ -1,6 +1,7 @@
 // @flow strict
 /*:: import type { Cast } from '@lukekaalim/cast'; */
 /*:: import type { UserID } from './user.js'; */
+/*:: import type { ServiceID } from './services.js'; */
 /*:: import type {
   LoginGrantID, LoginGrant,
   IdentityGrantID, IdentityGrant,
@@ -11,6 +12,7 @@
 import { createObjectCaster, createConstantCaster, createKeyedUnionCaster, castString } from '@lukekaalim/cast';
 import { castIdentityGrantId } from './grant.js';
 import { castUserId } from './user.js';
+import { castServiceId } from "./services.js";
 
 /*
 ## Proofs
@@ -54,6 +56,7 @@ export type LinkProof = {|
 
 export type ServiceProof = {|
   type: 'service',
+  serviceId: ServiceID,
   grantId: ServiceGrantID,
   secret: string,
 |};
@@ -87,6 +90,7 @@ export const createServiceProof = (serviceGrant/*: ServiceGrant*/, secret/*: str
   return {
     type: 'service',
     grantId: serviceGrant.id,
+    serviceId: serviceGrant.serviceId,
     secret,
   };
 }
@@ -112,6 +116,7 @@ export const castLinkProof/*: Cast<LinkProof>*/ = createObjectCaster({
 export const castServiceProof/*: Cast<ServiceProof>*/ = createObjectCaster({
   type: createConstantCaster('service'),
   grantId: castIdentityGrantId,
+  serviceId: castServiceId,
   secret: castString,
 });
 export const castProof/*:Cast<Proof>*/ = createKeyedUnionCaster('type', {
