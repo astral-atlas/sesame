@@ -1,14 +1,14 @@
 // @flow strict
 /*:: import type { SesameData } from '@astral-atlas/sesame-data'; */
+/*:: import type { APIConfig } from '@astral-atlas/sesame-models'; */
 /*:: import type { GrantService } from './services/grants.js'; */
 /*:: import type { AuthorityService } from './services/auth.js'; */
 /*:: import type { UserService } from './services/users.js'; */
-/*:: import type { Config } from "./config";*/
 import { createGrantService } from './services/grants.js';
 import { createAuthorityService } from './services/auth.js';
 import { createUserService } from './services/users.js';
 
-import { createMemorySesameData, createFileSesameData, createAWSS3SesameData } from '@astral-atlas/sesame-data';
+import { createMemoryData, createFileData, createS3Data } from '@astral-atlas/sesame-data';
 import { S3 } from "@aws-sdk/client-s3";
 
 /*::
@@ -19,34 +19,27 @@ export type Services = {
 };
 */
 
-const lukeUser = {
-  id: '1',
-  name: 'luke',
-  adminId: null,
-  creatorAdminId: null
-};
-
-export const createData = async (config/*: Config*/)/*: Promise<SesameData>*/ => {
+export const createData = async (config/*: APIConfig*/)/*: Promise<SesameData>*/ => {
   const dataConfig = config.data || { type: 'memory' };
   switch (dataConfig.type) {
     case 'memory':
-      const { data: memoryData } = createMemorySesameData({ users: [lukeUser] });
+      const { data: memoryData } = createMemoryData();
       return memoryData;
     case 'file':
-      const { data: fileData } = await createFileSesameData(dataConfig.dataDir || undefined)
+      const { data: fileData } = await createFileData(dataConfig.dataDir || './data')
       return fileData;
     case 'awsS3':
       const s3 = new S3({ region: 'ap-southeast-2' });
-      const { data: awsS3Data } = createAWSS3SesameData(s3, dataConfig.bucket, dataConfig.prefix || '/sesame');
+      const { data: awsS3Data } = createS3Data(s3, dataConfig.bucket, dataConfig.prefix || '/sesame');
       return awsS3Data;
   }
 };
 
-export const createServices = async (config/*: Config*/)/*: Promise<Services>*/ => {
+export const createServices = async (config/*: APIConfig*/)/*: Promise<Services>*/ => {
   const data = await createData(config);
 
-  const grant = createGrantService(data)
   const auth = createAuthorityService(data);
+  const grant = createGrantService(data, auth)
   const user = createUserService(data.users);
 
   return {

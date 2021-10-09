@@ -1,22 +1,22 @@
 {
-    "private": true,
-    "workspaces": [
-        "api",
-        "client",
-        "models",
-        "www",
-        "components",
-        "examples/trusted",
-        "data",
-        "cli"
-    ],
-    "scripts": {
-        "dev:www": "npm run dev -w www",
-        "dev:api": "npm run dev -w api",
-        "dev:example/trusted": "npm run dev -w examples/trusted",
-        "dev": "npx concurrently npm:dev:*"
-    },
-    "devDependencies": {
-        "flow-bin": "^0.160.2"
-    }
+  "private": true,
+  "workspaces": [
+    "api",
+    "client",
+    "models",
+    "www",
+    "components",
+    "examples/trusted",
+    "data",
+    "cli"
+  ],
+  "scripts": {
+    "dev:www": "npm run dev -w www",
+    "dev:api": "npm run dev -w api",
+    "dev:example/trusted": "npm run dev -w examples/trusted",
+    "dev": "npx concurrently npm:dev:*"
+  },
+  "devDependencies": {
+    "flow-bin": "^0.160.2"
+  }
 }

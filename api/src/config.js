@@ -1,59 +1,21 @@
 // @flow strict
-/*:: import type { UserID, AdminID } from '@astral-atlas/sesame-models'; */
+/*:: import type { UserID, AdminID, APIConfig } from '@astral-atlas/sesame-models'; */
 /*:: import type { Cast } from '@lukekaalim/cast'; */
 import { promises } from 'fs';
-import {
-  createObjectCaster as obj, castString as str, castNumber as num,
-  createNullableCaster as maybe, createKeyedUnionCaster as or,
-  createConstantCaster as lit,
-} from '@lukekaalim/cast';
+import { castAPIConfig } from '@astral-atlas/sesame-models';
 import JSON5 from 'json5';
 const { readFile } = promises;
 
 
-/*::
-export type DataConfig =
-  | {| type: 'memory' |}
-  | {| type: 'file', dataDir: ?string |}
-  | {| type: 'awsS3', bucket: string, prefix: ?string |}
-
-export type Config = {
-  port: ?number,
-  host: ?string,
-  data: ?DataConfig,
-  www: ?{
-    identity: ?{
-      origin: ?string
-    }
-  }
-};
-*/
-export const castDataConfig/*: Cast<DataConfig>*/ = or('type', {
-  'memory': obj({ type: lit('memory') }),
-  'file': obj({ type: lit('file'), dataDir: maybe(str) }),
-  'awsS3': obj({ type: lit('awsS3'), bucket: str, prefix: maybe(str) })
-});
-
-export const castConfig/*: Cast<Config>*/ = obj({
-  host: maybe(str),
-  port: maybe(num),
-  data: maybe(castDataConfig),
-  www: maybe(obj({
-    identity: maybe(obj({
-      origin: maybe(str)
-    })),
-  }))
-});
-
-export const loadConfigFromFile = async (path/*: string*/ = './sesame_config.json')/*: Promise<Config>*/ => {
+export const loadConfigFromFile = async (path/*: string*/ = './sesame_config.json')/*: Promise<APIConfig>*/ => {
   try {
     console.log(`Reading "${path}"`);
-    const sesameConfig = castConfig(JSON5.parse(await readFile(path, 'utf8')));
+    const sesameConfig = castAPIConfig(JSON5.parse(await readFile(path, 'utf8')));
     console.log(sesameConfig);
     return sesameConfig;
   } catch (error) {
     if(error.code === 'ENOENT') {
-      return { port: null, host: null, data: null, www: null };
+      return { port: null, host: null, data: null, www: { sesame: { origin: null }} };
     }
     throw error;
   }
