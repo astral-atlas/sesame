@@ -1,14 +1,16 @@
 // @flow strict
 /*:: import type { HTTPClient } from '@lukekaalim/http-client'; */
 /*:: import type { Authorization } from '@lukekaalim/net-description'; */
-/*:: import type { User, Admin, UserID, Proof } from '@astral-atlas/sesame-models'; */
-/*:: import type { IdentityGrantClient } from './api.js'; */
+/*:: import type { User, Admin, UserID, Proof, ServiceProof, LinkGrant } from '@astral-atlas/sesame-models'; */
+
+/*:: import type { IdentityGrantClient } from './identity.js'; */
 /*:: import type { LoginGrantClient } from './login.js'; */
 /*:: import type { UserClient } from './user.js'; */
+
 import { encodeProofToken } from '@astral-atlas/sesame-models';
 import { createAuthorizedClient } from '@lukekaalim/http-client';
 
-import { createIdentityGrantClient } from './api.js';
+import { createIdentityGrantClient } from './identity.js';
 import { createLoginGrantClient } from './login.js';
 import { createUserClient } from './user.js';
 
@@ -40,18 +42,4 @@ export const createClient = (baseURL/*: URL*/, httpClient/*: HTTPClient*/, proof
   };
 };
 
-/*::
-export type SesameSDK = {
-  authorize: (authorizationHeader: Authorization) => { type: 'valid', user: User } | { type: 'invalid' }
-};
-*/
-
-export const createSesameSDK = (baseURL/*: URL*/, httpClient/*: HTTPClient*/, sdkKey/*: string*/)/*: SesameSDK*/ => {
-  const authorize = async (header) => {
-    
-  };
-
-  return {
-    authorize,
-  };
-};
+export * from './sdk.js';

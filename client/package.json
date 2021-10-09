@@ -9,12 +9,12 @@
   },
   "author": "Luke Kaalim",
   "license": "MIT",
-  "dependencies": {
-    "@astral-atlas/sesame-models": "^8.0.1",
-    "@lukekaalim/cast": "^4.0.0",
-    "@lukekaalim/net-description": "^1.1.0"
-  },
   "peerDependencies": {
     "@lukekaalim/http-client": "^5.2.0"
+  },
+  "dependencies": {
+    "@astral-atlas/sesame-models": "^11.3.0",
+    "@lukekaalim/cast": "^4.0.0",
+    "@lukekaalim/net-description": "^1.1.0"
   }
 }

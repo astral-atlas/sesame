@@ -16,24 +16,17 @@ const assertSuccess = /*:: <T: { type: any }>*/(response/*: APIResponse<T>*/)/*:
 
 /*::
 export type IdentityGrantClient = {
-  create: (userId: UserID, service: string, granteeName: string) => Promise<{ grant: IdentityGrant, secret: string }>,
-  validate: (proof: IdentityProof) => Promise<bool>,
+  create: (userId: UserID, service: string, granteeName: string) => Promise<{ grant: IdentityGrant, secret: string }>
 };
 */
 export const createIdentityGrantClient = (httpClient/*: HTTPClient*/, baseURL/*: URL*/)/*: IdentityGrantClient*/ => {
   const identityGrantAPI = createJSONResourceClient(api.grantsIdentityResource, httpClient, baseURL.href);
-  const identityGrantValidateAPI = createJSONResourceClient(api.grantsIdentityValidateResource, httpClient, baseURL.href);
 
   return {
-    async create (userId, service, granteeName) {
-      const { body } = await identityGrantAPI.POST({ body: { userId, service, granteeName } });
+    async create (userId, granteeName) {
+      const { body } = await identityGrantAPI.POST({ body: { userId, granteeName } });
       const { grant, secret } = assertSuccess(body);
       return { grant, secret };
     },
-    async validate(proof) {
-      const { body } = await identityGrantValidateAPI.POST({ body: { proof } });
-      const result = assertSuccess(body);
-      return result.type === 'valid';
-    }
   }
 };
