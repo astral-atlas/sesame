@@ -1,11 +1,11 @@
 {
   "name": "@astral-atlas/sesame-data",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "description": "",
   "main": "entry.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postversion": "../scripts/postversion.sh"
   },
   "repository": {
     "type": "git",
