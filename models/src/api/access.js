@@ -29,16 +29,6 @@ type GrantResource<ID, Grant, Arguments = {}> = {|
     response: APIResponse<{ type: 'revoked' }>
   }
 |}
-type GrantValidateResource<Proof, Grant> = {|
-  POST: {
-    query: empty,
-    request: { proof: Proof },
-    response: APIResponse<
-      | {| type: 'valid', grant: Grant |}
-      | {| type: 'invalid' |}
-      >
-  }
-|}
 
 export type AccessAPI = {
   '/grants': {|
@@ -61,11 +51,19 @@ export type AccessAPI = {
     }
   |},
 
-  '/grants/identity':           GrantResource<IdentityGrantID, IdentityGrant, {| target: string, granteeName: string |}>,
-  '/grants/identity/validate':  GrantValidateResource<IdentityProof, IdentityGrant>,
+  '/grants/identity': GrantResource<IdentityGrantID, IdentityGrant, {| target: string, granteeName: string |}>,
 
-  '/grants/link':               GrantResource<LinkGrantID, LinkGrant, {| target: string |}>,
-  '/grants/link/validate':      GrantValidateResource<LinkProof, LinkGrant>,
+  '/grants/link': GrantResource<LinkGrantID, LinkGrant, {| target: string |}>,
+  '/grants/link/validate': {|
+    POST: {
+      query: empty,
+      request: { proof: LinkProof },
+      response: APIResponse<
+        | {| type: 'valid', grant: LinkGrant |}
+        | {| type: 'invalid' |}
+        >
+    }
+  |}
 };
 */
 
@@ -120,22 +118,6 @@ export const grantsLinkResource/*: ResourceDescription<AccessAPI['/grants/link']
   }
 };
 
-export const grantsIdentityValidateResource/*: ResourceDescription<AccessAPI['/grants/identity/validate']>*/ = {
-  path: '/grants/identity/validate',
-
-  POST: {
-    toRequestBody: obj({ proof: castIdentityProof }),
-    toResponseBody: res(or('type', {
-      'valid': obj({
-        type: lit('valid'),
-        grant: castIdentityGrant
-      }),
-      'invalid': obj({
-        type: lit('invalid')
-      }),
-    }))
-  }
-};
 export const grantsLinkValidateResource/*: ResourceDescription<AccessAPI['/grants/link/validate']>*/ = {
   path: '/grants/link/validate',
 
@@ -166,7 +148,6 @@ export const accessAPI = {
   '/grants': grantsResource,
   '/grants/identity': grantsIdentityResource,
   '/grants/link': grantsLinkResource,
-  '/grants/identity/validate': grantsIdentityValidateResource,
   '/grants/link/validate': grantsLinkValidateResource,
   '/grants': grantsLogin,
 }

@@ -27,19 +27,16 @@ export const castLinkGrantId/*: Cast<LinkGrantID>*/ = castString;
 export const castServiceGrantId/*: Cast<ServiceGrantID>*/ = castString;
 
 // An "Identity Grant" allows the bearer to act as if
-// they had the contained identity for a specific service
+// they had the contained identity
 /*::
 export type IdentityGrantID = string;
 export type IdentityGrant = {|
   id: IdentityGrantID,
   loginGrantId: LoginGrantID,
-
   revoked: boolean,
   type: 'identity',
   // The Identity the possesser of this grant can assume
   identity: UserID,
-  // The origin of the service grant is intended owned
-  target: string,
   // The "name" of the intended possessor of this grant,
   // like a nickname of the device
   granteeName: string
@@ -53,7 +50,6 @@ export const castIdentityGrant/*: Cast<IdentityGrant>*/ = createObjectCaster({
   type: createConstantCaster('identity'),
   revoked: castBoolean,
   identity: castUserId,
-  target: castString,
   granteeName: castString
 });
 
@@ -78,6 +74,8 @@ export const castLoginGrant/*: Cast<LoginGrant>*/ = createObjectCaster({
   revoked: castBoolean,
   createdIdentity: createNullableCaster(castIdentityGrantId)
 });
+
+// A "link grant" is a grant provided to a third party website
 /*::
 export type LinkGrantID = string;
 export type LinkGrant = {
