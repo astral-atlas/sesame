@@ -1,6 +1,6 @@
 {
   "name": "@astral-atlas/sesame-data",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "main": "entry.js",
   "type": "module",
