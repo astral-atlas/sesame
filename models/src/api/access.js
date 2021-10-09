@@ -51,7 +51,7 @@ export type AccessAPI = {
     }
   |},
 
-  '/grants/identity': GrantResource<IdentityGrantID, IdentityGrant, {| target: string, granteeName: string |}>,
+  '/grants/identity': GrantResource<IdentityGrantID, IdentityGrant, {| granteeName: string |}>,
 
   '/grants/link': GrantResource<LinkGrantID, LinkGrant, {| target: string |}>,
   '/grants/link/validate': {|
@@ -85,7 +85,7 @@ export const grantsIdentityResource/*: ResourceDescription<AccessAPI['/grants/id
   path: '/grants/identity',
 
   POST: {
-    toRequestBody: obj({ userId: castUserId, target: str, granteeName: str }),
+    toRequestBody: obj({ userId: castUserId, granteeName: str }),
     toResponseBody: res(obj({
       type: lit('created'),
       grant: castIdentityGrant,
