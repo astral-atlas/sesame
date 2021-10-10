@@ -2,7 +2,7 @@
 /*:: import type { JSONValue, Cast } from '@lukekaalim/cast'; */
 
 /*:: import type { BufferStore } from './buffer.js'; */
-import {c } from '@lukekaalim/cast';
+import { c } from '@lukekaalim/cast';
 
 /*::
 export type Page<Key, Value> = { result: Value[], next: Key | null };
