@@ -40,7 +40,7 @@ const main = async () => {
       if (!identity) {
         messenger.send({ type: 'sesame:cannot-grant', code: 'not_logged_in' });
         return;
-      } else if (identity && !state.proof) {
+      } else if (identity && (!state.proof || state.proof.userId !== identity.proof.userId)) {
         console.log('Dangrously auto-approving');
         const { grant, secret } = await client.grants.link.create(service);
         const proof = createLinkProof(grant, secret);
