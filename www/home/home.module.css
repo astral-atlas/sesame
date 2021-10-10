@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Slab:wght@100;300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Crimson Text', serif;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+button, pre {
+  font-family: 'Crimson Text', serif;
+  font-size: 22px;
+}
+
+
+.pageTitle {
+  font-family: 'Josefin Slab', serif;
+  text-align: center;
+  font-size: max(5vh, 32px);
+  margin: 0;
+  font-weight: normal;
+}
+
+.toggleButton {
+  border-image: url('/2d/5e_box.png') calc(16 * 4);
+  border-style: solid;
+  background: none;
+  border-width: 32px;
+  resize: both;
+  transition: border-image 2s;
+  cursor: pointer;
+
+  margin-bottom: 16px;
+}
+.toggleButton:hover {
+  border-image: url('/2d/5e_box_selected.png') calc(16 * 4);
+}
+
+.homepageContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.loggedInControls {
+  display: flex;
+  flex-direction: column;
+}
+
+.loginControlsName {
+  font-size: 22px;
+}
+
+.loginControlsNameInput {
+  font-size: 22px;
+  border: 0;
+  border-bottom: 2px solid black;
+  display: inline-block;
+  width: 15vw;
+  font-family: 'Crimson Text', serif;
+  font-weight: bold;
+}
+
+.loginControlsNameLabel {
+  display: flex;
+  flex-direction: column;
+  display: inline-block;
+  width: 15vw;
+  position: relative;
+  margin-bottom: 26px;
+}
+
+.loginControlsNameLabelHint {
+  opacity: 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 200%;
+  font-size: 18px;
+  transition: opacity 0.2s;
+}
+
+.loginControlsNameLabel:hover .loginControlsNameLabelHint, .loginControlsNameLabel:focus-within .loginControlsNameLabelHint {
+  opacity: 1;
+}
+
+.loginOfferText, .loginDescription {
+  font-family: 'Crimson Text', serif;
+  font-size: 22px;
+  text-align: center;
+}
+
+.loginTokenSection {
+  max-width: 50vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

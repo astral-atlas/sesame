@@ -11,9 +11,12 @@
     "vite": "^2.5.10"
   },
   "dependencies": {
-    "@astral-atlas/sesame-client": "^2.0.0",
-    "@astral-atlas/sesame-models": "^7.1.0",
+    "@astral-atlas/sesame-client": "^3.0.0",
+    "@astral-atlas/sesame-components": "^2.1.0",
+    "@astral-atlas/sesame-models": "^11.3.0",
     "@lukekaalim/act": "^2.2.0",
+    "@lukekaalim/act-curve": "^2.0.0",
+    "@lukekaalim/act-three": "^3.9.1",
     "@lukekaalim/act-web": "^0.4.1",
     "@lukekaalim/cast": "^4.0.0",
     "@lukekaalim/http-client": "^5.2.0",
