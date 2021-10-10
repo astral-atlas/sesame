@@ -3,7 +3,7 @@ module "www_release" {
   source = "../modules/github_release"
   owner = "astral-atlas"
   repository = "sesame"
-  release_tag = "@astral-atlas/sesame-www@2.0.1"
+  release_tag = "@astral-atlas/sesame-www@3.3.0"
   release_asset_name = "sesame-www.zip"
   output_directory = "./temp"
 }
@@ -25,6 +25,9 @@ locals {
     ".json": "application/json",
     ".json5": "application/json5",
     ".ico": "image/png",
+    ".png": "image/png",
+    ".flac": "audio/flac",
+    ".glb": "model/gltf-binary"
   }
   www_dir = data.external.unzip_www.result.output_directory
   www_objects = [for o in fileset(local.www_dir, "**") : o if o != "config.json5"]
