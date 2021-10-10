@@ -13,12 +13,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-      - run: npm ci install
-      - run: npm run build --workspace=www
-      - uses: papeloto/action-zip@v1
-        with:
-          files: www/artifacts/
-          dest: sesame-www.zip
+      - run: npm ci
+      - run: npm run build -w www
+      - run: cd www/dist; zip -r ../../sesame-www.zip .
       - name: Release
         uses: softprops/action-gh-release@v1
         with:

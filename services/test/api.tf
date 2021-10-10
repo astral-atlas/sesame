@@ -141,6 +141,9 @@ resource "aws_route53_record" "api" {
   }
 }
 
+output "api-source-bucket" {
+  value = aws_s3_bucket.application_versions.bucket
+}
 output "api-origin-name" {
   value = aws_elastic_beanstalk_environment.api_test.cname
 }

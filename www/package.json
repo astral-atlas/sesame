@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@astral-atlas/sesame-client": "^3.0.0",
-    "@astral-atlas/sesame-components": "^2.1.0",
+    "@astral-atlas/sesame-components": "^3.0.0",
     "@astral-atlas/sesame-models": "^11.3.0",
     "@lukekaalim/act": "^2.2.0",
     "@lukekaalim/act-curve": "^2.0.0",

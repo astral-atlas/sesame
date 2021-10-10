@@ -6,8 +6,7 @@ export default {
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        'frame/login': resolve(__dirname, 'frame/login.html'),
-        'token/login': resolve(__dirname, 'token/login.html'),
+        'frame/authorizer': resolve(__dirname, 'frame/authorizer.html'),
       }
     }
   },
