@@ -18,18 +18,36 @@ const main = async () => {
     const messenger = createProviderMessenger(service, window);
     const config = await loadConfigFromURL();
     const httpClient = createWebClient(fetch);
+
+    console.log(`Creating messenger for ${service}`);
   
     messenger.addPromptGrantListener(async () => {
       const identity = identityStore.get();
       const client = createClient(new URL(config.api.sesame.origin), httpClient, identity && identity.proof);
-      
+
       if (identity) {
+        console.log('Dangrously auto-approving');
         const { grant, secret } = await client.grants.link.create(service);
         const proof = createLinkProof(grant, secret);
         const token = encodeProofToken(proof);
         messenger.send({ type: 'sesame:update-link-grant', grant, secret, proof, token });
       }
     });
+    messenger.addStateListener(async (state) => {
+      const identity = identityStore.get();
+      const client = createClient(new URL(config.api.sesame.origin), httpClient, identity && identity.proof);
+
+      if (!identity) {
+        messenger.send({ type: 'sesame:cannot-grant', code: 'not_logged_in' });
+        return;
+      } else if (identity && !state.proof) {
+        console.log('Dangrously auto-approving');
+        const { grant, secret } = await client.grants.link.create(service);
+        const proof = createLinkProof(grant, secret);
+        const token = encodeProofToken(proof);
+        messenger.send({ type: 'sesame:update-link-grant', grant, secret, proof, token });
+      }
+    })
   
     messenger.send({ type: 'sesame:identity-provider-ready' });
   } catch (error) {
