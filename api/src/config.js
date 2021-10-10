@@ -14,6 +14,7 @@ export const loadConfigFromFile = async (path/*: string*/ = './sesame_config.jso
     console.log(sesameConfig);
     return sesameConfig;
   } catch (error) {
+    console.warn(error.message);
     if(error.code === 'ENOENT') {
       return { port: null, host: null, data: null, www: { sesame: { origin: null }} };
     }

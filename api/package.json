@@ -9,8 +9,8 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "npx nodemon src/entry.js",
-    "start": "node src/entry.js dev-config.json",
+    "dev": "npx nodemon src/entry.js dev.config.json5",
+    "start": "node src/entry.js dev.config.json5",
     "postversion": "../scripts/postversion.sh"
   },
   "author": "luke@kaal.im",
