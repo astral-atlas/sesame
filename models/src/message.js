@@ -11,11 +11,17 @@ import { castLinkProof } from "./proof.js";
 export type WWWMessage =
   | IdentityProviderReady
   | PromptLinkGrant
+  | ConsumerState
   | UpdateLinkedIdentityGrant
 
 export type IdentityProviderReady = {
   type: 'sesame:identity-provider-ready',
 };
+
+export type ConsumerState = {
+  type: 'sesame:consumer-state',
+  proof: ?LinkProof,
+}
 
 export type PromptLinkGrant = {
   type: 'sesame:prompt-link-grant',
@@ -29,6 +35,11 @@ export type UpdateLinkedIdentityGrant = {
   proof: LinkProof,
 };
 */
+
+export const castConsumerState/*: Cast<ConsumerState>*/ = c.obj({
+  type: c.lit('sesame:consumer-state'),
+  proof: c.maybe(castLinkProof),
+});
 
 export const castWWWMessage/*: Cast<WWWMessage>*/ = c.or('type', {
   'sesame:update-link-grant': c.obj({
@@ -44,4 +55,5 @@ export const castWWWMessage/*: Cast<WWWMessage>*/ = c.or('type', {
   'sesame:identity-provider-ready': c.obj({
     type: (c.lit('sesame:identity-provider-ready')/*: Cast<IdentityProviderReady['type']>*/),
   }),
+  'sesame:consumer-state': castConsumerState
 });
