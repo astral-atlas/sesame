@@ -3,7 +3,7 @@
 /*:: import type { SesameData } from './data'; */
 import { resolve, join } from 'path';
 import { createBufferedSesameData } from './data.js';
-import { createFileBufferStore, createMemoryBufferStore, createS3BufferStore } from "./sources/buffer";
+import { createFileBufferStore, createMemoryBufferStore, createS3BufferStore } from "./sources/buffer.js";
 
 export const createMemoryData = ()/*: { data: SesameData }*/ => {
   const { data } = createBufferedSesameData(() => createMemoryBufferStore());

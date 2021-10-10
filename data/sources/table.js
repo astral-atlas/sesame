@@ -23,9 +23,13 @@ export type CompositeTable<PartitionKey, SortKey, Value> = {
 export const createBufferTable = /*:: <T>*/(store/*: BufferStore*/, castValue/*: Cast<T>*/)/*: Table<string, T>*/ => {
   const castTable = c.arr(c.obj({ key: c.str, value: castValue }));
   const loadTable = async () => {
-    const buffer = await store.get()
-    const table = castTable(JSON.parse(buffer.toString('utf8')))
-    return table;
+    try {
+      const buffer = await store.get()
+      const table = castTable(JSON.parse(buffer.toString('utf8')))
+      return table;
+    } catch (error) {
+      return [];
+    }
   };
   const get = async (key) => {
     const table = await loadTable();
@@ -35,8 +39,8 @@ export const createBufferTable = /*:: <T>*/(store/*: BufferStore*/, castValue/*:
   const set = async (key, newValue) => {
     const table = await loadTable();
     const updatedTable = newValue ?
-      table.map(e => e.key === key ? { key, value: newValue } : e) :
-      table.filter(e => e.key !== newValue);
+    [...table.filter(e => e.key !== key), { key, value: newValue }] :
+      table.filter(e => e.key !== key);
     await store.set(Buffer.from(JSON.stringify(updatedTable, null, 2)));
   };
   const scan = async () => {
@@ -54,9 +58,13 @@ export const createBufferCompositeTable = /*:: <T>*/(store/*: BufferStore*/, cas
   const castTable = c.arr(c.obj({ partition: c.str, sort: c.str, value: castValue }));
   const matchEntry = (partition, sort, e) => (e.partition === partition && e.sort === sort);
   const loadTable = async () => {
-    const buffer = await store.get()
-    const table = castTable(JSON.parse(buffer.toString('utf8')))
-    return table;
+    try {
+      const buffer = await store.get()
+      const table = castTable(JSON.parse(buffer.toString('utf8')))
+      return table;
+    } catch (error) {
+      return [];
+    }
   };
   const get = async (partition, sort) => {
     const table = await loadTable();
@@ -66,7 +74,7 @@ export const createBufferCompositeTable = /*:: <T>*/(store/*: BufferStore*/, cas
   const set = async (partition, sort, newValue) => {
     const table = await loadTable();
     const updatedTable = newValue ?
-      table.map(e => matchEntry(partition, sort, e) ? { partition, sort, value: newValue } : e) :
+      [...table.filter(e => !matchEntry(partition, sort, e)), { partition, sort, value: newValue }] :
       table.filter(e => !matchEntry(partition, sort, e));
     await store.set(Buffer.from(JSON.stringify(updatedTable, null, 2)));
   }

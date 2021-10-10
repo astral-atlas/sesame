@@ -21,7 +21,7 @@
     "@aws-sdk/client-s3": "^3.34.0"
   },
   "dependencies": {
-    "@astral-atlas/sesame-models": "^11.0.0",
+    "@astral-atlas/sesame-models": "^11.4.0",
     "@lukekaalim/cast": "^4.0.0"
   }
 }
