@@ -3,6 +3,7 @@
 .*/.cache/.*
 .*/artifacts/.*
 .*/temp/.*
+<PROJECT_ROOT>/www/dist/.*
 [include]
 
 [libs]
