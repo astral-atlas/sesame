@@ -6,11 +6,12 @@ import { h, useState} from '@lukekaalim/act';
 import styles from './home.module.css';
 import { useAPI } from "../hooks/api.js";
 import { useAsync } from "../src/hooks/async";
+import { CopperButton } from "../components/button.js";
 
 /*::
 export type LoogedInControlsProps = {
   identity: { proof: IdentityProof },
-  onIdentityChange: (identity: ?{ proof: IdentityProof }) => mixed, 
+  onIdentityChange: (identity: ?{ proof: IdentityProof, version: number }) => mixed, 
 };
 */
 
@@ -21,7 +22,10 @@ export const LoggedInControls/*: Component<LoogedInControlsProps>*/ = ({ identit
   const [user, error] = useAsync(() => client.user.get(identity.proof.userId), [identity.proof.userId, u]);
 
   if (error)
-    return h('pre', {}, error.stack);
+    return [
+      h('pre', {}, error.stack || error.message),
+      h('button', { class: styles.toggleButton, onClick: () => onIdentityChange(null) }, 'Log Out of Astral Atlas')
+    ]
 
   if (!user)
     return null;
@@ -46,7 +50,6 @@ export const LoggedInControls/*: Component<LoogedInControlsProps>*/ = ({ identit
       ])
     ]),
     h('span', { style: { flexGrow: '1', width: '50%' }}),
-    h('link', { rel: 'preload', href: '/2d/5e_box_selected.png', as: 'image' }),
-    h('button', { class: styles.toggleButton, onClick: onLogoutClick }, 'Log Out of Astral Atlas')
+    h(CopperButton, { onClick: onLogoutClick }, 'Log Out of Astral Atlas'),
   ];
 }

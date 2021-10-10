@@ -13,19 +13,23 @@ import { LoggedInControls } from './LoggedInControls.js';
 import { NotLoggedInControls } from './NotLoggedInControls.js';
 import { configContext } from "../hooks/config";
 
+export const minIdentityVersion = 3;
+
 const Homepage = ({ config }) => {
   const [identity, setIdentity] = useStoredValue(identityStore);
   const onIdentityChange = (identity) => {
     setIdentity(v => identity);
   }
+
+  const validIdentity = (identity && identity.version >= minIdentityVersion) ? identity : null;
   
   return [
-    h(APIProvider, { config, proof: identity && identity.proof }, [
+    h(APIProvider, { config, proof: validIdentity && validIdentity.proof }, [
       h('section', { class: styles.homepageContent }, [
-        h(GateScene, { open: !!identity }),
+        h(GateScene, { open: !!validIdentity }),
         h('h1', { class: styles.pageTitle }, 'ASTRAL ATLAS'),
-        identity ? h(LoggedInControls, { identity, onIdentityChange }) : null,
-        !identity ? h(NotLoggedInControls, { onIdentityChange }) : null,
+        (validIdentity) ? h(LoggedInControls, { identity: validIdentity, onIdentityChange }) : null,
+        !(validIdentity) ? h(NotLoggedInControls, { onIdentityChange }) : null,
       ]),
     ]),
   ];

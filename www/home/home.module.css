@@ -100,3 +100,9 @@ button, pre {
   flex-direction: column;
   align-items: center;
 }
+
+.notLoggedInText {
+  font-family: 'Crimson Text', serif;
+  font-size: 22px;
+  text-align: center;
+}

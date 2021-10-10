@@ -15,7 +15,7 @@ import { CopperButton } from "../components/button";
 
 /*::
 export type NotLoggedInControlsProps = {
-  onIdentityChange: (identity: ?{ proof: IdentityProof }) => mixed, 
+  onIdentityChange: (identity: ?{ proof: IdentityProof, version: number }) => mixed, 
 };
 */
 
@@ -44,7 +44,7 @@ const UseTokenControls = ({ loginToken, onIdentityChange }) => {
   const onClick = async () => {
     const { grant, secret } = await client.grants.identity.create(user.id, 'Cool Device!');
     const proof = createIdentityProof(grant, secret);
-    onIdentityChange({ proof });
+    onIdentityChange({ proof, version: 3 });
   }
 
 
@@ -67,5 +67,9 @@ export const NotLoggedInControls/*: Component<NotLoggedInControlsProps>*/ = ({ o
 
   return [
     loginToken && h(UseTokenControls, { loginToken, onIdentityChange }),
+    !loginToken && h('section', { class: styles.notLoggedInText }, [
+      h('p', {}, `You need a valid token to Log In.`),
+      h('p', {}, `Your administrator should be able to provide you with one.`),
+    ]),
   ]
 };

@@ -14,10 +14,15 @@ export const createStoredValue = /*:: <T>*/(
   defaultValue/*: T*/
 )/*: StoredValue<T>*/ => {
   const get = () => {
-    const valueOrNull = localStorage.getItem(key);
-    if (!valueOrNull)
+    try {
+      const valueOrNull = localStorage.getItem(key);
+      if (!valueOrNull)
+        return defaultValue;
+      return toValue(parse(valueOrNull));
+    } catch (error) {
+      console.warn(error.message);
       return defaultValue;
-    return toValue(parse(valueOrNull));
+    }
   };
   const set = (value) => {
     localStorage.setItem(key, JSON.stringify(value));
