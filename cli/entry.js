@@ -2,7 +2,7 @@
 // @flow strict
 import { S3 } from '@aws-sdk/client-s3';
 import { createS3Data, createFileData } from "@astral-atlas/sesame-data";
-import { createLoginProof, encodeProofToken, castAPIConfig } from "@astral-atlas/sesame-models";
+import { createLoginProof, encodeProofToken, castAPIConfig, createServiceProof } from "@astral-atlas/sesame-models";
 import generateString from 'crypto-random-string';
 import { promises } from 'fs';
 import { v4 as uuid } from 'uuid';
@@ -77,7 +77,7 @@ const addUser = async (name) => {
 
   const proof = createLoginProof(grant, secret);
   const token = encodeProofToken(proof);
-  const loginUrl = new URL('/token/login.html', 'http://sesame.astral-atlas.com');
+  const loginUrl = new URL('/', 'http://sesame.astral-atlas.com');
   loginUrl.searchParams.append('token', token);
 
   console.log(loginUrl.href);
@@ -121,18 +121,49 @@ const init = async () => {
       return await initAWS(data);
     }
   }
+}
 
+const addService = async (name, origin) => {
+  const { data } = await createData();
+
+  const service = {
+    id: uuid(),
+    name,
+    origin,
+  }
+  await data.services.set(service.id, service);
+  console.log(service);
+}
+
+const addServiceGrant = async (serviceId) => {
+  const { data } = await createData();
+  const serviceGrant = {
+    type: 'service',
+    id: uuid(),
+    serviceId
+  }
+  const secret = generateString({ length: 32 });
+  await data.grants.service.set(serviceId, serviceGrant.id, serviceGrant);
+  await data.secrets.set(serviceGrant.id, secret);
+  const proof = createServiceProof(serviceGrant, secret);
+  const token = encodeProofToken(proof);
+  console.log(proof);
+  console.log(token);
 }
 
 const entry = async (command, ...subcommands) => {
   try {
     switch (command) {
+      case 'add-service':
+        return await addService(...subcommands);
       case 'init':
         return await init();
       case 'add-user':
         return await addUser(...subcommands);
       case 'add-login':
         return await addLogin(...subcommands);
+      case 'add-service-grant':
+        return await addServiceGrant(...subcommands);
       default:
         return console.log('🤷');
     }
