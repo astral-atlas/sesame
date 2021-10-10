@@ -107,3 +107,6 @@ dist
 artifacts
 
 *.secrets
+
+*.png~
+*.kra~
