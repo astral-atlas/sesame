@@ -20,8 +20,8 @@ declare module '@aws-sdk/client-s3' {
   import type { Readable } from 'stream';
   
   declare export type PutObjectRequest = {
-    Key?: string,
-    Bucket?: string,
+    Key: string,
+    Bucket: string,
 
     CacheControl?: string,
     ContentDisposition?: string,
