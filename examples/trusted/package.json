@@ -6,7 +6,7 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@astral-atlas/sesame-components": "^2.1.0",
+    "@astral-atlas/sesame-components": "^3.0.0",
     "preact": "^10.5.13"
   },
   "devDependencies": {
