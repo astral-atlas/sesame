@@ -5,7 +5,7 @@
   "main": "entry.js",
   "type": "module",
   "dependencies": {
-    "@astral-atlas/sesame-data": "^2.0.2",
+    "@astral-atlas/sesame-data": "^2.1.0",
     "@aws-sdk/client-s3": "^3.34.0",
     "crypto-random-string": "^4.0.0",
     "qrcode-terminal": "^0.12.0",
