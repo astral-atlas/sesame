@@ -1,13 +1,21 @@
 // @flow strict
-/*:: import type { UpdateLinkedIdentityGrant } from '@astral-atlas/sesame-models'; */
+/*:: import type { UpdateLinkedIdentityGrant, CannotGrant, LinkProof } from '@astral-atlas/sesame-models'; */
 /*:: import type { ConsumerMessenger } from './message.js'; */
 
 import { useEffect, useState } from "preact/hooks";
 import { createConsumerMessenger } from "./message.js";
 
+/*::
+export type UseConsumerMessengerOptions = {
+  proof?: ?LinkProof,
+  onGrant?: (message: UpdateLinkedIdentityGrant) => mixed,
+  onReject?: (message: CannotGrant) => mixed,
+}
+*/
+
 export const useConsumerMessenger = (
   identityOrigin/*: string*/,
-  onMessage/*: (message: UpdateLinkedIdentityGrant) => mixed*/ = () => {}
+  { onGrant = () => {}, onReject = () => {}, proof }/*: UseConsumerMessengerOptions*/ = {},
 )/*: null | ConsumerMessenger*/ => {
   const [messenger, setMessenger] = useState(null);
 
@@ -36,8 +44,13 @@ export const useConsumerMessenger = (
   useEffect(() => {
     if (!messenger)
       return;
-    const { remove } = messenger.addUpdateLinkedIdentityListener(onMessage);
-    return () => remove();
+    const uli = messenger.addUpdateLinkedIdentityListener(onGrant);
+    const cg = messenger.addCannotGrantListener(onReject);
+    messenger.send({ type: 'sesame:consumer-state', proof });
+    return () => {
+      uli.remove();
+      cg.remove();
+    }
   }, [messenger])
 
   return messenger;
