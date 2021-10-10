@@ -7,7 +7,7 @@ import { createSesameSDK } from '@astral-atlas/sesame-client';
 import { createWebClient } from '@lukekaalim/http-client';
 
 const httpClient = createWebClient(fetch);
-const identityURL = new URL('http://sesame.astral-atlas.com');
+const identityURL = new URL('http://localhost:8081');
 
 const serviceProof = {
   type: 'service',
@@ -21,7 +21,8 @@ const TrustedApp = () => {
   const [name, setName] = useState(null);
   const [token, setToken] = useState(null);
 
-  const onIdentityGrant = async ({ grant, proof, secret, token }) => {
+  const onGrant = async ({ grant, proof, secret, token }) => {
+    console.log(grant);
     const valiatedGrant = await sdk.validateProof(proof);
     if (!valiatedGrant)
       throw new Error();
@@ -30,7 +31,7 @@ const TrustedApp = () => {
     setName(user.name);
   };
 
-  const messenger = useConsumerMessenger(identityURL.href, onIdentityGrant);
+  const messenger = useConsumerMessenger(identityURL.href, { onGrant });
 
   return [
     messenger && h('button', { onClick: () => messenger.send({ type: 'sesame:prompt-link-grant' }) }, 'Lets log in!'),
