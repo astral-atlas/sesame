@@ -1,5 +1,5 @@
 // @flow strict
-/*:: import type { HTTPHeaders } from '@lukekaalim/http-server'; */
+/*:: import type { HTTPHeaders } from '@lukekaalim/net-description'; */
 /*:: import type {
   UserID, LoginGrant, Proof, LoginProof,
   ServiceProof, ServiceID, ServiceGrant,

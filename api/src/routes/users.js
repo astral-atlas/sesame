@@ -19,6 +19,12 @@ export const createUsersRoutes = (s/*: Services*/)/*: Route[]*/ => {
 
       return { body: { type: 'created', user }, status: statusCodes.created };
     },
+    PUT: async ({ query: { userId }, body: { name }, headers }) => {
+      const authorization = await s.auth.getAuth(headers);
+      const user = await s.user.update(userId, { name }, authorization);
+
+      return { body: { type: 'updated', user }, status: statusCodes.ok };
+    },
   });
 
   return [

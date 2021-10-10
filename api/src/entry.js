@@ -20,8 +20,8 @@ const main = async (configPath = 'config.json5') => {
     }
     const server = createServer(createRouteListener(routes, fallback));
 
-    const { origin } = await listenServer(server, config.port || 0, config.host || 'localhost');
-    console.log(`Running @ ${origin}`);
+    const { httpOrigin } = await listenServer(server, config.port || 0, config.host || 'localhost');
+    console.log(`Running @ ${httpOrigin}`);
   } catch (error) {
     console.error(error.message, error.stack);
   }

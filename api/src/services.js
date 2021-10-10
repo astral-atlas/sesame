@@ -40,7 +40,7 @@ export const createServices = async (config/*: APIConfig*/)/*: Promise<Services>
 
   const auth = createAuthorityService(data);
   const grant = createGrantService(data, auth)
-  const user = createUserService(data.users);
+  const user = createUserService(auth, data.users);
 
   return {
     grant,

@@ -2,8 +2,9 @@
 /*:: import type { Services } from '../services.js'; */
 /*:: import type { Route } from '@lukekaalim/http-server'; */
 import { createJSONResourceRoutes, statusCodes } from '@lukekaalim/http-server';
-import { api } from '@astral-atlas/sesame-models';
+import { api, accessAPI } from '@astral-atlas/sesame-models';
 import { routeOptions } from './meta.js';
+import { HTTP_STATUS } from "@lukekaalim/net-description";
 
 export const createGrantRoutes = (s/*: Services*/)/*: Route[]*/ => {
 
@@ -14,10 +15,9 @@ export const createGrantRoutes = (s/*: Services*/)/*: Route[]*/ => {
       const { grant, secret } = await s.grant.createIdentity(userId, granteeName, authority);
       return { body: { type: 'created', grant, secret }, status: statusCodes.created };
     },
-    DELETE: ({ query: { grantId, userId }, body }) => {
-
-      // a total lie!
-
+    DELETE: async ({ query: { grantId, userId }, body, headers }) => {
+      const authority = await s.auth.getAuth(headers);
+      await s.grant.revokeIdentity(userId, grantId, authority);
       return { body: { type: 'revoked' }, status: statusCodes.ok };
     }
   });
@@ -31,7 +31,18 @@ export const createGrantRoutes = (s/*: Services*/)/*: Route[]*/ => {
     },
   });
 
+  const grantsLinkRoutes = createJSONResourceRoutes(accessAPI['/grants/link'], {
+    ...routeOptions,
+    POST: async ({ body: { target }, headers }) => {
+      const authority = await s.auth.getAuth(headers);
+      const { grant, secret } = await s.grant.createLink(target, authority);
+      
+      return { status: HTTP_STATUS.created, body: { type: 'created', grant, secret } };
+    },
+  });
+
   return [
+    ...grantsLinkRoutes,
     ...grantsIdentityValidateRoutes,
     ...grantsIdentityRoutes,
   ];

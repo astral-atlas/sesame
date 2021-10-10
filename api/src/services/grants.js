@@ -9,7 +9,9 @@ import generateString from 'crypto-random-string';
 export type GrantService = {
   createIdentity(identity: UserID, granteeName: string,  authorizer: Authority): Promise<{ grant: IdentityGrant, secret: string }>,
   createLogin(identity: UserID,  authorizer: Authority): Promise<{ grant: LoginGrant, secret: string }>,
-  createLink(identity: UserID, authorizer: Authority): Promise<{ grant: LoginGrant, secret: string }>,
+  createLink(target: string, authorizer: Authority): Promise<{ grant: LinkGrant, secret: string }>,
+
+  revokeIdentity(userId: UserID, grantId: IdentityGrantID, authorizer: Authority): Promise<void>,
 };
 */
 
@@ -67,13 +69,41 @@ export const createGrantService = (data/*: SesameData*/, auth/*: AuthorityServic
     ]);
     return { grant, secret };
   }
-  const createLink = async () => {
-    throw new Error(`Not implemented`);
+  const createLink = async (target, authorizer) => {
+    if (authorizer.type !== 'identity')
+      throw new Error(`Only the user can create identity links`);
+      
+    const grant = {
+      id: uuid(),
+      type: 'link',
+      identity: authorizer.grant.identity,
+      target,
+      linkedIdentity: authorizer.grant.id,
+      revoked: false,
+    }
+    const secret =  generateString({ length: 32 });
+    await Promise.all([
+      data.grants.link.set(authorizer.grant.identity, grant.id, grant),
+      data.secrets.set(grant.id, secret)
+    ]);
+    return { grant, secret };
+  }
+
+  const revokeIdentity = async (userId, grantId, authorizer) => {
+    if (authorizer.type !== 'identity')
+      throw new Error(`Only identity tokens can be used to revoke identities`);
+
+    if (authorizer.grant.identity !== userId)
+      throw new Error(`You can only revoke grant IDs you own`);
+
+    await data.grants.identity.set(userId, grantId, null);
+    await data.secrets.set(grantId, null);
   }
 
   return {
     createIdentity,
     createLink,
     createLogin,
+    revokeIdentity,
   };
 };
