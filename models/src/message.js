@@ -13,6 +13,8 @@ export type WWWMessage =
   | PromptLinkGrant
   | ConsumerState
   | UpdateLinkedIdentityGrant
+  | CannotGrant
+  | GrantRevoked
 
 export type IdentityProviderReady = {
   type: 'sesame:identity-provider-ready',
@@ -25,6 +27,15 @@ export type ConsumerState = {
 
 export type PromptLinkGrant = {
   type: 'sesame:prompt-link-grant',
+}
+
+export type CannotGrant = {
+  type: 'sesame:cannot-grant',
+  code: 'not_logged_in' | 'origin_rejected'
+}
+
+export type GrantRevoked = {
+  type: 'sesame:grant-revoked',
 }
 
 export type UpdateLinkedIdentityGrant = {
@@ -41,7 +52,18 @@ export const castConsumerState/*: Cast<ConsumerState>*/ = c.obj({
   proof: c.maybe(castLinkProof),
 });
 
+export const castCannotGrant/*: Cast<CannotGrant>*/ = c.obj({
+  type: c.lit('sesame:cannot-grant'),
+  code: c.enums(['not_logged_in', 'origin_rejected']),
+})
+
+export const castGrantRevoked/*: Cast<GrantRevoked>*/ = c.obj({
+  type: c.lit('sesame:grant-revoked'),
+})
+
 export const castWWWMessage/*: Cast<WWWMessage>*/ = c.or('type', {
+  'sesame:grant-revoked': castGrantRevoked,
+  'sesame:cannot-grant': castCannotGrant,
   'sesame:update-link-grant': c.obj({
     type: (c.lit('sesame:update-link-grant')/*: Cast<UpdateLinkedIdentityGrant['type']>*/),
     grant: castLinkGrant,
