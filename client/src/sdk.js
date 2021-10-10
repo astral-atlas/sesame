@@ -1,7 +1,7 @@
 // @flow strict
 /*:: import type { HTTPClient } from '@lukekaalim/http-client'; */
 /*:: import type { Authorization } from '@lukekaalim/net-description'; */
-/*:: import type { User, Admin, UserID, Proof, ServiceProof, LinkGrant } from '@astral-atlas/sesame-models'; */
+/*:: import type { User, Admin, UserID, Proof, ServiceProof, LinkGrant, LinkProof } from '@astral-atlas/sesame-models'; */
 
 /*:: import type { LoginGrantClient } from './login.js'; */
 /*:: import type { UserClient } from './user.js'; */
@@ -14,7 +14,8 @@ import { createJSONResourceClient } from "@lukekaalim/http-client/resource";
 
 /*::
 export type SesameSDK = {
-  authorize: (authorizationHeader: string) => Promise<{ type: 'valid', grant: LinkGrant } | { type: 'invalid', reason: string }>,
+  validateHeader: (authorizationHeader: string) => Promise<{ type: 'valid', grant: LinkGrant } | { type: 'invalid', reason: string }>,
+  validateProof: (proof: LinkProof) => Promise<?LinkGrant>,
   getUser: (userId: UserID) => Promise<User>,
 };
 */
@@ -26,7 +27,7 @@ export const createSesameSDK = (baseURL/*: URL*/, httpClient/*: HTTPClient*/, se
   const valiateResource = createJSONResourceClient(accessAPI['/grants/link/validate'], authorizedClient, baseURL.href);
   const userResource = createJSONResourceClient(usersResourceDescription, authorizedClient, baseURL.href);
 
-  const authorize = async (authorizationHeader) => {
+  const validateHeader = async (authorizationHeader) => {
     const authorization = decodeAuthorizationHeader(authorizationHeader);
     if (authorization.type !== 'bearer')
       return { type: 'invalid', reason: `Only Bearer authorization is accepted` };
@@ -40,13 +41,20 @@ export const createSesameSDK = (baseURL/*: URL*/, httpClient/*: HTTPClient*/, se
 
     return { type: 'valid', grant: body.grant };
   };
+  const validateProof = async (proof) => {
+    const { body } = await valiateResource.POST({ body: { proof }})
+    if (body.type !== 'valid')
+      return null;
+    return body.grant;
+  };
   const getUser = async (userId) => {
     const { body: { user } } = await userResource.GET({ query: { userId }});
     return user;
   };
 
   return {
-    authorize,
+    validateHeader,
+    validateProof,
     getUser,
   };
 };
