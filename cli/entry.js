@@ -2,22 +2,24 @@
 // @flow strict
 import { S3 } from '@aws-sdk/client-s3';
 import { createS3Data, createFileData } from "@astral-atlas/sesame-data";
-import { createLoginProof, encodeProofToken } from "@astral-atlas/sesame-models";
+import { createLoginProof, encodeProofToken, castAPIConfig } from "@astral-atlas/sesame-models";
 import generateString from 'crypto-random-string';
 import { promises } from 'fs';
 import { v4 as uuid } from 'uuid';
 import qrcode from 'qrcode-terminal';
 import { dirname } from "path";
-const { writeFile, mkdir } = promises;
+import JSON5 from 'json5';
+const { writeFile, mkdir, readFile } = promises;
 
+const readConfig = async (configPath = './config.json5') => {
+  return castAPIConfig(JSON5.parse(await readFile(configPath, 'utf8')));
+};
 
-const bucketName = 'sesame-test-data20210930112954914600000001';
-
-const initAWS = async () => {
+const initAWS = async ({ bucket, prefix }) => {
   const s3 = new S3({ region: 'ap-southeast-2' });
 
   const emptyTable = Buffer.from(JSON.stringify([]));
-  const { keys } = createS3Data(s3, bucketName, '/');
+  const { keys } = createS3Data(s3, bucket, prefix || '/sesame');
 
   await Promise.all(
     Object.values(keys)
@@ -26,7 +28,7 @@ const initAWS = async () => {
       .map(bucketKey =>
         s3.putObject({
           Body: emptyTable,
-          Bucket: bucketName,
+          Bucket: bucket,
           Key: bucketKey,
           ContentType: 'application/json'
         })
@@ -36,11 +38,23 @@ const initAWS = async () => {
   console.log('done');
 };
 
-const addUser = async (name) => {
-  const s3 = new S3({ region: 'ap-southeast-2' });
+const createData = async () => {
+  const config = await readConfig();
+  const dataConfig = config.data || { type: 'file', dataDir: './data' };
 
-  //const { data, keys } = createS3Data(s3, 'sesame-test-data20210930112954914600000001', '/');
-  const { data } = createFileData('./api/data');
+  switch (dataConfig.type) {
+    case 'awsS3':
+      const s3 = new S3({ region: 'ap-southeast-2' });
+      return createS3Data(s3, dataConfig.bucket, dataConfig.prefix || '/sesame');
+    case 'file':
+      return createFileData(dataConfig.dataDir || './data');
+    default:
+      throw new Error();
+  }
+};
+
+const addUser = async (name) => {
+  const { data } = await createData()
   const user = {
     id: uuid(),
     name,
@@ -92,24 +106,38 @@ const addLogin = async (userId) => {
 }
 
 const init = async () => {
-  const { files } = createFileData('./api/data');
-  for (const file of files) {
-    await mkdir(dirname(file), { recursive: true });
+  const config = await readConfig();
+  const data = config.data || { type: 'file', dataDir: './data' };
+
+  switch (data.type) {
+    case 'file': {
+      const { files } = createFileData(data.dataDir || './data');
+      for (const file of files) {
+        await mkdir(dirname(file), { recursive: true });
+      }
+      return;
+    }
+    case 'awsS3': {
+      return await initAWS(data);
+    }
   }
+
 }
 
 const entry = async (command, ...subcommands) => {
-  switch (command) {
-    case 'init':
-      return await init();
-    case 'init-aws':
-      return await initAWS();
-    case 'add-user':
-      return await addUser(...subcommands);
-    case 'add-login':
-      return await addLogin(...subcommands);
-    default:
-      return console.log('🤷');
+  try {
+    switch (command) {
+      case 'init':
+        return await init();
+      case 'add-user':
+        return await addUser(...subcommands);
+      case 'add-login':
+        return await addLogin(...subcommands);
+      default:
+        return console.log('🤷');
+    }
+  } catch (error) {
+    console.warn(error.message);
   }
 };
 
