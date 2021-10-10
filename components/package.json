@@ -11,10 +11,10 @@
   },
   "author": "Luke Kaalim",
   "license": "MIT",
-  "dependencies": {
-    "@astral-atlas/sesame-models": "^8.0.1"
-  },
   "peerDependencies": {
     "preact": "^10.5.13"
+  },
+  "dependencies": {
+    "@astral-atlas/sesame-models": "^11.4.0"
   }
 }
