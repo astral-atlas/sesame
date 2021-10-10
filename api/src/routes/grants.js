@@ -26,8 +26,10 @@ export const createGrantRoutes = (s/*: Services*/)/*: Route[]*/ => {
     ...routeOptions,
     POST: async ({ body: { proof }, headers }) => {
       const authority = await s.auth.getAuth(headers);
-      throw new Error();
-      //return { status: 200, body: { type: 'valid', grant: {} } };
+      const grant = await s.grant.validateLink(proof, authority);
+      if (!grant)
+        return { status: HTTP_STATUS.ok, body: { type: 'invalid' } }
+      return { status: HTTP_STATUS.ok, body: { type: 'valid', grant } }
     },
   });
 

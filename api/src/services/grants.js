@@ -1,5 +1,5 @@
 // @flow strict
-/*:: import type { UserID, IdentityGrantID, IdentityGrant, LoginGrant, LinkGrant, LinkGrantID } from '@astral-atlas/sesame-models'; */
+/*:: import type { UserID, IdentityGrantID, IdentityGrant, LoginGrant, LinkGrant, LinkGrantID, LinkProof } from '@astral-atlas/sesame-models'; */
 /*:: import type { SesameData } from '@astral-atlas/sesame-data'; */
 /*:: import type { Authority, AuthorityService } from './auth'; */
 import { v4 as uuid } from 'uuid';
@@ -12,6 +12,8 @@ export type GrantService = {
   createLink(target: string, authorizer: Authority): Promise<{ grant: LinkGrant, secret: string }>,
 
   revokeIdentity(userId: UserID, grantId: IdentityGrantID, authorizer: Authority): Promise<void>,
+
+  validateLink(proof: LinkProof, authorizer: Authority): Promise<?LinkGrant>,
 };
 */
 
@@ -100,10 +102,21 @@ export const createGrantService = (data/*: SesameData*/, auth/*: AuthorityServic
     await data.secrets.set(grantId, null);
   }
 
+  const validateLink = async (proof, authorizer) => {
+    if (authorizer.type !== 'service')
+      throw new Error();
+    const { result: grant } = await data.grants.link.get(proof.userId, proof.grantId); 
+    const { result: secret } = await data.secrets.get(proof.grantId); 
+    if (!grant || !secret || secret !== proof.secret)
+      return null;
+    return grant;
+  };
+
   return {
     createIdentity,
     createLink,
     createLogin,
     revokeIdentity,
+    validateLink,
   };
 };
