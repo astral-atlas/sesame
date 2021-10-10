@@ -17,7 +17,7 @@ export type UsersAPI = {
       request: { name: string },
       response: { type: 'created', user: User },
     },
-    PATCH: {
+    PUT: {
       query: { userId: UserID },
       request: { name: string },
       response: { type: 'updated', user: User },
@@ -56,7 +56,7 @@ export const usersResourceDescription/*: ResourceDescription<UsersAPI['/users']>
     toRequestBody: obj({ name: str }),
     toResponseBody: obj({ type: lit('created'), user: castUser }),
   },
-  PATCH: {
+  PUT: {
     toQuery: obj({ userId: castUserId }),
     toRequestBody: obj({ name: str }),
     toResponseBody: obj({ type: lit('updated'), user: castUser }),

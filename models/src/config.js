@@ -1,6 +1,5 @@
 // @flow strict
 /*:: import type  { Cast } from '@lukekaalim/cast'; */
-import * as identity from "../../www/src/storage/identity";
 import { c } from '@lukekaalim/cast';
 
 /*::

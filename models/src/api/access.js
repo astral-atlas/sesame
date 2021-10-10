@@ -9,18 +9,16 @@
 import { createObjectCaster as obj, createArrayCaster as arr, createConstantCaster as lit, createKeyedUnionCaster as or, castString as str } from '@lukekaalim/cast';
 
 import { castUserId } from '../user.js';
-import { castIdentityGrant, castLoginGrant, castIdentityGrantId, castLinkGrant } from '../grant.js';
-import { castIdentityProof } from '../proof.js';
+import { castIdentityGrant, castLoginGrant, castIdentityGrantId, castLinkGrant, castLinkGrantId } from '../grant.js';
+import { castLinkProof } from '../proof.js';
 import { createAPIResponseCaster as res } from './meta.js';
-import { castLinkGrantId } from "../grant";
-import { castLinkProof } from "../proof";
 
 /*::
 
 type GrantResource<ID, Grant, Arguments = {}> = {|
   POST: {
     query: empty,
-    request: { userId: UserID, ...Arguments },
+    request: Arguments,
     response: APIResponse<{ type: 'created', grant: Grant, secret: string }>
   },
   DELETE: {
@@ -51,7 +49,7 @@ export type AccessAPI = {
     }
   |},
 
-  '/grants/identity': GrantResource<IdentityGrantID, IdentityGrant, {| granteeName: string |}>,
+  '/grants/identity': GrantResource<IdentityGrantID, IdentityGrant, {| userId: UserID, granteeName: string |}>,
 
   '/grants/link': GrantResource<LinkGrantID, LinkGrant, {| target: string |}>,
   '/grants/link/validate': {|
@@ -103,7 +101,7 @@ export const grantsLinkResource/*: ResourceDescription<AccessAPI['/grants/link']
   path: '/grants/link',
 
   POST: {
-    toRequestBody: obj({ userId: castUserId, target: str }),
+    toRequestBody: obj({ target: str }),
     toResponseBody: res(obj({
       type: lit('created'),
       grant: castLinkGrant,
