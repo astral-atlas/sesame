@@ -20,7 +20,7 @@ button, pre {
   font-family: 'Josefin Slab', serif;
   text-align: center;
   font-size: max(5vh, 32px);
-  margin: 0;
+  margin: 0 0 64px 0;
   font-weight: normal;
 }
 
@@ -51,16 +51,25 @@ button, pre {
   flex-direction: column;
 }
 
-.loginControlsName {
+.loginControlsName, .loginControlsId {
   font-size: 22px;
+  margin: 0;
+  text-align: center;
+}
+
+.loginControlsIdPick {
+  margin: 0 8px 0 8px;
+  font-weight: 100;
+  border-bottom: 2px solid #717480;
+  position: relative;
 }
 
 .loginControlsNameInput {
   font-size: 22px;
   border: 0;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid #717480;
   display: inline-block;
-  width: 15vw;
+  width: 100%;
   font-family: 'Crimson Text', serif;
   font-weight: bold;
 }
@@ -69,22 +78,26 @@ button, pre {
   display: flex;
   flex-direction: column;
   display: inline-block;
-  width: 15vw;
+  width: 200px;
   position: relative;
   margin-bottom: 26px;
 }
 
-.loginControlsNameLabelHint {
+.loginControlsNameLabelHint, .loginControlsIdHint {
   opacity: 0;
   position: absolute;
   top: 100%;
-  left: 0;
-  width: 200%;
+  right: 0;
+  width: auto;
+  font-family: 'Crimson Text', serif;
+  font-weight: 300;
   font-size: 18px;
   transition: opacity 0.2s;
 }
 
-.loginControlsNameLabel:hover .loginControlsNameLabelHint, .loginControlsNameLabel:focus-within .loginControlsNameLabelHint {
+.loginControlsNameLabel:hover .loginControlsNameLabelHint, .loginControlsNameLabel:focus-within .loginControlsNameLabelHint,
+.loginControlsId:hover .loginControlsIdHint, .loginControlsId:focus-within .loginControlsIdHint
+{
   opacity: 1;
 }
 
