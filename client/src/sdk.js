@@ -10,7 +10,7 @@ import { encodeProofToken, decodeProofToken, accessAPI, usersResourceDescription
 import { createAuthorizedClient } from '@lukekaalim/http-client';
 import { decodeAuthorizationHeader } from '@lukekaalim/net-description';
 
-import { createJSONResourceClient } from "@lukekaalim/http-client/resource";
+import { createJSONResourceClient } from "@lukekaalim/http-client";
 
 /*::
 export type SesameSDK = {
