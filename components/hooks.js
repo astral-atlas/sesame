@@ -14,12 +14,15 @@ export type UseConsumerMessengerOptions = {
 */
 
 export const useConsumerMessenger = (
-  identityOrigin/*: string*/,
+  identityOrigin/*: ?string*/,
   { onGrant = () => {}, onReject = () => {}, proof }/*: UseConsumerMessengerOptions*/ = {},
 )/*: null | ConsumerMessenger*/ => {
   const [messenger, setMessenger] = useState(null);
 
   useEffect(() => {
+    if (!identityOrigin)
+      return;
+
     const url = new URL('/frame/authorizer.html', identityOrigin);
     url.searchParams.append('service', document.location.origin);
 
