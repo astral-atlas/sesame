@@ -1,6 +1,6 @@
 {
   "name": "@astral-atlas/sesame-components",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Preact components for rendering Sesame elements and forms",
   "type": "module",
   "main": "entry.js",
