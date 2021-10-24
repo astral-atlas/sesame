@@ -127,6 +127,43 @@ resource "aws_elastic_beanstalk_environment" "api_test" {
     name      = "DeleteOnTerminate"
     value     = true
   }
+  setting {
+    namespace = "aws:elasticbeanstalk:environment"
+    name      = "LoadBalancerType"
+    value     = "application"
+  }
+
+  ## Networking Configs
+  setting {
+    namespace = "aws:ec2:vpc"
+    name      = "VPCId"
+    value     = module.vpc.vpc_id
+  }
+  setting {
+    namespace = "aws:ec2:vpc"
+    name      = "Subnets"
+    value     = join(",", sort(module.vpc.private_subnets))
+  }
+  setting {
+    namespace = "aws:ec2:vpc"
+    name      = "ELBSubnets"
+    value     = join(",", sort(module.vpc.public_subnets))
+  }
+  setting {
+    namespace = "aws:elbv2:listener:443"
+    name      = "ListenerEnabled"
+    value     = true
+  }
+  setting {
+    namespace = "aws:elbv2:listener:443"
+    name      = "Protocol"
+    value     = "HTTPS"
+  }
+  setting {
+    namespace = "aws:elbv2:listener:443"
+    name      = "SSLCertificateArns"
+    value     = module.api_certificate.certificate_arn
+  }
 }
 
 resource "aws_route53_record" "api" {
@@ -139,6 +176,12 @@ resource "aws_route53_record" "api" {
     zone_id                = "Z2PCDNR3VC2G1N"
     evaluate_target_health = false
   }
+}
+module "api_certificate" {
+  source = "../modules/certificate"
+
+  record_zone_id = data.aws_route53_zone.root.zone_id
+  record_full_name = "api.sesame.astral-atlas.com"
 }
 
 output "api-source-bucket" {

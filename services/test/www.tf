@@ -3,7 +3,7 @@ module "www_release" {
   source = "../modules/github_release"
   owner = "astral-atlas"
   repository = "sesame"
-  release_tag = "@astral-atlas/sesame-www@3.6.0"
+  release_tag = "@astral-atlas/sesame-www@3.7.0"
   release_asset_name = "sesame-www.zip"
   output_directory = "./temp"
 }
@@ -56,11 +56,11 @@ resource "aws_s3_bucket_object" "www_objects" {
 
 locals {
   www_config = {
-    origin: "http://${aws_route53_record.www.fqdn}",
+    origin: "https://${aws_route53_record.www.fqdn}",
     name: "Open Sesame",
     api: {
       sesame: {
-        origin: "http://${aws_route53_record.api.fqdn}"
+        origin: "https://${aws_route53_record.api.fqdn}"
       }
     }
   }
@@ -77,17 +77,6 @@ resource "aws_s3_bucket_object" "www_config" {
   etag = md5(jsonencode(local.www_config))
 }
 
-resource "aws_route53_record" "www" {
-  zone_id = data.aws_route53_zone.root.zone_id
-  name    = "sesame"
-  type    = "A"
-
-  alias {
-    name                   = aws_s3_bucket.www_test.website_domain
-    zone_id                = "Z1WCIGYICN2BYD"
-    evaluate_target_health = false
-  }
-}
 
 output "www-origin-name" {
   value = aws_s3_bucket.www_test.website_endpoint

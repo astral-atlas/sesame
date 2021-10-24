@@ -25,3 +25,9 @@ provider "immutable-elastic-beanstalk" {
 provider "aws" {
   region = "ap-southeast-2"
 }
+
+
+provider "aws" {
+  alias  = "american"
+  region = "us-east-1"
+}
