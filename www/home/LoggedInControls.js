@@ -46,6 +46,7 @@ export const LoggedInControls/*: Component<LoogedInControlsProps>*/ = ({ identit
     const selection = window.getSelection();
     const range = document.createRange();
     range.selectNode(htmlStrongElement.childNodes[0]);
+    selection.removeAllRanges();
     selection.addRange(range);
   };
 
