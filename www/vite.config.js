@@ -7,6 +7,8 @@ export default {
       input: {
         main: resolve(__dirname, 'index.html'),
         'frame/authorizer': resolve(__dirname, 'frame/authorizer.html'),
+        'frame/embed': resolve(__dirname, 'frame/embed.html'),
+        'frame/popoutAuth': resolve(__dirname, 'frame/popoutAuth.html'),
       }
     }
   },

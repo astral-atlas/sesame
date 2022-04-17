@@ -1,0 +1,90 @@
+.popout_authorizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  background-color: rgb(10, 5, 59);
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.popout_authorizer .popup_content {
+  background-color: white;
+  border-radius: 16px;
+
+  overflow: auto;
+
+  margin: 42px;
+  padding: 16px;
+  max-width: 512px;
+  max-height: 512px;
+  flex-grow: 1;
+
+  font-size: 18px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.account_details {
+  list-style: none;
+  padding: 8px;
+  border-radius: 8px;
+  
+  background-color: #a8f4a5;
+}
+.account_details dt {
+  font-weight: bold;
+}
+.account_details pre {
+  margin: 0;
+  overflow-x: auto;
+  min-width: 0px;
+  display: inline;
+}
+
+.service_title {
+  width: 100%;
+  text-align: center;
+  color: teal;
+
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: 24px;
+}
+.service_title a {
+  color: inherit;
+}
+.popup_main_title {
+  margin: 0;
+  text-align: center;
+}
+.popup_error_title {
+  margin: 0;
+  color: red;
+  text-align: center;
+}
+
+.popout_authorizer input[type=submit] {
+  padding: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: 24px;
+
+  background-color: rgb(3, 122, 3);
+  border-radius: 8px;
+  border: 2px solid #73c225;
+
+  color: white;
+
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+.popout_authorizer input[type=submit]:hover {
+  background-color: rgb(4, 155, 4);;
+}

@@ -5,9 +5,10 @@ import { useConsumerMessenger } from '@astral-atlas/sesame-components';
 
 import { createSesameSDK } from '@astral-atlas/sesame-client';
 import { createWebClient } from '@lukekaalim/http-client';
+import { requestLinkGrant } from "@astral-atlas/sesame-components";
 
 const httpClient = createWebClient(fetch);
-const identityURL = new URL('http://localhost:8081');
+const identityURL = new URL('http://localhost:8080');
 
 const serviceProof = {
   type: 'service',
@@ -21,20 +22,18 @@ const TrustedApp = () => {
   const [name, setName] = useState(null);
   const [token, setToken] = useState(null);
 
-  const onGrant = async ({ grant, proof, secret, token }) => {
-    console.log(grant);
+  const onLoginClick = async () => {
+    const { proof, token } = await requestLinkGrant(identityURL)
     const valiatedGrant = await sdk.validateProof(proof);
     if (!valiatedGrant)
       throw new Error();
     const user = await sdk.getUser(valiatedGrant.identity);
     setToken(token);
     setName(user.name);
-  };
-
-  const messenger = useConsumerMessenger(identityURL.href, { onGrant });
+  }
 
   return [
-    messenger && h('button', { onClick: () => messenger.send({ type: 'sesame:prompt-link-grant' }) }, 'Lets log in!'),
+    h('button', { onClick: onLoginClick }, 'Login'),
     name && h('p', {}, `You are logged in as ${name}`),
     token && h('p', {}, [`Your authorization token is: `, h('pre', {}, token)]),
   ];
