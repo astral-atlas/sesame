@@ -1,0 +1,16 @@
+.sesame__multistrategy_root {
+  font-size: 16px;
+  text-decoration: underline;
+
+  border-radius: 8px;
+  border: 2px solid rgb(152, 229, 243);
+  background-color: rgb(83, 111, 143);
+  color: white;
+  padding: 16px;
+  cursor: pointer;
+
+  transition: background-color 0.2s;
+}
+.sesame__multistrategy_root:hover {
+  background-color: rgb(84, 127, 177);
+}

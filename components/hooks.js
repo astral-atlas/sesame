@@ -36,7 +36,7 @@ export const useConsumerMessenger = (
       throw new Error();
 
     body.appendChild(iframeElement);
-    createConsumerMessenger(iframeElement)
+    createConsumerMessenger(new URL(iframeElement.src), iframeElement.contentWindow)
       .then(messenger => setMessenger(messenger));
 
     return () => {

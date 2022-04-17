@@ -15,6 +15,6 @@
     "preact": "^10.5.13"
   },
   "dependencies": {
-    "@astral-atlas/sesame-models": "^11.6.0"
+    "@astral-atlas/sesame-models": "^11.7.0"
   }
 }

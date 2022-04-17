@@ -45,7 +45,7 @@ export const createProviderMessenger = (origin/*: string*/, window/*: any*/)/*: 
     return { remove() { stateListeners.delete(listener) }}
   };
   const send = (message) => {
-    window.parent.postMessage(message, origin);
+    (window.opener || window.parent).postMessage(message, origin);
   };
 
   return {
@@ -55,48 +55,48 @@ export const createProviderMessenger = (origin/*: string*/, window/*: any*/)/*: 
   };
 }
 
-export const createConsumerMessenger = async (iframeElement/*: HTMLIFrameElement*/)/*: Promise<ConsumerMessenger>*/ => {
+export const createConsumerMessenger = async (targetURL/*: URL*/, targetWindow/*: WindowProxy*/)/*: Promise<ConsumerMessenger>*/ => {
   const updateLinkedIdentityListeners = new Set();
   const cannotGrantListeners = new Set();
-  let onReadyResolver = null;
-  const url = new URL(iframeElement.src);
 
-  window.addEventListener('message', (e/*: MessageEvent*/) => {
-    try {
-      if (e.origin !== url.origin)
-        return;
-      const message = m.castWWWMessage(e.data);
-      switch (message.type) {
-        case 'sesame:update-link-grant':
-          for (const listener of updateLinkedIdentityListeners) listener(message);
+  return new Promise(resolve => {
+    window.addEventListener('message', (e/*: MessageEvent*/) => {
+      try {
+        if (e.origin !== targetURL.origin)
           return;
-        case 'sesame:cannot-grant':
-          for (const listener of cannotGrantListeners) listener(message);
-          return;
-        case 'sesame:identity-provider-ready':
-          onReadyResolver && onReadyResolver();
-          return;
-      }
-    } catch (error) {}
-  });
+        const message = m.castWWWMessage(e.data);
+        switch (message.type) {
+          case 'sesame:update-link-grant':
+            for (const listener of updateLinkedIdentityListeners)
+              listener(message);
+            return;
+          case 'sesame:cannot-grant':
+            for (const listener of cannotGrantListeners)
+              listener(message);
+            return;
+          case 'sesame:identity-provider-ready':
+            resolve(messeger);
+            return;
+        }
+      } catch (error) {}
+    });
+  
+    const addUpdateLinkedIdentityListener = (listener) => {
+      updateLinkedIdentityListeners.add(listener);
+      return { remove() { updateLinkedIdentityListeners.delete(listener) }}
+    };
+    const addCannotGrantListener = (listener) => {
+      cannotGrantListeners.add(listener);
+      return { remove() { cannotGrantListeners.delete(listener) }}
+    }
+    const send = (message) => {
+      targetWindow.postMessage(message, targetURL.origin);
+    };
 
-  const addUpdateLinkedIdentityListener = (listener) => {
-    updateLinkedIdentityListeners.add(listener);
-    return { remove() { updateLinkedIdentityListeners.delete(listener) }}
-  };
-  const addCannotGrantListener = (listener) => {
-    cannotGrantListeners.add(listener);
-    return { remove() { cannotGrantListeners.delete(listener) }}
-  }
-  const send = (message) => {
-    iframeElement.contentWindow.postMessage(message, url.origin);
-  };
-
-  await new Promise(r => { onReadyResolver = r });
-
-  return {
-    send,
-    addUpdateLinkedIdentityListener,
-    addCannotGrantListener,
-  };
+    const messeger = {
+      send,
+      addUpdateLinkedIdentityListener,
+      addCannotGrantListener,
+    }
+  })
 }

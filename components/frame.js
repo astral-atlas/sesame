@@ -22,7 +22,7 @@ export const AuthorizerFrame = ({ origin, service = document.location.origin, on
     if (!iframeElement)
       return;
 
-    createConsumerMessenger(iframeElement)
+    createConsumerMessenger(new URL(iframeElement.src), iframeElement.contentWindow)
       .then(onMessengerLoad);
   }, [])
 
