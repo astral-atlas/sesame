@@ -1,7 +1,7 @@
 // @flow strict
 /*:: import type { S3 } from "@aws-sdk/client-s3"; */
 /*:: import type { SesameData } from './data'; */
-import { resolve, join } from 'path';
+/*:: import type { FS } from './sources/buffer'; */
 import { createBufferedSesameData } from './data.js';
 import { createFileBufferStore, createMemoryBufferStore, createS3BufferStore } from "./sources/buffer.js";
 
@@ -9,12 +9,12 @@ export const createMemoryData = ()/*: { data: SesameData }*/ => {
   const { data } = createBufferedSesameData(() => createMemoryBufferStore());
   return { data };
 }
-export const createFileData = (directory/*: string*/)/*: { data: SesameData, files: string[] }*/ => {
+export const createFileData = (fs/*: FS*/, directory/*: string*/)/*: { data: SesameData, files: string[] }*/ => {
   const files = [];
   const createBackingBufferBuffer = (name) => {
-    const path = resolve(directory, `${name}.json`);
+    const path = [directory, `${name}.json`].join('/');
     files.push(path);
-    return createFileBufferStore(path);
+    return createFileBufferStore(fs, path);
   };
   const { data } = createBufferedSesameData(createBackingBufferBuffer);
   return { data, files };
@@ -22,7 +22,7 @@ export const createFileData = (directory/*: string*/)/*: { data: SesameData, fil
 export const createS3Data = (S3/*: S3*/, bucket/*: string*/, keyPrefix/*: string*/)/*: { data: SesameData, keys: string[] }*/ => {
   const keys = [];
   const createBackingBufferBuffer = (name) => {
-    const key = join(keyPrefix, name);
+    const key = [keyPrefix, name].join('');
     keys.push(key);
     return createS3BufferStore(S3, bucket, key);
   };

@@ -1,0 +1,17 @@
+.userTable {
+  border: 1px solid black;
+
+  border-collapse: collapse;
+}
+.userTable th {
+  border: 1px solid black;
+  padding: 4px;
+}
+.userTable td {
+  border: 1px solid black;
+  padding: 4px;
+}
+
+form label {
+  display: block;
+}

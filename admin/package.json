@@ -1,0 +1,29 @@
+{
+  "name": "@astral-atlas/sesame-admin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "esbuild src/entry.js --bundle --sourcemap --outdir=dist/js --servedir=dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/astral-atlas/sesame.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/astral-atlas/sesame/issues"
+  },
+  "homepage": "https://github.com/astral-atlas/sesame#readme",
+  "dependencies": {
+    "@astral-atlas/sesame-client": "^3.1.1",
+    "@astral-atlas/sesame-data": "^2.2.0",
+    "@lukekaalim/act": "^2.4.0",
+    "@lukekaalim/act-three": "^5.3.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.14.36",
+    "vite": "^2.9.5"
+  }
+}

@@ -8,7 +8,8 @@
     "components",
     "examples/trusted",
     "data",
-    "cli"
+    "cli",
+    "admin"
   ],
   "scripts": {
     "dev:www": "npm run dev -w www",

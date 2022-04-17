@@ -20,14 +20,30 @@ export type CompositeTable<PartitionKey, SortKey, Value> = {
 };
 */
 
+const bufferToString = (buffer) => {
+  if (TextDecoder)
+    return new TextDecoder('utf-8').decode(buffer)
+  if (Buffer)
+    return Buffer.from(buffer).toString('utf8');
+  throw new Error();
+}
+const stringToBuffer = (string) => {
+  if (TextEncoder)
+    return new TextEncoder().encode(string)
+  if (Buffer)
+    return Uint8Array.from(Buffer.from(string, 'utf-8'))
+  throw new Error();
+}
+
 export const createBufferTable = /*:: <T>*/(store/*: BufferStore*/, castValue/*: Cast<T>*/)/*: Table<string, T>*/ => {
   const castTable = c.arr(c.obj({ key: c.str, value: castValue }));
   const loadTable = async () => {
     try {
       const buffer = await store.get()
-      const table = castTable(JSON.parse(buffer.toString('utf8')))
+      const table = castTable(JSON.parse(bufferToString(buffer)))
       return table;
     } catch (error) {
+      console.warn(error)
       return [];
     }
   };
@@ -41,7 +57,7 @@ export const createBufferTable = /*:: <T>*/(store/*: BufferStore*/, castValue/*:
     const updatedTable = newValue ?
     [...table.filter(e => e.key !== key), { key, value: newValue }] :
       table.filter(e => e.key !== key);
-    await store.set(Buffer.from(JSON.stringify(updatedTable, null, 2)));
+    await store.set(stringToBuffer(JSON.stringify(updatedTable, null, 2)));
   };
   const scan = async () => {
     const table = await loadTable();
@@ -60,7 +76,7 @@ export const createBufferCompositeTable = /*:: <T>*/(store/*: BufferStore*/, cas
   const loadTable = async () => {
     try {
       const buffer = await store.get()
-      const table = castTable(JSON.parse(buffer.toString('utf8')))
+      const table = castTable(JSON.parse(bufferToString(buffer)))
       return table;
     } catch (error) {
       return [];
@@ -76,7 +92,7 @@ export const createBufferCompositeTable = /*:: <T>*/(store/*: BufferStore*/, cas
     const updatedTable = newValue ?
       [...table.filter(e => !matchEntry(partition, sort, e)), { partition, sort, value: newValue }] :
       table.filter(e => !matchEntry(partition, sort, e));
-    await store.set(Buffer.from(JSON.stringify(updatedTable, null, 2)));
+    await store.set(stringToBuffer(JSON.stringify(updatedTable, null, 2)));
   }
   const scan = async ({ partition = null, sort }, limit) => {
     // we assume buffer tables have no limit
