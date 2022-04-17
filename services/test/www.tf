@@ -3,7 +3,7 @@ module "www_release" {
   source = "../modules/github_release"
   owner = "astral-atlas"
   repository = "sesame"
-  release_tag = "@astral-atlas/sesame-www@3.8.0"
+  release_tag = "@astral-atlas/sesame-www@3.9.0"
   release_asset_name = "sesame-www.zip"
   output_directory = "./temp"
 }
