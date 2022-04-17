@@ -31,7 +31,7 @@ data "external" "create_api_bundle" {
 }
 locals {
   api_config = {
-    "md5_breaker": 2
+    "md5_breaker": 3
     "data": { "type": "awsS3", "bucket": aws_s3_bucket.api_data.bucket, "prefix": "/" },
     "port": 8080 // this is the default port elastic beanstalk will listen to
   }
