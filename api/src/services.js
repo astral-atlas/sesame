@@ -10,6 +10,7 @@ import { createUserService } from './services/users.js';
 
 import { createMemoryData, createFileData, createS3Data } from '@astral-atlas/sesame-data';
 import { S3 } from "@aws-sdk/client-s3";
+import { promises as fs } from 'fs';
 
 /*::
 export type Services = {
@@ -26,7 +27,7 @@ export const createData = async (config/*: APIConfig*/)/*: Promise<SesameData>*/
       const { data: memoryData } = createMemoryData();
       return memoryData;
     case 'file':
-      const { data: fileData } = await createFileData(dataConfig.dataDir || './data')
+      const { data: fileData } = await createFileData(fs, dataConfig.dataDir || './data')
       return fileData;
     case 'awsS3':
       const s3 = new S3({ region: 'ap-southeast-2' });

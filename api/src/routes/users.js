@@ -26,8 +26,21 @@ export const createUsersRoutes = (s/*: Services*/)/*: Route[]*/ => {
       return { body: { type: 'updated', user }, status: statusCodes.ok };
     },
   });
+  const userSelfRoutes = createJSONResourceRoutes(api.usersSelfResourceDescription, {
+    ...routeOptions,
+    GET: async ({ headers }) => {
+      const authorization = await s.auth.getAuth(headers);
+      if (authorization.type !== 'identity')
+        return { status: statusCodes.forbidden };
+
+      const user = await s.user.getByID(authorization.grant.identity);
+
+      return { body: { type: 'found', user }, status: statusCodes.ok };
+    },
+  })
 
   return [
     ...usersRoutes,
+    ...userSelfRoutes,
   ];
 };

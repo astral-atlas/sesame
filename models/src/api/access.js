@@ -147,5 +147,5 @@ export const accessAPI = {
   '/grants/identity': grantsIdentityResource,
   '/grants/link': grantsLinkResource,
   '/grants/link/validate': grantsLinkValidateResource,
-  '/grants': grantsLogin,
+  '/grants/login': grantsLogin,
 }

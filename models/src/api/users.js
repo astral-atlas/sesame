@@ -35,13 +35,13 @@ export type UsersAPI = {
       response: { type: 'found', users: $ReadOnlyArray<User> },
     },
   },
-  '/users/self': {
+  '/users/self': {|
     GET: {
       query: empty,
       request: empty,
       response: { type: 'found', user: User },
     },
-  }
+  |}
 };
 */
 
