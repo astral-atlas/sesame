@@ -1,6 +1,6 @@
 {
   "name": "@astral-atlas/sesame-api",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "private": true,
   "description": "Identity Service API for Astral Atlas",
   "main": "src/entry.js",
@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@astral-atlas/sesame-data": "^2.2.0",
-    "@astral-atlas/sesame-models": "^11.4.0",
+    "@astral-atlas/sesame-models": "^11.7.0",
     "@aws-sdk/client-s3": "^3.35.0",
     "@lukekaalim/cast": "^4.0.0",
     "@lukekaalim/http-server": "^13.5.1",

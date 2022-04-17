@@ -13,7 +13,7 @@
     "@lukekaalim/http-client": "^5.2.0"
   },
   "dependencies": {
-    "@astral-atlas/sesame-models": "^11.4.0",
+    "@astral-atlas/sesame-models": "^11.7.0",
     "@lukekaalim/cast": "^4.0.0",
     "@lukekaalim/net-description": "^1.1.0"
   }
